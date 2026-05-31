@@ -87,7 +87,7 @@ class UsuarioController
         $id = $this->request->get('id');
 
         if (!is_numeric($id)) {
-            Log::warning("UsuarioController::eliminar - id invalido: $id");
+            Log::warning("UsuarioController::eliminar -id invalido: $id");
             Redirect::toIndex();
             return;
         }
