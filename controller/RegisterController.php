@@ -1,4 +1,10 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require 'vendor/autoload.php';
+
+$mail = new PHPMailer(true);
 class RegisterController{
     private $model;
     private $renderer;
@@ -18,7 +24,7 @@ class RegisterController{
     public function registrar(){
         Log::info("registerController::registrar");
         $nombre = $this->request->post('nombreCompleto');
-        $fechaNac = $this->request->post('anioNacimiento') ;
+        $fechaNac = $this->request->post('anioNacimiento') . '-01-01' ;
         $sexo = $this->request->post('sexo');
         $pais = $this->request->post('pais');
         $ciudad = $this->request->post('ciudad');
@@ -35,23 +41,25 @@ class RegisterController{
             Redirect::toIndex();
             return;
         }
-//
-//        if (isset($_FILES['fotoPerfil']) && $_FILES['fotoPerfil']['error'] === UPLOAD_ERR_OK) {
-//
-//            $extension = pathinfo($_FILES['fotoPerfil']['name'], PATHINFO_EXTENSION);
-//
-//            $foto_perfil = uniqid("perfil_") . "." . $extension;
-//
-//            $rutaDestino = __DIR__ . "/../public/img/" . $foto_perfil;
-//
-//            move_uploaded_file(
-//                $_FILES['fotoPerfil']['tmp_name'],
-//                $rutaDestino
-//            );
-//        }
+
+        if (isset($_FILES['fotoPerfil']) && $_FILES['fotoPerfil']['error'] === UPLOAD_ERR_OK) {
+
+            $extension = pathinfo($_FILES['fotoPerfil']['name'], PATHINFO_EXTENSION);
+
+            $foto_perfil = uniqid("perfil_") . "." . $extension;
+
+            $rutaDestino = __DIR__ . "/../public/img/" . $foto_perfil;
+
+            move_uploaded_file(
+                $_FILES['fotoPerfil']['tmp_name'],
+                $rutaDestino
+            );
+        }
 
         Log::info("registerController::procesarAlta - nombre=$nombre");
-        $this->model->registrarUsuario($nombre, $fechaNac, $sexo, "default", "default", $mail, $username, $password, $foto_perfil ?? "default-user.png");
+        $this->model->registrarUsuario($nombre, $fechaNac, $sexo, $pais, $ciudad, $mail, $username, $password, $foto_perfil ?? "default-user.png");
         Redirect::toIndex();
     }
 }
+
+?>

@@ -90,6 +90,19 @@
                         </div>
 
                         <!-- Mapa -->
+                        <div id="mapa"></div>
+                        <label>Indique su ubicación (país / ciudad)</label>
+
+                        <div class="row">
+                            <div class="col">
+                                <label>País:</label>
+                                <input type="text" id="pais" name="pais" readonly placeholder="Haz clic en el mapa">
+                            </div>
+                            <div class="col">
+                                <label>Ciudad:</label>
+                                <input type="text" id="ciudad" name="ciudad" readonly placeholder="Haz clic en el mapa">
+                            </div>
+                        </div>
 
 
                         <!-- Email -->
@@ -186,6 +199,62 @@
         </div>
     </div>
 </div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // 1. Inicializar el mapa en coordenadas genéricas (Lat, Lon) y zoom 3
+    const map = L.map('mapa').setView([20, 0], 2);
+
+    // 2. Cargar la capa de diseño del mapa (OpenStreetMap)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Variable para guardar el marcador y que no se duplique
+    let marcador = null;
+
+    // 3. Escuchar el evento Click en el mapa
+    map.on('click', function(e) {
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
+
+        // Si ya había un marcador, lo movemos. Si no, lo creamos.
+        if (marcador) {
+            marcador.setLatLng(e.latlng);
+        } else {
+            marcador = L.marker(e.latlng).addTo(map);
+        }
+
+        // 4. Llamar a la API de Geocodificación Inversa (Nominatim)
+        const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
+
+        fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.address) {
+                        // Extraer País
+                        const pais = data.address.country || 'No detectado';
+
+                        // Extraer Ciudad (Nominatim usa diferentes llaves según el tamaño de la localidad)
+                        const ciudad = data.address.city ||
+                                data.address.town ||
+                                data.address.village ||
+                                data.address.county ||
+                                'No detectada';
+
+                        // 5. Inyectar los valores en los inputs del formulario
+                        document.getElementById('pais').value = pais;
+                        document.getElementById('ciudad').value = ciudad;
+
+                        // Opcional: Mostrar un cartelito sobre el marcador
+                        marcador.bindPopup(`<b>${ciudad}, ${pais}</b>`).openPopup();
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al obtener la ubicación:", error);
+                });
+    });
+</script>
 
 
 
