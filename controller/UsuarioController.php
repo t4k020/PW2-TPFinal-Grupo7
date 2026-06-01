@@ -29,22 +29,22 @@ class UsuarioController
 
     public function procesarAlta()
     {
-        $nombre = $this->request->post('nombre');
-        $fechaNac = $this->request->post('fechaNac');
-        $sexo = $this->request->post('sexo');
-        $pais = $this->request->post('pais');
-        $ciudad = $this->request->post('ciudad');
-        $mail = $this->request->post('mail');
-        $username = $this->request->post('username');
-        $password = $this->request->post('password');
-        $foto_perfil = $this->request->post('foto_perfil');
+//        $nombre = $this->request->post('nombre');
+//        $fechaNac = $this->request->post('fechaNac');
+//        $sexo = $this->request->post('sexo');
+//        $pais = $this->request->post('pais');
+//        $ciudad = $this->request->post('ciudad');
+//        $mail = $this->request->post('mail');
+//        $username = $this->request->post('username');
+//        $password = $this->request->post('password');
+//        $foto_perfil = $this->request->post('foto_perfil');
 
 
 
-
-        Log::info("UsuarioController::procesarAlta - nombre=$nombre");
-        $this->model->alta($nombre, $fechaNac, $sexo, $pais, $ciudad, $mail, $username, $password, $foto_perfil);
-        Redirect::toIndex();
+//
+//        Log::info("UsuarioController::procesarAlta - nombre=$nombre");
+//        $this->model->alta($nombre, $fechaNac, $sexo, $pais, $ciudad, $mail, $username, $password, $foto_perfil);
+//        Redirect::toIndex();
     }
 
     // que se le permite editar al usuario?
