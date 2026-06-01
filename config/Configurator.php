@@ -8,11 +8,6 @@ class Configurator {
         $this->config = parse_ini_file("config/config.ini");
     }
 
-    public function getVikingoController()
-    {
-        return new VikingoController($this->getVikingoModel(), $this->getRenderer(), new Request());
-    }
-
     private function getDatabase()
     {
         return new MyDatabase(
@@ -28,14 +23,31 @@ class Configurator {
         return new MustacheRenderer(__DIR__ . '/../view');
     }
 
-    private function getVikingoModel()
+    //Lobby
+    public function getLobbyController()
     {
-        return new VikingoModel($this->getDatabase());
+        return new LobbyController($this->getLobbyModel(), $this->getRenderer(), new Request());
+    }
+
+    private function getLobbyModel()
+    {
+        return new LobbyModel($this->getDatabase());
+    }
+
+    //Login
+    public function getLoginController()
+    {
+        return new LoginController($this->getLoginModel(), $this->getRenderer(), new Request());
+    }
+
+    private function getLoginModel()
+    {
+        return new LoginModel($this->getDatabase());
     }
 
     public function getRouter()
     {
-        return new Router($this, 'vikingo', 'ver');
+        return new Router($this, 'lobby', 'mostrar');
     }
 
     public function getOrDefault($controllerName, $defaultControllerName)
@@ -47,4 +59,6 @@ class Configurator {
         $defaultGetter = 'get' . ucfirst($defaultControllerName) . 'Controller';
         return $this->{$defaultGetter}();
     }
+
+
 }
