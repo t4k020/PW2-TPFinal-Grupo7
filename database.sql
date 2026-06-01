@@ -33,14 +33,15 @@ create table JuegoPreguntas.Usuario
     password varchar(255) not null,
     fotoPerfil varchar(255) default 'default.png',
     puntaje int default 0,
-    trampita int default 0
+    trampitas int default 0
 );
 
-    INSERT INTO Usuario (nombreCompleto, anioNacimiento, sexo, pais, ciudad, mail, username, password, fotoPerfil)
+# Todas las contraseñas hasheadas en insert representan a 1234
+    INSERT INTO Usuario (nombreCompleto, anioNacimiento, sexo, pais, ciudad, mail, username, password)
 VALUES
-('Admin', '1990-05-12', 'Masculino', 'Argentina', 'Buenos Aires', 'admin@gmail.com', 'Admin', '1234', 'default.png'),
+('Admin', '1990-05-12', 'Masculino', 'Argentina', 'Buenos Aires', 'admin@gmail.com', 'Admin', '$2y$10$vlbDuqv8RNDEe84bHSaj9e00AfameGKIM4gAiieTa9f6Nw20QCjl.'),
 
-('Editor', '1993-09-24', 'Masculino', 'Argentina', 'Moreno', 'editor@gmail.com', 'Editor', '5678', 'default.png'),
+('Editor', '1993-09-24', 'Masculino', 'Argentina', 'Moreno', 'editor@gmail.com', 'Editor', '$2y$10$vlbDuqv8RNDEe84bHSaj9e00AfameGKIM4gAiieTa9f6Nw20QCjl.'),
 
-('Usuario', '1998-01-05', 'Masculino', 'Argentina', 'San Justo', 'usuario@gmail.com', 'Usuario', 'Abcd', 'default.png');
+('Usuario', '1998-01-05', 'Masculino', 'Argentina', 'San Justo', 'usuario@gmail.com', 'Usuario', '$2y$10$vlbDuqv8RNDEe84bHSaj9e00AfameGKIM4gAiieTa9f6Nw20QCjl.');
 
