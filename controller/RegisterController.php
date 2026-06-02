@@ -9,11 +9,13 @@ class RegisterController{
     private $model;
     private $renderer;
     private $request;
+    private $mailer;
 
-    public function __construct($model, $renderer, $request){
+    public function __construct($model, $renderer, $request, $mailer){
         $this->model = $model;
         $this->renderer = $renderer;
         $this->request = $request;
+        $this->mailer = $mailer;
 
     }
     public function mostrar(){
@@ -33,6 +35,8 @@ class RegisterController{
         $password = $this->request->post('password');
         $repetirPassword = $this->request->post('repetirPassword');
         $foto_perfil = $this->request->post('foto_perfil') ?? "default-user.png";
+        //token, guardar boolean y token en db y luego verificar si lo tipeado es igual
+        $token = bin2hex(random_bytes(32));
 
 
 
@@ -59,6 +63,13 @@ class RegisterController{
         Log::info("registerController::procesarAlta - nombre=$nombre");
         $this->model->registrarUsuario($nombre, $fechaNac, $sexo, $pais, $ciudad, $mail, $username, $password, $foto_perfil ?? "default-user.png");
         Redirect::toIndex();
+        $enviado = $this->mailService->enviarValidacion($mail, $nombre, $token);
+
+        if ($enviado) {
+            Log::info("se envio el correo");
+        } else {
+            Log::error("NO se envio el correo");
+        }
     }
 }
 

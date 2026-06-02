@@ -1,5 +1,10 @@
 <?php
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 class Configurator {
+
 
     private $config;
 
@@ -48,7 +53,7 @@ class Configurator {
     //register
     public function getRegisterController()
     {
-        return new RegisterController($this->getRegisterModel(), $this->getRenderer(), new Request());
+        return new RegisterController($this->getRegisterModel(), $this->getRenderer(), new Request(), $this->getMailer());
     }
 
     private function getRegisterModel()
@@ -69,6 +74,27 @@ class Configurator {
         }
         $defaultGetter = 'get' . ucfirst($defaultControllerName) . 'Controller';
         return $this->{$defaultGetter}();
+    }
+
+    function getMailer(): PHPMailer
+    {
+
+        $mailer = new PHPMailer(true);
+
+        $mailer->isSMTP();
+        $mailer->Host = 'smtp.gmail.com';
+        $mailer->SMTPAuth = true;
+        $mailer->Username = 'pwtpg2712@gmail.com';
+        $mailer->Password = 'ehrq zayo dsay wrlt';
+        $mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mailer->Port = 587;
+
+        $mailer->setFrom(
+            'pwtpg2712@gmail.com',
+            'Preguntados'
+        );
+
+        return $mailer;
     }
 
 
