@@ -1,22 +1,14 @@
 <?php
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
 
-require 'vendor/autoload.php';
-
-$mail = new PHPMailer(true);
 class RegisterController{
     private $model;
     private $renderer;
     private $request;
-    private $mailer;
 
-    public function __construct($model, $renderer, $request, $mailer){
+    public function __construct($model, $renderer, $request){
         $this->model = $model;
         $this->renderer = $renderer;
         $this->request = $request;
-        $this->mailer = $mailer;
-
     }
     public function mostrar(){
         Log::info("registerController::mostrar");
@@ -35,16 +27,16 @@ class RegisterController{
         $password = $this->request->post('password');
         $repetirPassword = $this->request->post('repetirPassword');
         $foto_perfil = $this->request->post('foto_perfil') ?? "default-user.png";
-        //token, guardar boolean y token en db y luego verificar si lo tipeado es igual
-        $token = bin2hex(random_bytes(32));
-
-
 
         if ($password != $repetirPassword){
             Log::warning("RegisterController::procesarAlta - la contraseña no es igual: $password");
             Redirect::toIndex();
             return;
         }
+
+        $token = bin2hex(random_bytes(32));
+        $password = password_hash($password, PASSWORD_DEFAULT);
+        $link = "http://localhost/register/validar?token=$token";
 
         if (isset($_FILES['fotoPerfil']) && $_FILES['fotoPerfil']['error'] === UPLOAD_ERR_OK) {
 
@@ -60,16 +52,43 @@ class RegisterController{
             );
         }
 
-        Log::info("registerController::procesarAlta - nombre=$nombre");
-        $this->model->registrarUsuario($nombre, $fechaNac, $sexo, $pais, $ciudad, $mail, $username, $password, $foto_perfil ?? "default-user.png");
-        Redirect::toIndex();
-        $enviado = $this->mailService->enviarValidacion($mail, $nombre, $token);
+        $enviado = Mailer::enviarValidacion ($mail, $link);
 
         if ($enviado) {
-            Log::info("se envio el correo");
+            Log::info("Se envio el correo a $mail");
         } else {
-            Log::error("NO se envio el correo");
+            Log::error("NO se envio el correo a $mail");
+            Redirect::toIndex();
         }
+
+        Log::info("registerController::procesarAlta - nombre=$nombre");
+        $this->model->registrarUsuario($nombre, $fechaNac, $sexo, $pais, $ciudad, $mail, $username, $password, $foto_perfil ?? "default-user.png",$token);
+
+        Redirect::toIndex();
+    }
+
+    public function validar()
+    {
+        $token = $this->request->get("token");
+
+        if (!$token) {
+            Redirect::to("/login");
+            return;
+        }
+
+        $usuario = $this->model->buscarPorToken($token);
+
+        if (!$usuario) {
+            Log::warning("Token inválido: $token");
+            Redirect::to("/login");
+            return;
+        }
+
+        $this->model->activarUsuario($usuario["id"]);
+
+        Log::info("Usuario activado: " . $usuario["username"]);
+
+        Redirect::to("/login");
     }
 }
 
