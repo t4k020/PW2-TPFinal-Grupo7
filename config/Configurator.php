@@ -95,5 +95,16 @@ class Configurator {
         return $mailer;
     }
 
+    public function getPreguntaModel() {
+        return new PreguntaModel($this->getDatabase());
+    }
+
+    public function getPreguntaController() {
+        return new PreguntaController(
+            $this->getPreguntaModel(),
+            $this->getRenderer(),
+            new Request()
+        );
+    }
 
 }
