@@ -103,6 +103,11 @@
 <header>
     {{#usuario}}
     <div class="position-absolute top-0 end-0 p-3">
+        {{#esAdmin}}
+            <a href="/panelAdmin" class="btn btn-warning shadow fw-bold">
+                ⚙️ Panel Admin
+            </a>
+        {{/esAdmin}}
         <a href="/login/logout" class="btn btn-danger shadow">
             🔓 Cerrar sesión
         </a>
@@ -116,7 +121,7 @@
           crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-            crossorigin=""></script>
-    <h1>Salón del Trono</h1>
-    <p>"AQUÍ SE FORJAN LAS LEYENDAS QUE CANTARÁN LOS SKALDOS"</p>
+            crossorigin="">
+    </script>
+
 </header>

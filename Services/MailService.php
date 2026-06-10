@@ -3,6 +3,7 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+// se crea un servicio para que to-do lo relacionado a PHPmailer pase aca
 class MailService {
 
     private $mailer;
@@ -17,12 +18,12 @@ class MailService {
             Log::info("Inicia el envio de correo");
 
             $link = "http://localhost/tu_proyecto/verify.php?token=" . $token;
-            $this->mailer->SMTPDebug = 2;
 
+            //borra cualquier direccion mail anteriormente usada
             $this->mailer->clearAddresses();
 
             $this->mailer->addAddress($email);
-
+            //le indica que el mensaje sera en html en vez de texto plano
             $this->mailer->isHTML(true);
 
             $this->mailer->Subject = 'Verifica tu cuenta';
@@ -40,6 +41,7 @@ class MailService {
                     Activar cuenta
                 </a>
             ";
+            // El nivel 2 le pide a PHPMailer que imprima en la pantalla toda la conversación  que tiene tu servidor con los servidores de Google
             $this->mailer->SMTPDebug = 2;
             $this->mailer->Debugoutput = 'html';
 
