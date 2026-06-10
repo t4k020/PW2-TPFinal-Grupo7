@@ -21,6 +21,7 @@ class LobbyController {
         $usuario = $this->model->obtenerDatosUsuario($_SESSION["id"]);
         $this->renderer->render("lobbyView", [
             "usuario" => $usuario["username"],
+            "fotoPerfil" => $usuario["fotoPerfil"],
             "puntaje" => $usuario["puntaje"],
             "trampitas" => $usuario["trampitas"],
             "esAdmin"   => ($usuario["username"] === "Admin")

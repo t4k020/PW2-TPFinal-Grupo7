@@ -35,6 +35,11 @@ class LoginController
             return;
         }
 
+        if (!$usuario["validado"]) {
+            Redirect::to("/login");
+            return;
+        }
+
         $_SESSION["id"] = $usuario["id"];
         $_SESSION["username"] = $usuario["username"];
         $_SESSION["rol"] = $usuario["rol"];

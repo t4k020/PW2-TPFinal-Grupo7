@@ -5,7 +5,6 @@ use PHPMailer\PHPMailer\Exception;
 
 class Configurator {
 
-
     private $config;
 
     public function __construct()
@@ -55,7 +54,7 @@ class Configurator {
         return new LoginModel($this->getDatabase());
     }
 
-    //register
+    //Register
     public function getRegisterController()
     {
         return new RegisterController($this->getRegisterModel(), $this->getRenderer(), new Request(), $this->getMailer());
@@ -83,7 +82,6 @@ class Configurator {
 
     function getMailer(): PHPMailer
     {
-
         $mailer = new PHPMailer(true);
 
         //el mailer usara simple mail transfer protocol
@@ -107,5 +105,16 @@ class Configurator {
         return $mailer;
     }
 
+    public function getPreguntaModel() {
+        return new PreguntaModel($this->getDatabase());
+    }
+
+    public function getPreguntaController() {
+        return new PreguntaController(
+            $this->getPreguntaModel(),
+            $this->getRenderer(),
+            new Request()
+        );
+    }
 
 }
