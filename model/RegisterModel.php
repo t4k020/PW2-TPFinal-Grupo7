@@ -13,8 +13,10 @@ class RegisterModel
 
         $sql = "INSERT INTO Usuario (nombreCompleto, anioNacimiento, sexo, pais, ciudad, mail, username, password, fotoPerfil, token) VALUES (?,?,?,?,?,?,?,?,?,?)";
         Log::info("SQL: $sql [$nombre, $fechaNac, $sexo, $pais, $ciudad, $mail, $username, $password, $foto_perfil, $token]");
+        //se encripta la password por seguridad
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-        return $this->database->execute($sql, [$nombre, $fechaNac, $sexo, $pais, $ciudad, $mail, $username, $password, $foto_perfil, $token]);
+        return $this->database->execute($sql, [$nombre, $fechaNac, $sexo, $pais, $ciudad, $mail, $username, $passwordHash, $foto_perfil, $token]);
 
     }
 
@@ -24,21 +26,19 @@ class RegisterModel
 
         $filas = $this->database->query($sql, [$token]);
         $sql = "INSERT INTO usuario (nombreCompleto, anioNacimiento, sexo, pais, ciudad, mail, username, password, fotoPerfil) VALUES (?, ?, ?, ?,?,?,?,?,?)";
-        //se encripta la password por seguridad
-        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-        Log::info("SQL: $sql [$nombre, $fechaNac, $sexo, $pais, $ciudad, $mail, $username, $passwordHash, $foto_perfil]");
+
+        Log::info("SQL: $sql");
 
         return !empty($filas) ? $filas[0] : null;
     }
 
     public function activarUsuario($id)
     {
+        Log::info("activando usuario $id..");
         $sql = "UPDATE Usuario
         SET validado = 1,
             token = NULL
-        WHERE id = ?
-    ";
-        return $this->database->execute($sql, [$nombre, $fechaNac, $sexo, $pais, $ciudad, $mail, $username, $passwordHash, $foto_perfil]);
+        WHERE id = ?  ";
 
         $this->database->execute($sql, [$id]);
     }
