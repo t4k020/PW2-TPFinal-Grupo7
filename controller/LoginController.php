@@ -26,17 +26,23 @@ class LoginController
         $usuario = $this->model->buscarUsuario($username);
 
         if (!$usuario) {
+            Log::error("no existe usuario");
             Redirect::to("/login");
+
             return;
         }
 
         if (!password_verify($password, $usuario["password"])) {
+            Log::error("contraseña invalido");
             Redirect::to("/login");
+
             return;
         }
 
         if (!$usuario["validado"]) {
+            Log::error("no esta validado");
             Redirect::to("/login");
+
             return;
         }
 

@@ -13,10 +13,7 @@ class RegisterModel
 
         $sql = "INSERT INTO Usuario (nombreCompleto, anioNacimiento, sexo, pais, ciudad, mail, username, password, fotoPerfil, token) VALUES (?,?,?,?,?,?,?,?,?,?)";
         Log::info("SQL: $sql [$nombre, $fechaNac, $sexo, $pais, $ciudad, $mail, $username, $password, $foto_perfil, $token]");
-        //se encripta la password por seguridad
-        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-
-        return $this->database->execute($sql, [$nombre, $fechaNac, $sexo, $pais, $ciudad, $mail, $username, $passwordHash, $foto_perfil, $token]);
+        return $this->database->execute($sql, [$nombre, $fechaNac, $sexo, $pais, $ciudad, $mail, $username, $password, $foto_perfil, $token]);
 
     }
 
