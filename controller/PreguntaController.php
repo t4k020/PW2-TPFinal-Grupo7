@@ -4,6 +4,7 @@ class PreguntaController {
     private $preguntaModel;
     private $renderer;
     private $request;
+    // private $maestriaService; Maestria de usuario
 
 
     public function __construct($preguntaModel, $renderer, $request) {

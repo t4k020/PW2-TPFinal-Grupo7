@@ -8,12 +8,13 @@ class PreguntaModel
         $this->database = $database;
     }
 
+    // Cambio 1: cambio de nombre de las tablas preguntas, categorias y respuestas, linea 16,17 y 31
     // Metodo para traer una pregunta específica con sus 4 respuestas
     public function getPregunta($id) {
         //Traigo los datos de la pregunta y su categoría
         $sqlPregunta = "SELECT p.id, p.texto, c.nombre AS categoria_nombre, c.color AS categoria_color 
-                        FROM preguntas p 
-                        JOIN categorias c ON p.categoria_id = c.id 
+                        FROM Pregunta p 
+                        JOIN Categoria c ON p.categoria_id = c.id 
                         WHERE p.id = " . intval($id);
 
         $resultadoPregunta = $this->database->query($sqlPregunta);
@@ -27,7 +28,7 @@ class PreguntaModel
         $pregunta = $resultadoPregunta[0];
 
         // Traigo las 4 respuestas asociadas a esa pregunta
-        $sqlRespuestas = "SELECT id, texto, es_correcta FROM respuestas WHERE pregunta_id = " . intval($id);
+        $sqlRespuestas = "SELECT id, texto, es_correcta FROM Respuesta WHERE pregunta_id = " . intval($id);
         $respuestas = $this->database->query($sqlRespuestas);
 
         //Meto el array de respuestas adentro del array de la pregunta
@@ -36,9 +37,10 @@ class PreguntaModel
         return $pregunta;
     }
 
+    //Cambio 2: cambio de nombre tabla respuestas
     public function verificarRespuesta($idRespuesta) {
         // Consulta para traer el campo es_correcta
-        $sql = "SELECT es_correcta FROM respuestas WHERE id = " . intval($idRespuesta);
+        $sql = "SELECT es_correcta FROM Respuesta WHERE id = " . intval($idRespuesta);
 
         $resultado = $this->database->query($sql);
 
@@ -52,9 +54,10 @@ class PreguntaModel
         return $fila['es_correcta'] == 1;
     }
 
+    //Cambio 3: cambio de nombre tabla preguntas
     public function getRandomPregunta($listaIgnorar = []) {
         // Base de la query
-        $sql = "SELECT id FROM preguntas";
+        $sql = "SELECT id FROM Pregunta";
 
         // Si hay IDs para ignorar, los transformamos a un string separado por comas (ej: "1,4,5")
         // y modificamos la consulta SQL
