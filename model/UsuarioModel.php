@@ -44,4 +44,30 @@ class UsuarioModel
         Log::info("SQL: $sql [$id]");
         $this->database->execute($sql, [$id]);
     }
+
+
+
+
+// Maestria de usuario
+
+    // 1. Sirve para saber cuántas respondió y cuántas acertó el usuario
+    public function obtenerEstadisticasJugador($idUsuario) {
+        // ATENCIÓN: Esta consulta depende de cómo guarden ustedes el historial.
+        // Suponiendo que tienen una tabla donde guardan cada respuesta de la partida:
+        $sql = "SELECT 
+                    COUNT(*) as total_respondidas, 
+                    SUM(acerto) as total_correctas 
+                FROM historial_respuestas 
+                WHERE id_usuario = ?";
+
+        $resultado = $this->database->query($sql, [$idUsuario]);
+        return $resultado[0];
+    }
+
+    // 2. Sirve para poder actualizar el nivel del usuario
+    public function actualizarNivelMaestria($idUsuario, $nuevaMaestria) {
+        $sql = "UPDATE Usuario SET maestria = ? WHERE id = ?";
+        $this->database->execute($sql, [$nuevaMaestria, $idUsuario]);
+    }
+
 }

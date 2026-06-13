@@ -117,4 +117,17 @@ class Configurator {
         );
     }
 
+
+    public function getUsuarioModel() {
+        return new UsuarioModel($this->getDatabase());
+    }
+
+    // Se agrega el servicio de Maestría inyectándole el modelo
+    public function getMaestriaService() {
+        return new MaestriaService($this->getUsuarioModel());
+    }
+
+
+
+
 }
