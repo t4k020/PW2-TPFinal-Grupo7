@@ -2,12 +2,14 @@
 
 class LobbyController {
     private $model;
+    private $partidaModel;
     private $renderer;
     private $request;
 
-    public function __construct($model, $renderer, $request)
+    public function __construct($model, $partidaModel, $renderer, $request)
     {
         $this->model = $model;
+        $this->partidaModel = $partidaModel;
         $this->renderer = $renderer;
         $this->request = $request;
     }
@@ -19,10 +21,11 @@ class LobbyController {
             return;
         }
         $usuario = $this->model->obtenerDatosUsuario($_SESSION["id"]);
+        $puntajeTotal = $this->partidaModel->getPuntajeTotalUsuario($_SESSION["id"]);
         $this->renderer->render("lobbyView", [
             "usuario" => $usuario["username"],
             "fotoPerfil" => $usuario["fotoPerfil"],
-            "puntaje" => $usuario["puntaje"],
+            "puntaje" => $puntajeTotal,
             "trampitas" => $usuario["trampitas"],
             "esAdmin"   => ($usuario["username"] === "Admin")
 
