@@ -57,9 +57,9 @@ CREATE TABLE IF NOT EXISTS Respuesta
 
 -- Insert Categoria
 INSERT INTO Categoria (nombre, color) VALUES
-                                          ('Historia', '#DEC100'),
-                                          ('Geografía', '#2196F3'),
-                                          ('Ciencia', '#4CAF50');
+('Historia', '#DEC100'),
+('Geografía', '#2196F3'),
+('Ciencia', '#4CAF50');
 
 -- Insert preguntas, se le agrego a todas las preguntas estado y dificultad
 -- Insert Pregunta 1 (Historia)
@@ -68,10 +68,10 @@ INSERT INTO Pregunta (texto, categoria_id, dificultad, estado) VALUES
 
 -- Insert sus 4 opciones (La correcta es 1492)
 INSERT INTO Respuesta (pregunta_id, texto, es_correcta) VALUES
-                                                            (1, '1492', 1),
-                                                            (1, '1789', 0),
-                                                            (1, '1500', 0),
-                                                            (1, '1453', 0);
+(1, '1492', 1),
+(1, '1789', 0),
+(1, '1500', 0),
+(1, '1453', 0);
 
 -- Insert Pregunta 2 (Geografía)
 INSERT INTO Pregunta (texto, categoria_id, dificultad, estado) VALUES
@@ -79,10 +79,10 @@ INSERT INTO Pregunta (texto, categoria_id, dificultad, estado) VALUES
 
 -- Insert sus 4 opciones (La correcta es el Amazonas)
 INSERT INTO Respuesta (pregunta_id, texto, es_correcta) VALUES
-                                                            (2, 'Río Nilo', 0),
-                                                            (2, 'Río Amazonas', 1),
-                                                            (2, 'Río Misisipi', 0),
-                                                            (2, 'Río Paraná', 0);
+(2, 'Río Nilo', 0),
+(2, 'Río Amazonas', 1),
+(2, 'Río Misisipi', 0),
+(2, 'Río Paraná', 0);
 
 -- Insert Pregunta 3
 INSERT INTO Pregunta (texto, categoria_id, dificultad, estado)
@@ -153,3 +153,11 @@ VALUES ('Saturno', 0, 9),
        ('Júpiter', 1, 9),
        ('Neptuno', 0, 9),
        ('La Tierra', 0, 9);
+
+CREATE TABLE Partida (
+id INT AUTO_INCREMENT PRIMARY KEY,
+usuario_id INT NOT NULL,
+puntaje INT NOT NULL,
+fecha_partida DATETIME NOT NULL,
+FOREIGN KEY (usuario_id) REFERENCES Usuario(id)
+);

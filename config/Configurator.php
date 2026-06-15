@@ -30,7 +30,7 @@ class Configurator {
     //Lobby
     public function getLobbyController()
     {
-        return new LobbyController($this->getLobbyModel(), $this->getRenderer(), new Request());
+        return new LobbyController($this->getLobbyModel(), $this->getPartidaModel() ,$this->getRenderer(), new Request());
     }
 
     private function getLobbyModel()
@@ -112,9 +112,14 @@ class Configurator {
     public function getPreguntaController() {
         return new PreguntaController(
             $this->getPreguntaModel(),
+            $this->getPartidaModel(),
             $this->getRenderer(),
             new Request()
         );
+    }
+
+    public function getPartidaModel() {
+        return new PartidaModel($this->getDatabase());
     }
 
 

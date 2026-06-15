@@ -1,0 +1,52 @@
+<?php
+
+class PartidaModel{
+
+    private $database;
+
+    public function __construct($database){
+        $this->database = $database;
+    }
+
+    public function guardarPartida($usuarioId, $puntaje) {
+
+        // el signo de pregunta '?' como placeholder para proteger la base de datos
+        // el NOW() para que MySQL guarde la fecha y hora exacta de este milisegundo.
+        $sql = "INSERT INTO Partida (usuario_id, puntaje, fecha_partida) VALUES (?, ?, NOW())";
+
+        // se guardan los parametros en un array
+        $params = [$usuarioId, $puntaje];
+
+
+        // usamos el metodo execute() para asegurar la bdd.
+        return $this->database->execute($sql, $params);
+    }
+
+    public function getPuntajeTotalUsuario($usuarioId) {
+        // consulta para sumar todos los puntajes de las partidas de este usuario
+        $sql = "SELECT SUM(puntaje) as puntaje_total FROM Partida WHERE usuario_id = ?";
+
+        $params = [$usuarioId];
+
+        // Como es un SELECT que devuelve datos, usamos el metodo query()
+        $resultado = $this->database->query($sql, $params);
+
+        // Si la base de datos nos devolvió algo y el valor no es nulo, mandamos el número.
+        // Si el usuario es nuevo y nunca jugó, SUM(puntaje) da NULL, entonces devolvemos 0.
+        if (!empty($resultado) && isset($resultado[0]['puntaje_total'])) {
+            return intval($resultado[0]['puntaje_total']);
+        }
+
+        return 0;
+    }
+
+    public function getRankingGeneral() {
+        $sql = "SELECT U.username, U.fotoPerfil, SUM(P.puntaje) as puntaje_total 
+            FROM Partida P
+            INNER JOIN Usuario U ON P.usuario_id = U.id
+            GROUP BY U.id
+            ORDER BY puntaje_total DESC";
+
+        return $this->database->query($sql);
+    }
+}
