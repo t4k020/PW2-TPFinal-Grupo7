@@ -32,4 +32,14 @@ class LobbyController {
         ]);
 
     }
+
+    public function ranking() {
+        $listaRanking = $this->partidaModel->getRankingGeneral();
+
+        foreach ($listaRanking as $index => &$usuario) {//el & es para que trabaje sobre el dato real y no sobre la copia
+            $usuario['puesto'] = $index + 1;
+        }
+
+        $this->renderer->render("rankingView", ["usuarios" => $listaRanking]);
+    }
 }

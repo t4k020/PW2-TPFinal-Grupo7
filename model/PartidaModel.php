@@ -39,4 +39,14 @@ class PartidaModel{
 
         return 0;
     }
+
+    public function getRankingGeneral() {
+        $sql = "SELECT U.username, U.fotoPerfil, SUM(P.puntaje) as puntaje_total 
+            FROM Partida P
+            INNER JOIN Usuario U ON P.usuario_id = U.id
+            GROUP BY U.id
+            ORDER BY puntaje_total DESC";
+
+        return $this->database->query($sql);
+    }
 }
