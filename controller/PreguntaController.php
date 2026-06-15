@@ -73,6 +73,16 @@ class PreguntaController {
             header("Location: /index.php?controller=pregunta&method=list");
             exit();
         } else {
+            //se guardan las ids en local para mostrarlas en gameover
+            $idsRespondidos = $_SESSION['preguntas_respondidas'] ?? [];
+            $preguntasRespondidasDetalle = [];
+            if (!empty($idsRespondidos)) {
+
+                foreach ($idsRespondidos as $idPregunta) {
+                    // Traer los datos de cada pregunta
+                    $preguntasRespondidasDetalle[] = $this->preguntaModel->getPregunta($idPregunta);
+                }
+            }
             // agarro el ID del usuario logueado.
             $usuarioId = $_SESSION['id'];
 
@@ -87,8 +97,13 @@ class PreguntaController {
             unset($_SESSION['preguntas_respondidas']);
             unset($_SESSION['pregunta_actual_id']);
             unset($_SESSION['partida_puntaje']);
+            $datosVista = [
+                //nombre que se usan en moustache => contenido
+                "historial_preguntas" => $preguntasRespondidasDetalle,
+                "hubo_respuestas" => !empty($preguntasRespondidasDetalle) // Un booleano útil para Mustache
+            ];
 
-            $this->renderer->render("gameover");
+            $this->renderer->render("gameover", $datosVista);
             exit();
         }
     }

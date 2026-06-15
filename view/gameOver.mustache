@@ -16,7 +16,23 @@
             <div class="card shadow p-5 border-0 row-gap-3">
                 <div class="display-1 text-danger">💀</div>
                 <h1 class="fw-bold text-dark">¡Fin del Juego!</h1>
-                <p class="lead text-muted">La respuesta seleccionada no era la correcta.</p>
+                {{#hubo_respuestas}}
+                    <h3>Preguntas que respondiste correctamente en esta partida:</h3>
+                    <ul class="lista-respondidas">
+                        {{#historial_preguntas}}
+                            <li>
+                                <strong>📌 {{texto}}</strong>
+                                <span class="badge" style="background-color: {{categoria_color}};">
+                                   ({{categoria_nombre}})
+                                </span>
+                            </li>
+                        {{/historial_preguntas}}
+                    </ul>
+                {{/hubo_respuestas}}
+
+                {{^hubo_respuestas}}
+                    <p>No lograste responder ninguna pregunta correctamente esta vez. ¡A intentarlo de nuevo!</p>
+                {{/hubo_respuestas}}
 
                 <hr class="my-4">
 
