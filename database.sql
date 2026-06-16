@@ -21,7 +21,7 @@ CREATE TABLE JuegoPreguntas.Usuario
     token varchar(255),
     maestria VARCHAR(20) DEFAULT 'Aprendiz', -- maestriaUsuario
     qr varchar(255)
-);
+) ENGINE=InnoDB;
 
 # Todas las contraseñas hasheadas en insert representan a 1234
 INSERT INTO Usuario (nombreCompleto, anioNacimiento, sexo, pais, ciudad, mail, username, password, rol, validado)
@@ -47,13 +47,10 @@ CREATE TABLE IF NOT EXISTS Pregunta
     categoria_id INT NOT NULL,
     dificultad VARCHAR(20) NOT NULL DEFAULT 'FACIL',
     estado VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE',
+    reportado ENUM('no reportado', 'Pregunta mal escrita', 'Respuesta equivocada') NOT NULL DEFAULT 'no reportado',
     FOREIGN KEY (categoria_id) REFERENCES Categoria(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
-ALTER TABLE Pregunta
-    ADD COLUMN Reportado ENUM('no reportado', 'Pregunta mal escrita', 'Respuesta equivocada')
-NOT NULL
-DEFAULT 'no reportado';
 
 CREATE TABLE IF NOT EXISTS Respuesta
 (
@@ -63,6 +60,17 @@ CREATE TABLE IF NOT EXISTS Respuesta
     es_correcta TINYINT(1) NOT NULL DEFAULT 0,
     FOREIGN KEY (pregunta_id) REFERENCES Pregunta(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
+CREATE TABLE Partida (
+                         id INT AUTO_INCREMENT PRIMARY KEY,
+                         usuario_id INT NOT NULL,
+                         puntaje INT NOT NULL,
+                         fecha_partida DATETIME NOT NULL,
+                         FOREIGN KEY (usuario_id) REFERENCES Usuario(id)
+) ENGINE=InnoDB;
+
+
+
 
 -- Insert Categoria
 INSERT INTO Categoria (nombre, color) VALUES
@@ -162,11 +170,3 @@ VALUES ('Saturno', 0, 9),
        ('Júpiter', 1, 9),
        ('Neptuno', 0, 9),
        ('La Tierra', 0, 9);
-
-CREATE TABLE Partida (
-id INT AUTO_INCREMENT PRIMARY KEY,
-usuario_id INT NOT NULL,
-puntaje INT NOT NULL,
-fecha_partida DATETIME NOT NULL,
-FOREIGN KEY (usuario_id) REFERENCES Usuario(id)
-);
