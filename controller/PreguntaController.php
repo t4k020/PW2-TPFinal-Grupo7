@@ -52,6 +52,16 @@ class PreguntaController {
 
         // si ya no hay más preguntas que responder, salimos.
         if ($preguntaCompleta === null) {
+
+            $puntajeTotal = isset($_SESSION['partida_puntaje']) ? $_SESSION['partida_puntaje'] : 0;
+            $idUsuario = $_SESSION['id'];
+
+            $this->partidaModel->guardarPartida($idUsuario, $puntajeTotal);
+
+            $_SESSION['partida_puntaje'] = 0;
+            unset($_SESSION['preguntas_respondidas']);
+            unset($_SESSION['pregunta_actual_id']);
+
             echo "<h1>¡Increíble! Respondiste absolutamente todas las preguntas disponibles. 🏆</h1>";
             echo "<a href='/index.php?controller=lobby&method=list'>Volver al Lobby</a>";
             exit();
