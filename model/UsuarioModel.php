@@ -57,7 +57,7 @@ class UsuarioModel
         $sql = "SELECT 
                     COUNT(*) as total_respondidas, 
                     SUM(acerto) as total_correctas 
-                FROM historial_respuestas 
+                FROM Historial_respuestas 
                 WHERE id_usuario = ?";
 
         $resultado = $this->database->query($sql, [$idUsuario]);

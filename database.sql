@@ -2,7 +2,7 @@
 create schema JuegoPreguntas;
 use JuegoPreguntas;
 
-CREATE TABLE JuegoPreguntas.Usuario
+CREATE TABLE Usuario
 (
     id int auto_increment primary key,
     nombreCompleto varchar(255) not null,

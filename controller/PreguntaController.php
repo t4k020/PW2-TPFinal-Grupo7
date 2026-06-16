@@ -127,7 +127,7 @@ class PreguntaController {
                 "hubo_respuestas" => !empty($preguntasRespondidasDetalle) // Un booleano útil para Mustache
             ];
 
-            $this->renderer->render("gameover", $datosVista);
+            $this->renderer->render("gameover", $datosVista); //controller=pregunta&method=evaluar&id_respuesta=19
             exit();
         }
     }

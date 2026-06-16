@@ -85,7 +85,7 @@ class PreguntaModel
 
         // se arma el query
         $sql = "UPDATE Pregunta 
-            SET Reportado = '" . $motivoReporte . "' 
+            SET reportado = '" . $motivoReporte . "' 
             WHERE id = " . $id;
 
 
@@ -97,12 +97,12 @@ class PreguntaModel
 
         $sqlReporte = "SELECT p.id, 
                           p.texto, 
-                          p.Reportado, 
+                          p.reportado, 
                           c.nombre, 
                           c.color
                         FROM Pregunta p
                         JOIN Categoria c ON p.categoria_id = c.id 
-                        WHERE p.Reportado IN ('Pregunta mal escrita', 'Respuesta equivocada') ";
+                        WHERE p.reportado IN ('Pregunta mal escrita', 'Respuesta equivocada') ";
 
 
         $resultadoReporte = $this->database->query($sqlReporte);
@@ -123,7 +123,7 @@ class PreguntaModel
         $id = intval($id);
         log::info("Ignorando pregunta $id");
         $sql = "update Pregunta 
-                 set Reportado = 'no reportado'
+                 set reportado = 'no reportado'
                  where id = " . $id;
         $this->database->query($sql);
     }
