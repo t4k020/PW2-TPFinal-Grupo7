@@ -79,4 +79,52 @@ class PreguntaModel
         $idAzar = $resultado[0]['id'];
         return $this->getPregunta($idAzar);
     }
+    public function guardarReporte($idPregunta, $motivoReporte) {
+        //  asegura que sea un numero
+        $id = intval($idPregunta);
+
+        // se arma el query
+        $sql = "UPDATE Pregunta 
+            SET Reportado = '" . $motivoReporte . "' 
+            WHERE id = " . $id;
+
+
+        return $this->database->query($sql);
+    }
+
+    public function getPreguntasReportadas(){
+        log::info("trayendo preguntas reportadas..");
+
+        $sqlReporte = "SELECT p.id, 
+                          p.texto, 
+                          p.Reportado, 
+                          c.nombre, 
+                          c.color
+                        FROM Pregunta p
+                        JOIN Categoria c ON p.categoria_id = c.id 
+                        WHERE p.Reportado IN ('Pregunta mal escrita', 'Respuesta equivocada') ";
+
+
+        $resultadoReporte = $this->database->query($sqlReporte);
+
+        return $resultadoReporte;
+    }
+
+    public function  borrarPregunta($id)
+    {
+
+        log::info("borrando pregunta $id");
+        $id = intval($id);
+        $sql = "DELETE FROM Pregunta WHERE id = " . $id;
+         $this->database->query($sql);
+    }
+
+    public function ignorarPregunta($id){
+        $id = intval($id);
+        log::info("Ignorando pregunta $id");
+        $sql = "update Pregunta 
+                 set Reportado = 'no reportado'
+                 where id = " . $id;
+        $this->database->query($sql);
+    }
 }

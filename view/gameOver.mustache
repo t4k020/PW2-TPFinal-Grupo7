@@ -20,14 +20,57 @@
                     <h3>Preguntas que respondiste correctamente en esta partida:</h3>
                     <ul class="lista-respondidas">
                         {{#historial_preguntas}}
-                            <li>
-                                <strong>📌 {{texto}}</strong>
-                                <span class="badge" style="background-color: {{categoria_color}};">
-                                   ({{categoria_nombre}})
-                                </span>
+                            <li style="background: #f9f9f9; border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 5px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <div>
+                                        <strong>📌 {{texto}}</strong>
+                                        <span class="badge" style="background-color: {{categoria_color}}; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">
+                                            {{categoria_nombre}}
+                                        </span>
+                                    </div>
+
+                                    <div>
+                                        {{#ya_reportada}}
+                                            <span style="color: green; font-weight: bold; font-size: 0.9rem;">✔️ ¡Reportada!</span>
+                                        {{/ya_reportada}}
+
+                                        {{^ya_reportada}}
+                                            <button type="button" onclick="conmutarFormulario({{id}})" title="Reportar pregunta" style="background: none; border: none; color: red; font-size: 1.3rem; cursor: pointer;">
+                                                🚩
+                                            </button>
+                                        {{/ya_reportada}}
+                                    </div>
+                                </div>
+
+                                {{^ya_reportada}}
+                                    <form id="form-reporte-{{id}}" action="/index.php?controller=pregunta&method=iniciarReporte" method="POST" style="display: none; margin-top: 12px; background: #fff; padding: 10px; border-left: 3px solid red;">
+                                        <input type="hidden" name="id_pregunta_reportada" value="{{id}}">
+
+                                        <label for="motivo-{{id}}" style="display: block; font-size: 0.9rem; margin-bottom: 5px; font-weight: bold;">¿Cuál es el problema?</label>
+                                        <div style="display: flex; gap: 10px;">
+                                            <select name="motivo_reporte" id="motivo-{{id}}" required style="padding: 5px; flex-grow: 1;">
+                                                <option value="Respuesta equivocada">Respuesta equivocada</option>
+                                                <option value="Pregunta mal escrita">Pregunta mal escrita</option>
+                                            </select>
+                                            <button type="submit" style="background: red; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; font-weight: bold;">
+                                                Enviar Reporte
+                                            </button>
+                                        </div>
+                                    </form>
+                                {{/ya_reportada}}
                             </li>
                         {{/historial_preguntas}}
                     </ul>
+                    <script>
+                        function conmutarFormulario(id) {
+                            var formulario = document.getElementById('form-reporte-' + id);
+                            if (formulario.style.display === 'none') {
+                                formulario.style.display = 'block';
+                            } else {
+                                formulario.style.display = 'none';
+                            }
+                        }
+                    </script>
                 {{/hubo_respuestas}}
 
                 {{^hubo_respuestas}}
@@ -37,9 +80,12 @@
                 <hr class="my-4">
 
                 <div class="d-grid gap-2">
-                    <a href="/index.php?controller=pregunta&method=list" class="btn btn-primary btn-lg">
-                        🔄 Intentar de nuevo
-                    </a>
+                    <form action="/index.php?controller=pregunta&method=list" method="POST" class="d-grid">
+                        <input type="hidden" name="reiniciar_partida" value="1">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            🔄 Intentar de nuevo
+                        </button>
+                    </form>
                     <a href="/index.php?controller=lobby&method=list" class="btn btn-outline-secondary">
                         🏠 Volver al Lobby
                     </a>
