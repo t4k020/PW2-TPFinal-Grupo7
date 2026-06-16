@@ -62,11 +62,11 @@ CREATE TABLE IF NOT EXISTS Respuesta
 ) ENGINE=InnoDB;
 
 CREATE TABLE Partida (
-                         id INT AUTO_INCREMENT PRIMARY KEY,
-                         usuario_id INT NOT NULL,
-                         puntaje INT NOT NULL,
-                         fecha_partida DATETIME NOT NULL,
-                         FOREIGN KEY (usuario_id) REFERENCES Usuario(id)
+     id INT AUTO_INCREMENT PRIMARY KEY,
+     usuario_id INT NOT NULL,
+     puntaje INT NOT NULL,
+     fecha_partida DATETIME NOT NULL,
+     FOREIGN KEY (usuario_id) REFERENCES Usuario(id)
 ) ENGINE=InnoDB;
 
 
