@@ -4,11 +4,14 @@ class PanelAdminController {
     private $renderer;
     private $request;
 
-    public function __construct($model, $renderer, $request)
+    private $preguntaModel;
+
+    public function __construct($model, $renderer, $request, $preguntaModel)
     {
     $this->model = $model;
     $this->renderer = $renderer;
     $this->request = $request;
+    $this->preguntaModel = $preguntaModel;
     }
 
     public function mostrar(){
@@ -29,4 +32,26 @@ class PanelAdminController {
         ]);
 
     }
+    public  function verReportes()
+    {
+        $preguntasReportadas = $this->preguntaModel->getPreguntasReportadas();
+        $datosVista = [
+            "lista_reportes" => $preguntasReportadas,
+            "hubo_reportes" => !empty($preguntasReportadas)
+        ];
+        $this->renderer->render("verPreguntasReportadas", $datosVista);
+    }
+
+    public function eliminarPregunta(){
+        $idPregunta = isset($_POST['id_pregunta']) ? intval($_POST['id_pregunta']) : 0;
+        $this->preguntaModel->borrarPregunta($idPregunta);
+        $this->verReportes();
+    }
+
+    public function ignorarPregunta(){
+        $idPregunta = isset($_POST['id_pregunta']) ? intval($_POST['id_pregunta']) : 0;
+        $this->preguntaModel->ignorarPregunta($idPregunta);
+        $this->verReportes();
+    }
+
 }

@@ -40,7 +40,7 @@ class Configurator {
 
     public function getPanelAdminController()
     {
-        return new PanelAdminController($this->getLobbyModel(),$this->getRenderer(), new Request());
+        return new PanelAdminController($this->getLobbyModel(),$this->getRenderer(), new Request(), $this->getPreguntaModel());
     }
 
     //Login

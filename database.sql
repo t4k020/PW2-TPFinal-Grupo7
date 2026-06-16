@@ -50,6 +50,11 @@ CREATE TABLE IF NOT EXISTS Pregunta
     FOREIGN KEY (categoria_id) REFERENCES Categoria(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+ALTER TABLE Pregunta
+    ADD COLUMN Reportado ENUM('no reportado', 'Pregunta mal escrita', 'Respuesta equivocada')
+NOT NULL
+DEFAULT 'no reportado';
+
 CREATE TABLE IF NOT EXISTS Respuesta
 (
     id INT AUTO_INCREMENT PRIMARY KEY,
