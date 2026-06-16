@@ -43,7 +43,7 @@
                                 </div>
 
                                 {{^ya_reportada}}
-                                    <form id="form-reporte-{{id}}" action="/index.php?controller=pregunta&method=iniciarReporte" method="POST" style="display: none; margin-top: 12px; background: #fff; padding: 10px; border-left: 3px solid red;">
+                                    <form id="form-reporte-{{id}}" action="/index.php?controller=Pregunta&method=iniciarReporte" method="POST" style="display: none; margin-top: 12px; background: #fff; padding: 10px; border-left: 3px solid red;">
                                         <input type="hidden" name="id_pregunta_reportada" value="{{id}}">
 
                                         <label for="motivo-{{id}}" style="display: block; font-size: 0.9rem; margin-bottom: 5px; font-weight: bold;">¿Cuál es el problema?</label>
