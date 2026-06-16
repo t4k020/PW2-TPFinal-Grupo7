@@ -16,11 +16,11 @@ class UsuarioModel
         return $this->database->query($sql);
     }
 
-    public function getVikingo($id)
+    public function getUsuario($username)
     {
-        $sql = "SELECT * FROM Usuario WHERE id = ?";
-        Log::info("SQL: $sql [$id]");
-        $filas = $this->database->query($sql, [$id]);
+        $sql = "SELECT * FROM Usuario WHERE username = ?";
+        Log::info("SQL: $sql [$username]");
+        $filas = $this->database->query($sql, [$username]);
         return !empty($filas) ? $filas[0] : null;
     }
 

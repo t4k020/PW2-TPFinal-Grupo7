@@ -57,7 +57,8 @@ class Configurator {
     //Register
     public function getRegisterController()
     {
-        return new RegisterController($this->getRegisterModel(), $this->getRenderer(), new Request(), $this->getMailer());
+        return new RegisterController($this->getRegisterModel(), $this->getRenderer(),
+            new Request(), $this->config['url_base']);
     }
 
     private function getRegisterModel()
@@ -105,10 +106,6 @@ class Configurator {
         return $mailer;
     }
 
-    public function getPreguntaModel() {
-        return new PreguntaModel($this->getDatabase());
-    }
-
     public function getPreguntaController() {
         return new PreguntaController(
             $this->getPreguntaModel(),
@@ -118,10 +115,18 @@ class Configurator {
         );
     }
 
+    public function getPreguntaModel() {
+        return new PreguntaModel($this->getDatabase());
+    }
+
     public function getPartidaModel() {
         return new PartidaModel($this->getDatabase());
     }
 
+    public function getUsuarioController()
+    {
+        return new UsuarioController($this->getUsuarioModel(), $this->getRenderer(), new Request());
+    }
 
     public function getUsuarioModel() {
         return new UsuarioModel($this->getDatabase());

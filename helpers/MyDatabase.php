@@ -38,6 +38,7 @@ class MyDatabase
     public function __construct($hostname, $username, $password, $database)
     {
         $this->conexion = new mysqli($hostname, $username, $password, $database);
+        $this->conexion->set_charset("utf8mb4");
 
         // Excelente práctica: si la conexión falla, frena acá con un mensaje claro
         if ($this->conexion->connect_error) {

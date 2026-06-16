@@ -13,11 +13,15 @@ class Router
         $this->defaultMethod     = $defaultMethod;
     }
 
-    public function dispatch($controller, $method)
+    public function dispatch($controller, $method, $params = null)
     {
         $controller = $this->getController($controller);
         $method     = $this->getMethod($controller, $method);
-        $controller->{$method}();
+
+        if($params != null)
+            $controller->{$method}($params);
+        else
+            $controller->{$method}();
     }
 
     private function getController($controller)

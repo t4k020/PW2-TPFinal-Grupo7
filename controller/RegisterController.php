@@ -1,14 +1,18 @@
 <?php
 
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
 class RegisterController{
     private $model;
     private $renderer;
     private $request;
+    private $urlBase;
 
-    public function __construct($model, $renderer, $request){
+    public function __construct($model, $renderer, $request, $urlBase){
         $this->model = $model;
         $this->renderer = $renderer;
         $this->request = $request;
+        $this->urlBase = $urlBase;
     }
     public function mostrar(){
         Log::info("registerController::mostrar");
@@ -27,6 +31,7 @@ class RegisterController{
         $password = $this->request->post('password');
         $repetirPassword = $this->request->post('repetirPassword');
         $foto_perfil = $this->request->post('foto_perfil') ?? "default-user.png";
+        $qr = $this->generarQR($username);
 
         if ($password != $repetirPassword){
             Log::warning("RegisterController::procesarAlta - la contraseña no es igual: $password");
@@ -36,7 +41,7 @@ class RegisterController{
 
         $token = bin2hex(random_bytes(32));
         $password = password_hash($password, PASSWORD_DEFAULT);
-        $link = "http://localhost/register/validar?token=$token";
+        $link = "$this->urlBase/register/validar?token=$token";
 
         if (isset($_FILES['fotoPerfil']) && $_FILES['fotoPerfil']['error'] === UPLOAD_ERR_OK) {
 
@@ -62,7 +67,8 @@ class RegisterController{
         }
 
         Log::info("registerController::procesarAlta - nombre=$nombre");
-        $this->model->registrarUsuario($nombre, $fechaNac, $sexo, $pais, $ciudad, $mail, $username, $password, $foto_perfil ?? "default-user.png",$token);
+        $this->model->registrarUsuario($nombre, $fechaNac, $sexo, $pais, $ciudad, $mail,
+            $username, $password, $foto_perfil ?? "default-user.png",$token, $qr);
 
         Redirect::toIndex();
     }
@@ -90,6 +96,30 @@ class RegisterController{
 
         Redirect::to("/login");
     }
+
+    private function generarQR($username)
+    {
+        $urlPerfil = "$this->urlBase/usuario/ver/$username";
+
+        $qrPath = "$username.png";
+        $filePath = __DIR__ . "/../public/img/qr/" . $username . ".png";
+
+        if (!file_exists($filePath)) {
+
+            $qr = \Endroid\QrCode\QrCode::create($urlPerfil)
+                ->setSize(300)
+                ->setMargin(10);
+
+            $writer = new \Endroid\QrCode\Writer\PngWriter();
+            $result = $writer->write($qr);
+            if ($result === null) {
+                die("ERROR generando QR");
+            }
+
+            $result->saveToFile($filePath);
+        }
+
+        return $qrPath;
+    }
 }
 
-?>

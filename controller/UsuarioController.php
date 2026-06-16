@@ -1,6 +1,5 @@
 <?php
 
-
 class UsuarioController
 {
     private $model;
@@ -14,37 +13,21 @@ class UsuarioController
         $this->request = $request;
     }
 
-    public function ver()
+    public function ver($username)
     {
-        Log::info("UsuarioController::ver");
+        Log::info("UsuarioController::ver $username");
 
-        $this->renderer->render("verUsuarioView", ['Usuarios' => $this->model->getUsuarios()]);
+        $usuario = $this->model->getUsuario($username);
+        if (!$usuario)
+            throw new Exception("Usuario no encontrado");
+
+        $this->renderer->render("verUsuarioView", ['Usuario' => $usuario]);
     }
 
     public function alta()
     {
         Log::info("UsuarioController::alta (form)");
         $this->renderer->render("formAltaUsuarioView");
-    }
-
-    public function procesarAlta()
-    {
-//        $nombre = $this->request->post('nombre');
-//        $fechaNac = $this->request->post('fechaNac');
-//        $sexo = $this->request->post('sexo');
-//        $pais = $this->request->post('pais');
-//        $ciudad = $this->request->post('ciudad');
-//        $mail = $this->request->post('mail');
-//        $username = $this->request->post('username');
-//        $password = $this->request->post('password');
-//        $foto_perfil = $this->request->post('foto_perfil');
-
-
-
-//
-//        Log::info("UsuarioController::procesarAlta - nombre=$nombre");
-//        $this->model->alta($nombre, $fechaNac, $sexo, $pais, $ciudad, $mail, $username, $password, $foto_perfil);
-//        Redirect::toIndex();
     }
 
     // que se le permite editar al usuario?

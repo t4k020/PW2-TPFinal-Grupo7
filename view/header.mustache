@@ -9,10 +9,9 @@
     }
 
     header {
-        background:
-                linear-gradient(rgba(13, 110, 253, 0.75),
-                        rgba(13, 110, 253, 0.25)),
-                url('/public/img/banner.jpg');
+        background: linear-gradient(rgba(13, 110, 253, 0.75),
+        rgba(13, 110, 253, 0.25)),
+        url('/public/img/banner.jpg');
 
         background-size: cover;
         background-position: center;
@@ -29,7 +28,7 @@
         color: white;
 
         border-bottom: 4px solid #ffc107;
-        box-shadow: 0 5px 20px rgba(0,0,0,.3);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, .3);
     }
 
     header h1 {
@@ -37,10 +36,9 @@
         font-weight: 900;
         color: white;
 
-        text-shadow:
-                0 2px 0 #041a42,
-                0 4px 0 #021945,
-                0 6px 12px rgba(0,0,0,.4);
+        text-shadow: 0 2px 0 #041a42,
+        0 4px 0 #021945,
+        0 6px 12px rgba(0, 0, 0, .4);
 
         letter-spacing: -2px;
     }
@@ -55,74 +53,32 @@
         position: relative;
         z-index: 10;
     }
-        .btn-submit {
-            width: 100%;
-            padding: 15px;
-            background-color: #c0392b;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-family: 'Cinzel', serif;
-            font-size: 1em;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 10px;
-        }
 
-        .btn-submit:hover {
-            background-color: #d4af37;
-            color: #1a1a1a;
-        }
-
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            color: #888;
-            text-decoration: none;
-            font-size: 0.9em;
-            transition: color 0.2s;
-        }
-
-        .back-link:hover {
-            color: #d4af37;
-        }
-        #mapa {
-            height: 400px;
-            width: 100%;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-        }
+    #mapa {
+        height: 400px;
+        width: 100%;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+    }
 
 </style>
 
 <header>
     {{#usuario}}
-    <div class="position-absolute top-0 end-0 p-3">
-        {{#esAdmin}}
-            <a href="/panelAdmin" class="btn btn-warning shadow fw-bold">
-                ⚙️ Panel Admin
+        <div class="position-absolute top-0 end-0 p-3">
+            {{#esAdmin}}
+                <a href="/panelAdmin" class="btn btn-warning shadow fw-bold">
+                    ⚙️ Panel Admin
+                </a>
+            {{/esAdmin}}
+            <a href="/login/logout" class="btn btn-danger shadow">
+                🔓 Cerrar sesión
             </a>
-        {{/esAdmin}}
-        <a href="/login/logout" class="btn btn-danger shadow">
-            🔓 Cerrar sesión
-        </a>
-    </div>
+        </div>
     {{/usuario}}
 
-    <h1>Preguntados</h1>
+    <a class="text-decoration-none" href="/lobby"><h1>Preguntados</h1></a>
     <p>"AQUÍ SE FORJAN LAS LEYENDAS DEL CONOCIMIENTO"</p>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-          crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-            crossorigin="">
-
-    </script>
 
 </header>

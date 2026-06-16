@@ -19,15 +19,19 @@ CREATE TABLE JuegoPreguntas.Usuario
     trampitas int default 0,
     validado boolean default false,
     token varchar(255),
-    maestria VARCHAR(20) DEFAULT 'Aprendiz' -- maestriaUsuario
+    maestria VARCHAR(20) DEFAULT 'Aprendiz', -- maestriaUsuario
+    qr varchar(255)
 );
 
 # Todas las contraseñas hasheadas en insert representan a 1234
 INSERT INTO Usuario (nombreCompleto, anioNacimiento, sexo, pais, ciudad, mail, username, password, rol, validado)
 VALUES
-    ('Admin', '1990-05-12', 'Masculino', 'Argentina', 'Buenos Aires', 'admin@gmail.com', 'Admin', '$2y$10$vlbDuqv8RNDEe84bHSaj9e00AfameGKIM4gAiieTa9f6Nw20QCjl.', 'ADMIN', true),
-    ('Editor', '1993-09-24', 'Masculino', 'Argentina', 'Moreno', 'editor@gmail.com', 'Editor', '$2y$10$vlbDuqv8RNDEe84bHSaj9e00AfameGKIM4gAiieTa9f6Nw20QCjl.', 'EDITOR', true),
-    ('Usuario', '1998-01-05', 'Masculino', 'Argentina', 'San Justo', 'usuario@gmail.com', 'Usuario', '$2y$10$vlbDuqv8RNDEe84bHSaj9e00AfameGKIM4gAiieTa9f6Nw20QCjl.', 'JUGADOR', true);
+    ('Admin', '1990-05-12', 'Masculino', 'Argentina', 'Buenos Aires', 'admin@gmail.com',
+     'Admin', '$2y$10$vlbDuqv8RNDEe84bHSaj9e00AfameGKIM4gAiieTa9f6Nw20QCjl.', 'ADMIN', true),
+    ('Editor', '1993-09-24', 'Masculino', 'Argentina', 'Moreno', 'editor@gmail.com',
+     'Editor', '$2y$10$vlbDuqv8RNDEe84bHSaj9e00AfameGKIM4gAiieTa9f6Nw20QCjl.', 'EDITOR', true),
+    ('Usuario', '1998-01-05', 'Masculino', 'Argentina', 'San Justo', 'usuario@gmail.com',
+     'Usuario', '$2y$10$vlbDuqv8RNDEe84bHSaj9e00AfameGKIM4gAiieTa9f6Nw20QCjl.', 'JUGADOR', true);
 
 CREATE TABLE IF NOT EXISTS Categoria
 (
