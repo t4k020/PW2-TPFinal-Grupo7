@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Usuario</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body class="bg-dark">
+{{> header}}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <div class="card shadow">
+                <div class="card-header">
+                    <h3 class="mb-0">Registro de Usuario</h3>
+                </div>
+
+                <div class="card-body">
+
+                    {{#error}}
+                        <div class="alert alert-danger">
+                            {{error}}
+                        </div>
+                    {{/error}}
+
+                    <form action="/register/registrar" method="POST" enctype="multipart/form-data">
+
+                        <!-- Nombre completo -->
+                        <div class="mb-3">
+                            <label for="nombreCompleto" class="form-label">
+                                Nombre completo
+                            </label>
+                            <input
+                                    type="text"
+                                    class="form-control"
+                                    id="nombreCompleto"
+                                    name="nombreCompleto"
+                                    maxlength="80"
+                                    minlength="1"
+                                    value="{{nombreCompleto}}"
+                                    required>
+                        </div>
+
+                        <!-- Año de nacimiento -->
+                        <div class="mb-3">
+                            <label for="anioNacimiento" class="form-label">
+                                Año de nacimiento
+                            </label>
+                            <input
+                                    type="number"
+                                    class="form-control"
+                                    id="anioNacimiento"
+                                    name="anioNacimiento"
+                                    min="1900"
+                                    max="2100"
+                                    value="{{anioNacimiento}}"
+                                    required>
+                        </div>
+
+                        <!-- Sexo -->
+                        <div class="mb-3">
+                            <label for="sexo" class="form-label">
+                                Sexo
+                            </label>
+
+                            <select
+                                    class="form-select"
+                                    id="sexo"
+                                    name="sexo"
+                                    required>
+
+                                <option value="">Seleccione una opción</option>
+
+                                <option value="Masculino">
+                                    Masculino
+                                </option>
+
+                                <option value="Femenino">
+                                    Femenino
+                                </option>
+
+                                <option value="Prefiero no decirlo">
+                                    Prefiero no decirlo
+                                </option>
+
+                            </select>
+                        </div>
+
+                        <!-- Mapa -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Ubicación (selecciona en el mapa)
+                            </label>
+
+                            <div class="card shadow-sm">
+                                <div class="card-body p-2">
+                                    <div id="mapa" class="w-100 rounded"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- País y Ciudad -->
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="pais" class="form-label">País</label>
+                                <input type="text"
+                                       id="pais"
+                                       name="pais"
+                                       class="form-control"
+                                       readonly
+                                       placeholder="Haz clic en el mapa">
+                            </div>
+
+                            <div class="col">
+                                <label for="ciudad" class="form-label">Ciudad</label>
+                                <input type="text"
+                                       id="ciudad"
+                                       name="ciudad"
+                                       class="form-control"
+                                       readonly
+                                       placeholder="Haz clic en el mapa">
+                            </div>
+                        </div>
+
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                Correo electrónico
+                            </label>
+
+                            <input
+                                    type="email"
+                                    class="form-control"
+                                    id="email"
+                                    name="email"
+                                    value="{{email}}"
+                                    required>
+                        </div>
+
+                        <!-- Usuario -->
+                        <div class="mb-3">
+                            <label for="username" class="form-label">
+                                Nombre de usuario
+                            </label>
+
+                            <input
+                                    type="text"
+                                    class="form-control"
+                                    id="username"
+                                    name="username"
+                                    maxlength="80"
+                                    minlength="1"
+                                    value="{{username}}"
+                                    required>
+                        </div>
+
+                        <!-- Contraseña -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label">
+                                Contraseña
+                            </label>
+
+                            <input
+                                    type="password"
+                                    class="form-control"
+                                    id="password"
+                                    name="password"
+                                    maxlength="80"
+                                    minlength="1"
+                                    required>
+                        </div>
+
+                        <!-- Repetir contraseña -->
+                        <div class="mb-3">
+                            <label for="repetirPassword" class="form-label">
+                                Repetir contraseña
+                            </label>
+
+                            <input
+                                    type="password"
+                                    class="form-control"
+                                    id="repetirPassword"
+                                    name="repetirPassword"
+                                    maxlength="80"
+                                    minlength="1"
+                                    required>
+                        </div>
+
+                        <!-- Foto de perfil -->
+                        <div class="mb-4">
+                            <label for="fotoPerfil" class="form-label">
+                                Foto de perfil
+                            </label>
+
+                            <input
+                                    type="file"
+                                    class="form-control"
+                                    id="fotoPerfil"
+                                    name="fotoPerfil"
+                                    accept="image/*">
+                        </div>
+
+                        <div class="d-grid">
+                            <button
+                                    type="submit"
+                                    class="btn btn-primary btn-lg">
+                                Registrarse
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/public/js/mapaRegister.js"></script>
+</body>
+</html>

@@ -11,7 +11,7 @@ class LoginModel
 
     public function buscarUsuario($username)
     {
-        $sql = "SELECT * FROM usuario WHERE username = ?";
+        $sql = "SELECT * FROM Usuario WHERE username = ?";
 
         Log::info("SQL: $sql [$username]");
 

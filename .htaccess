@@ -44,6 +44,7 @@ Options -Indexes
     # [L]   = Last: si esta regla coincide, no evaluar las siguientes.
     # [QSA] = Query String Append: conserva parámetros adicionales.
     #   /vikingo/editar?id=5 llega como controller=vikingo&method=editar&id=5
+    RewriteRule ^([^/]+)/([^/]+)/([^/]+)$ index.php?controller=$1&method=$2&params=$3 [L,QSA]
     RewriteRule ^([^/]+)/([^/]+)$ index.php?controller=$1&method=$2 [L,QSA]
 
     # ── REGLA 2: /controller (sin method) ────────────────
