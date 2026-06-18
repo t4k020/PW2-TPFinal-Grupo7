@@ -91,17 +91,13 @@ class Configurator {
 
         $mailer->SMTPAuth = true;
         // email que enviara los correos
-        $mailer->Username = 'pwtpg2712@gmail.com';
-        //contraseña para que se pueda usar el email como un mailer, normalmente se tendria que ocultar esto
-        $mailer->Password = 'ehrq zayo dsay wrlt';
+        $mailer->Username = $this->config['mail_user'];
+        $mailer->Password = $this->config['mail_password'];
         // encripta el mensaje para no ser interceptado por terceros
         $mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mailer->Port = 587;
 
-        $mailer->setFrom(
-            'pwtpg2712@gmail.com',
-            'Preguntados'
-        );
+        $mailer->setFrom($this->config['mail_user'], 'Preguntados');
 
         return $mailer;
     }
