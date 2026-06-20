@@ -54,4 +54,45 @@ class PanelAdminController {
         $this->verReportes();
     }
 
+    public  function verEditarPregunta()
+    {
+        $id = $_GET['id'] ?? null;
+        $data['pregunta'] = $this->preguntaModel->getPregunta($id);
+
+        $this->renderer->render("editarPregunta", $data);
+    }
+
+    public function procesarEdicion()
+    {
+        // Validamos que vengan los datos mínimos obligatorios
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['id'])) {
+            header("Location: /PanelAdmin/mostrar");
+            exit();
+        }
+
+        $idPregunta = intval($_POST['id']);
+        $nuevoTextoPregunta = $_POST['texto'] ?? '';
+        $idRespuestaCorrecta = intval($_POST['respuesta_correcta_id'] ?? 0);
+        $respuestasData = $_POST['respuestas'] ?? []; // Trae el array indexado [id => ['texto' => '...']]
+
+        //Mandamos los datos al modelo
+        $exito = $this->preguntaModel->updatePreguntaYRespuestas(
+            $idPregunta,
+            $nuevoTextoPregunta,
+            $idRespuestaCorrecta,
+            $respuestasData
+        );
+
+        // 3. Redirigimos según el resultado
+        if ($exito) {
+            // Podés agregar un mensaje de éxito si tenés variables de sesión
+            log::info("se modificaron exitosamente");
+            header("Location: /PanelAdmin/verReportes");
+        } else {
+            log::error("No se modificaron exitosamente ");
+       }
+        exit();
+    }
+
+
 }
