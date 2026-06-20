@@ -97,9 +97,13 @@ class PreguntaController {
             header("Location: /index.php?controller=pregunta&method=list");
             exit();
         } else {
+            //se guarda la pregunta mal respondida para el reporte
+            $_SESSION['preguntas_respondidas'][] = $_SESSION['pregunta_actual_id'];
             //se guardan las ids en local para mostrarlas en gameover
             $idsRespondidos = $_SESSION['preguntas_respondidas'] ?? [];
             $preguntasRespondidasDetalle = [];
+
+
             if (!empty($idsRespondidos)) {
 
                 foreach ($idsRespondidos as $idPregunta) {
@@ -107,6 +111,9 @@ class PreguntaController {
                     $preguntasRespondidasDetalle[] = $this->preguntaModel->getPregunta($idPregunta);
                 }
             }
+
+
+
             // agarro el ID del usuario logueado.
             $usuarioId = $_SESSION['id'];
 
