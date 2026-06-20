@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/public/css/lobby.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
+    <title>Preguntados - Lobby</title>
+</head>
+
+{{> header}}
+
+<main class="container py-4">
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow border-0 bg-dark text-white p-4 text-center rounded-3">
+                <h2 class="mb-1">📊 Estadísticas Generales</h2>
+                <p class="lead mb-0 text-white-50">El rendimiento global del juego en tiempo real</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-md-4">
+            <div class="card shadow border-0 h-100 rounded-3">
+                <div class="card-body text-center py-4">
+                    <div class="text-primary mb-2">
+                        <i class="bi bi-people-fill fs-1"></i>
+                    </div>
+                    <h4>Usuarios Totales</h4>
+                    <p class="display-6 fw-bold my-3 text-secondary">
+                        {{total_usuarios}}
+                    </p>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">Activos</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow border-0 h-100 rounded-3">
+                <div class="card-body text-center py-4">
+                    <div class="text-warning mb-2">
+                        <i class="bi bi-controller fs-1"></i>
+                    </div>
+                    <h4>Partidas Jugadas</h4>
+                    <p class="display-6 fw-bold my-3 text-secondary">
+                        {{total_partidas}}
+                    </p>
+                    <span class="badge bg-light text-dark border px-2 py-1">Histórico global</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow border-0 h-100 rounded-3">
+                <div class="card-body text-center py-4">
+                    <div class="text-success mb-2">
+                        <i class="bi bi-question-circle-fill fs-1"></i>
+                    </div>
+                    <h4>Preguntas en la DB</h4>
+                    <p class="display-6 fw-bold my-3 text-secondary">
+                        {{total_preguntas}}
+                    </p>
+                    <span class="badge bg-info-subtle text-info border border-info-subtle px-2 py-1">Habilitadas</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow border-0 h-100 rounded-3">
+                <div class="card-body text-center py-4">
+                    <div class="text-danger mb-2">
+                        <i class="bi bi-exclamation-triangle-fill fs-1"></i>
+                    </div>
+                    <h4>Preguntas Reportadas</h4>
+                    <p class="display-6 fw-bold my-3 text-danger">
+                        {{total_reportadas}}
+                    </p>
+                    <a href="/PanelAdmin/mostrar" class="btn btn-sm btn-outline-danger mt-1">Revisar</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow border-0 h-100 rounded-3">
+                <div class="card-body text-center py-4">
+                    <div class="text-info mb-2">
+                        <i class="bi bi-lightbulb-fill fs-1"></i>
+                    </div>
+                    <h4>Sugeridas Pendientes</h4>
+                    <p class="display-6 fw-bold my-3 text-secondary">
+                        {{total_sugeridas}}
+                    </p>
+                    <a href="/PanelAdmin/sugeridas" class="btn btn-sm btn-outline-info mt-1">Moderar</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow border-0 h-100 rounded-3">
+                <div class="card-body text-center py-4">
+                    <div class="text-purple mb-2" style="color: #6f42c1;">
+                        <i class="bi bi-magic fs-1"></i>
+                    </div>
+                    <h4>Trampitas Usadas</h4>
+                    <p class="display-6 fw-bold my-3 text-secondary">
+                        {{total_trampitas}}
+                    </p>
+                    <span class="badge bg-light text-dark border px-2 py-1">Por usuarios</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow border-0 h-100 rounded-3">
+                <div class="card-body text-center py-4">
+                    <div class="text-success mb-2">
+                        <i class="bi bi-graph-up-arrow fs-1"></i>
+                    </div>
+                    <h4>Porcentaje Acierto</h4>
+                    <p class="display-6 fw-bold my-3 text-success">
+                        {{porcentaje_acierto}}%
+                    </p>
+                    <span class="badge bg-light text-dark border px-2 py-1">Promedio general</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow border-0 h-100 rounded-3">
+                <div class="card-body text-center py-4">
+                    <div class="text-dark mb-2">
+                        <i class="bi bi-trophy-fill fs-1 text-warning"></i>
+                    </div>
+                    <h4>Récord Máximo</h4>
+                    <p class="display-6 fw-bold my-3 text-secondary">
+                        {{record_maximo}} pts
+                    </p>
+                    <span class="badge bg-light text-dark border px-2 py-1">Por {{usuario_record}}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow border-0 h-100 rounded-3">
+                <div class="card-body text-center py-4">
+                    <div class="text-secondary mb-2">
+                        <i class="bi bi-calendar-check-fill fs-1 text-primary"></i>
+                    </div>
+                    <h4>Registros de Hoy</h4>
+                    <p class="display-6 fw-bold my-3 text-secondary">
+                        {{registros_hoy}}
+                    </p>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">Últimas 24hs</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <a href="/index.php?controller=lobby&method=mostrar" class="btn btn-outline-secondary btn-lg px-4 shadow-sm border-0 fw-medium">
+                Volver al Lobby
+            </a>
+        </div>
+    </div>
+
+</main>
+
+{{> footer}}

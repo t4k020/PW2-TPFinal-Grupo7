@@ -30,13 +30,7 @@ class UsuarioModel
         Log::info("SQL: $sql [$nombre, $fechaNac, $sexo, $pais, $ciudad, $mail, $username, $password, $foto_perfil]");
         return $this->database->execute($sql, [$nombre, $fechaNac, $sexo, $pais, $ciudad, $mail, $username, $password, $foto_perfil]);
     }
-    // Que se le permite Editar al usuario?
-//    public function editar($id, $nombre, $apodo, $clan, $fuerza)
-//    {
-//        $sql = "UPDATE guerreros SET nombre = ?, apodo = ?, clan = ?, fuerza = ? WHERE id = ?";
-//        Log::info("SQL: $sql [$nombre, $apodo, $clan, $fuerza, $id]");
-//        $this->database->execute($sql, [$nombre, $apodo, $clan, $fuerza, $id]);
-//    }
+
 
     public function eliminar($id)
     {
@@ -68,6 +62,20 @@ class UsuarioModel
     public function actualizarNivelMaestria($idUsuario, $nuevaMaestria) {
         $sql = "UPDATE Usuario SET maestria = ? WHERE id = ?";
         $this->database->execute($sql, [$nuevaMaestria, $idUsuario]);
+    }
+
+
+// para estadisticas
+    public function getTotalUsuarios()
+    {
+        $sql = "SELECT COUNT(*) as total FROM Usuario";
+        $resultado = $this->database->query($sql);
+
+        if (!empty($resultado)) {
+            return intval($resultado[0]['total']);
+        }
+
+        return 0;
     }
 
 }

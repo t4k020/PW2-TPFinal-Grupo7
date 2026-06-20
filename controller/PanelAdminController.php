@@ -5,22 +5,20 @@ class PanelAdminController {
     private $request;
 
     private $preguntaModel;
+    private $usuarioModel;
 
-    public function __construct($model, $renderer, $request, $preguntaModel)
+    public function __construct($model, $renderer, $request, $preguntaModel, $usuarioModel)
     {
     $this->model = $model;
     $this->renderer = $renderer;
     $this->request = $request;
     $this->preguntaModel = $preguntaModel;
+    $this->usuarioModel = $usuarioModel;
     }
 
     public function mostrar(){
         Log::info("panelAdminController::mostrar");
-
-        if (!isset($_SESSION["id"])) {
-            Redirect::to("/login");
-
-        }
+        $this->verificarAdmin();
         $usuario = $this->model->obtenerDatosUsuario($_SESSION["id"]);
 
         $this->renderer->render("panelAdminView", [
@@ -34,6 +32,8 @@ class PanelAdminController {
     }
     public  function verReportes()
     {
+        $this->verificarAdmin();
+
         $preguntasReportadas = $this->preguntaModel->getPreguntasReportadas();
         $datosVista = [
             "lista_reportes" => $preguntasReportadas,
@@ -43,12 +43,14 @@ class PanelAdminController {
     }
 
     public function eliminarPregunta(){
+        $this->verificarAdmin();
         $idPregunta = isset($_POST['id_pregunta']) ? intval($_POST['id_pregunta']) : 0;
         $this->preguntaModel->borrarPregunta($idPregunta);
         $this->verReportes();
     }
 
     public function ignorarPregunta(){
+        $this->verificarAdmin();
         $idPregunta = isset($_POST['id_pregunta']) ? intval($_POST['id_pregunta']) : 0;
         $this->preguntaModel->ignorarPregunta($idPregunta);
         $this->verReportes();
@@ -56,6 +58,7 @@ class PanelAdminController {
 
     public  function verEditarPregunta()
     {
+        $this->verificarAdmin();
         $id = $_GET['id'] ?? null;
         $data['pregunta'] = $this->preguntaModel->getPregunta($id);
 
@@ -64,6 +67,7 @@ class PanelAdminController {
 
     public function procesarEdicion()
     {
+        $this->verificarAdmin();
         // Validamos que vengan los datos mínimos obligatorios
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['id'])) {
             header("Location: /PanelAdmin/mostrar");
@@ -92,6 +96,32 @@ class PanelAdminController {
             log::error("No se modificaron exitosamente ");
        }
         exit();
+    }
+
+    public  function verEstadisticasAdmin()
+    {
+        $this->verificarAdmin();
+        $totalUsuarios = $this->usuarioModel->getTotalUsuarios();
+
+        $datosVista = [
+            "total_usuarios" => $totalUsuarios
+
+        ];
+
+
+        $this->renderer->render("verEstadisticasAdmin.mustache", $datosVista);
+    }
+
+
+    /**
+     * @return void
+     */
+    public function verificarAdmin(): void
+    {
+        if (!isset($_SESSION["id"])) {
+            Redirect::to("/lobby");
+
+        }
     }
 
 
