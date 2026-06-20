@@ -49,4 +49,36 @@ class PartidaModel{
 
         return $this->database->query($sql);
     }
+
+// estadisticas
+    public function getTotalPartidas()
+    {
+        $sql = "SELECT COUNT(*) as total FROM Partida";
+        $resultado = $this->database->query($sql);
+
+        if (!empty($resultado)) {
+            return intval($resultado[0]['total']);
+        }
+
+        return 0;
+    }
+    public function getPorcentajeAciertoGlobal()
+    {
+        $sql = "SELECT 
+                SUM(puntaje) as total_correctas,
+                SUM(puntaje + 1) as total_preguntas
+            FROM Partida";
+
+        $resultado = $this->database->query($sql);
+
+        if (!empty($resultado) && $resultado[0]['total_preguntas'] > 0) {
+            $correctas = $resultado[0]['total_correctas'];
+            $totales = $resultado[0]['total_preguntas'];
+
+            // Calculamos el porcentaje general redondeado
+            return ROUND(($correctas / $totales) * 100, 2);
+        }
+
+        return 0; // Si no hay partidas jugadas, da 0%
+    }
 }

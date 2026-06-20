@@ -158,4 +158,17 @@ class PreguntaModel
 
         return true;
     }
+    //estadisticas
+
+    public function getTotalPreguntas()
+    {
+        $sql = "SELECT COUNT(*) as total FROM Pregunta";
+        $resultado = $this->database->query($sql);
+
+        if (!empty($resultado)) {
+            return intval($resultado[0]['total']);
+        }
+
+        return 0;
+    }
 }

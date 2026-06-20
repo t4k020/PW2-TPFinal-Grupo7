@@ -6,14 +6,15 @@ class PanelAdminController {
 
     private $preguntaModel;
     private $usuarioModel;
-
-    public function __construct($model, $renderer, $request, $preguntaModel, $usuarioModel)
+    private $partidaModel;
+    public function __construct($model, $renderer, $request, $preguntaModel, $usuarioModel, $partidaModel)
     {
     $this->model = $model;
     $this->renderer = $renderer;
     $this->request = $request;
     $this->preguntaModel = $preguntaModel;
     $this->usuarioModel = $usuarioModel;
+    $this->partidaModel = $partidaModel;
     }
 
     public function mostrar(){
@@ -102,9 +103,22 @@ class PanelAdminController {
     {
         $this->verificarAdmin();
         $totalUsuarios = $this->usuarioModel->getTotalUsuarios();
+        $totalPreguntas = $this->preguntaModel->getTotalPreguntas();
+        $usuariosPorPais = $this->usuarioModel->getUsuariosPorPais();
+        $usuariosPorEdad = $this->usuarioModel->getUsuariosPorEdad();
+        $usuariosPorSexo = $this->usuarioModel->getUsuariosPorSexo();
+        $totalPartidas = $this->partidaModel->getTotalPartidas();
+        $aciertoGlobal = $this->partidaModel->getPorcentajeAciertoGlobal();
 
         $datosVista = [
-            "total_usuarios" => $totalUsuarios
+            "total_usuarios" => $totalUsuarios,
+            "total_preguntas" => $totalPreguntas,
+            "usuarios_por_pais" => $usuariosPorPais,
+            "usuarios_por_edad" => $usuariosPorEdad,
+            "usuarios_por_sexo" => $usuariosPorSexo,
+            "total_partidas" => $totalPartidas,
+            "acierto_global" => $aciertoGlobal
+
 
         ];
 

@@ -41,7 +41,7 @@ class Configurator {
     public function getPanelAdminController()
     {
         return new PanelAdminController($this->getLobbyModel(),$this->getRenderer(), new Request(), $this->getPreguntaModel()
-                                        , $this->getUsuarioModel());
+                                        , $this->getUsuarioModel(), $this->getPartidaModel());
     }
 
     //Login

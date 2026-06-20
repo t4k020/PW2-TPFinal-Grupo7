@@ -78,4 +78,44 @@ class UsuarioModel
         return 0;
     }
 
+    public function getUsuariosPorPais()
+    {
+        $sql = "SELECT pais, COUNT(*) as cantidad 
+            FROM Usuario 
+            WHERE pais IS NOT NULL AND pais != ''
+            GROUP BY pais 
+            ORDER BY cantidad DESC";
+
+        return $this->database->query($sql);
+    }
+
+    public function getUsuariosPorEdad()
+    {
+        $sql = "SELECT 
+                CASE 
+                    WHEN TIMESTAMPDIFF(YEAR, anioNacimiento, CURDATE()) < 18 THEN 'Menores de 18'
+                    WHEN TIMESTAMPDIFF(YEAR, anioNacimiento, CURDATE()) BETWEEN 18 AND 50 THEN 'Entre 18 y 50'
+                    ELSE 'Mayores de 50 (Jubilados)'
+                END as rango_edad,
+                COUNT(*) as cantidad
+            FROM Usuario
+            WHERE anioNacimiento IS NOT NULL
+            GROUP BY rango_edad
+            ORDER BY FIELD(rango_edad, 'Menores de 18', 'Entre 18 y 50', 'Mayores de 50 (Jubilados)')";
+
+        return $this->database->query($sql);
+    }
+
+    public function getUsuariosPorSexo()
+    {
+        $sql = "SELECT sexo, COUNT(*) as cantidad 
+            FROM Usuario 
+            GROUP BY sexo 
+            ORDER BY cantidad DESC";
+
+        return $this->database->query($sql);
+    }
+
+
+
 }
