@@ -12,7 +12,9 @@ class PreguntaModel
     // Metodo para traer una pregunta específica con sus 4 respuestas
     public function getPregunta($id) {
         //Traigo los datos de la pregunta y su categoría
-        $sqlPregunta = "SELECT p.id, p.texto, c.nombre AS categoria_nombre, c.color AS categoria_color 
+        $sqlPregunta = "SELECT p.id, p.texto, p.dificultad, p.estado, p.reportado, 
+                           c.nombre AS categoria_nombre, 
+                           c.color AS categoria_color
                         FROM Pregunta p 
                         JOIN Categoria c ON p.categoria_id = c.id 
                         WHERE p.id = " . intval($id);
@@ -126,5 +128,47 @@ class PreguntaModel
                  set reportado = 'no reportado'
                  where id = " . $id;
         $this->database->query($sql);
+    }
+
+    public function updatePreguntaYRespuestas($idPregunta, $textoPregunta, $idRespuestaCorrecta, $respuestasData)
+    {
+        // Actualizar el texto de la Pregunta usando placeholders
+        $sqlPregunta = "UPDATE Pregunta SET texto = ? WHERE id = ?";
+        $paramsPregunta = [$textoPregunta, intval($idPregunta)];
+
+        // Ejecutamos el cambio en la tabla Pregunta
+        $this->database->execute($sqlPregunta, $paramsPregunta);
+
+        // Recorremos las 4 respuestas con foreach para actualizarlas una por una
+        foreach ($respuestasData as $idRespuesta => $datos) {
+            $idRespuesta = intval($idRespuesta);
+            $nuevoTextoRespuesta = $datos['texto'];
+
+            // Evaluamos si el ID de esta respuesta coincide con el radio button seleccionado como correcto
+            $esCorrecta = ($idRespuesta === intval($idRespuestaCorrecta)) ? 1 : 0;
+
+            // Consulta preparada para la tabla Respuesta
+            $sqlRespuesta = "UPDATE Respuesta SET texto = ?, es_correcta = ? WHERE id = ? AND pregunta_id = ?";
+            $paramsRespuesta = [$nuevoTextoRespuesta, $esCorrecta, $idRespuesta, intval($idPregunta)];
+
+            // Ejecutamos el update de esta respuesta de forma segura
+            $this->database->execute($sqlRespuesta, $paramsRespuesta);
+        }
+        $this->ignorarPregunta($idPregunta);
+
+        return true;
+    }
+    //estadisticas
+
+    public function getTotalPreguntas()
+    {
+        $sql = "SELECT COUNT(*) as total FROM Pregunta";
+        $resultado = $this->database->query($sql);
+
+        if (!empty($resultado)) {
+            return intval($resultado[0]['total']);
+        }
+
+        return 0;
     }
 }
