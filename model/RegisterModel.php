@@ -21,8 +21,6 @@ class RegisterModel
     {
         $sql = "SELECT * FROM Usuario WHERE token = ?";
 
-        $link = this->databa;
-
         $filas = $this->database->query($sql, [$token]);
         $sql = "INSERT INTO Usuario (nombreCompleto, anioNacimiento, sexo, pais, ciudad, mail, username, password, fotoPerfil) VALUES (?, ?, ?, ?,?,?,?,?,?)";
 

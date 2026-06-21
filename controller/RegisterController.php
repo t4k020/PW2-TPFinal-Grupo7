@@ -6,13 +6,13 @@ class RegisterController{
     private $model;
     private $renderer;
     private $request;
-    private $urlBase;
+    private $config;
 
-    public function __construct($model, $renderer, $request, $urlBase){
+    public function __construct($model, $renderer, $request){
         $this->model = $model;
         $this->renderer = $renderer;
         $this->request = $request;
-        $this->urlBase = $urlBase;
+        $this->config = parse_ini_file("config/config.ini");
     }
     public function mostrar(){
         Log::info("registerController::mostrar");
@@ -20,6 +20,10 @@ class RegisterController{
     }
 
     public function registrar(){
+        $url_base = $this->config["url_base"];
+        $mail_user = $this->config["mail_user"];
+        $mail_password = $this->config["mail_password"];
+
         Log::info("registerController::registrar");
         $nombre = $this->request->post('nombreCompleto');
         $fechaNac = $this->request->post('anioNacimiento') . '-01-01' ;
@@ -31,17 +35,17 @@ class RegisterController{
         $password = $this->request->post('password');
         $repetirPassword = $this->request->post('repetirPassword');
         $foto_perfil = $this->request->post('foto_perfil') ?? "default-user.png";
-        $qr = $this->generarQR($username);
+        $qr = QrGenerator::crearQrUsuario($username, $url_base);
 
         if ($password != $repetirPassword){
-            Log::warning("RegisterController::procesarAlta - la contraseña no es igual: $password");
+            Log::warning("RegisterController::procesarAlta - la contraseña no es igual");
             Redirect::toIndex();
             return;
         }
 
         $token = bin2hex(random_bytes(32));
         $password = password_hash($password, PASSWORD_DEFAULT);
-        $link = "$this->urlBase/register/validar?token=$token";
+        $link = "$url_base/register/validar?token=$token";
 
         if (isset($_FILES['fotoPerfil']) && $_FILES['fotoPerfil']['error'] === UPLOAD_ERR_OK) {
 
@@ -57,14 +61,8 @@ class RegisterController{
             );
         }
 
-        $enviado = Mailer::enviarValidacion ($mail, $link);
-
-        if ($enviado) {
-            Log::info("Se envio el correo a $mail");
-        } else {
-            Log::error("NO se envio el correo a $mail");
-            Redirect::toIndex();
-        }
+        $enviado = Mailer::enviarValidacion ($mail, $link, $mail_user, $mail_password);
+        !$enviado && Redirect::toIndex();
 
         Log::info("registerController::procesarAlta - nombre=$nombre");
         $this->model->registrarUsuario($nombre, $fechaNac, $sexo, $pais, $ciudad, $mail,
@@ -112,9 +110,7 @@ class RegisterController{
 
             $writer = new \Endroid\QrCode\Writer\PngWriter();
             $result = $writer->write($qr);
-            if ($result === null) {
-                die("ERROR generando QR");
-            }
+            $result && Log::error("NO se pudo generar el QR");
 
             $result->saveToFile($filePath);
         }

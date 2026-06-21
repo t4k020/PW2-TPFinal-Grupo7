@@ -1,7 +1,7 @@
 <?php
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+//
+//use PHPMailer\PHPMailer\PHPMailer;
+//use PHPMailer\PHPMailer\Exception;
 
 class Configurator {
 
@@ -58,7 +58,7 @@ class Configurator {
     public function getRegisterController()
     {
         return new RegisterController($this->getRegisterModel(), $this->getRenderer(),
-            new Request(), $this->config['url_base']);
+            new Request());
     }
 
     private function getRegisterModel()
@@ -81,26 +81,26 @@ class Configurator {
         return $this->{$defaultGetter}();
     }
 
-    function getMailer(): PHPMailer
-    {
-        $mailer = new PHPMailer(true);
-
-        //el mailer usara simple mail transfer protocol
-        $mailer->isSMTP();
-        $mailer->Host = 'smtp.gmail.com';
-
-        $mailer->SMTPAuth = true;
-        // email que enviara los correos
-        $mailer->Username = $this->config['mail_user'];
-        $mailer->Password = $this->config['mail_password'];
-        // encripta el mensaje para no ser interceptado por terceros
-        $mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mailer->Port = 587;
-
-        $mailer->setFrom($this->config['mail_user'], 'Preguntados');
-
-        return $mailer;
-    }
+//    function getMailer(): PHPMailer
+//    {
+//        $mailer = new PHPMailer(true);
+//
+//        //el mailer usara simple mail transfer protocol
+//        $mailer->isSMTP();
+//        $mailer->Host = 'smtp.gmail.com';
+//
+//        $mailer->SMTPAuth = true;
+//        // email que enviara los correos
+//        $mailer->Username = $this->config['mail_user'];
+//        $mailer->Password = $this->config['mail_password'];
+//        // encripta el mensaje para no ser interceptado por terceros
+//        $mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+//        $mailer->Port = 587;
+//
+//        $mailer->setFrom($this->config['mail_user'], 'Preguntados');
+//
+//        return $mailer;
+//    }
 
     public function getPreguntaController() {
         return new PreguntaController(
