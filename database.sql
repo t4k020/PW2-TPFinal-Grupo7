@@ -19,7 +19,7 @@ CREATE TABLE Usuario
     trampitas int default 0,
     validado boolean default false,
     token varchar(255),
-    maestria VARCHAR(20) DEFAULT 'Aprendiz', -- maestriaUsuario
+    maestria VARCHAR(20) DEFAULT 'Amateur', -- maestriaUsuario
     qr varchar(255)
 ) ENGINE=InnoDB;
 
@@ -211,8 +211,3 @@ VALUES (
            'password123'
        );
 
--- Cambia la regla para los usuarios NUEVOS
-ALTER TABLE Usuario MODIFY COLUMN maestria VARCHAR(20) DEFAULT 'Amateur';
-
--- Actualiza a los usuarios VIEJOS que hayan quedado como Aprendiz
-UPDATE Usuario SET maestria = 'Amateur' WHERE maestria = 'Aprendiz';
