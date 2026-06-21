@@ -5,12 +5,13 @@ class PreguntaController {
     private $renderer;
     private $request;
     private $partidaModel;
-    // private $maestriaService; Maestria de usuario
+    private $usuarioModel;
 
 
-    public function __construct($preguntaModel, $partidaModel ,$renderer, $request) {
+    public function __construct($preguntaModel, $partidaModel ,$renderer, $request, $usuarioModel) {
         $this->preguntaModel = $preguntaModel;
         $this->partidaModel = $partidaModel;
+        $this->usuarioModel = $usuarioModel;
         $this->renderer = $renderer;
         $this->request = $request;
     }
@@ -57,6 +58,9 @@ class PreguntaController {
             $idUsuario = $_SESSION['id'];
 
             $this->partidaModel->guardarPartida($idUsuario, $puntajeTotal);
+
+            // NUEVO: Verificamos si el usuario sube de rango después de su "partida perfecta"
+            $this->usuarioModel->actualizarMaestria($idUsuario);
 
             $_SESSION['partida_puntaje'] = 0;
             unset($_SESSION['preguntas_respondidas']);
@@ -115,6 +119,9 @@ class PreguntaController {
 
             // uso el metodo de PartidaModel para que guarde tod o de forma segura
             $this->partidaModel->guardarPartida($usuarioId, $puntajeFinal);
+
+            // NUEVO: Verificamos si el usuario sube de rango después de esta partida
+            $this->usuarioModel->actualizarMaestria($usuarioId);
 
             // si el usuario pierde se destruye la lista de p respondidas para que en la prox partida pueda ver todas las preguntas
             //  y se resetea la partida

@@ -170,3 +170,10 @@ VALUES ('Saturno', 0, 9),
        ('Júpiter', 1, 9),
        ('Neptuno', 0, 9),
        ('La Tierra', 0, 9);
+
+
+-- Cambia la regla para los usuarios NUEVOS
+ALTER TABLE Usuario MODIFY COLUMN maestria VARCHAR(20) DEFAULT 'Amateur';
+
+-- Actualiza a los usuarios VIEJOS que hayan quedado como Aprendiz
+UPDATE Usuario SET maestria = 'Amateur' WHERE maestria = 'Aprendiz';
