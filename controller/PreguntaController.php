@@ -101,9 +101,13 @@ class PreguntaController {
             header("Location: /index.php?controller=pregunta&method=list");
             exit();
         } else {
+            //se guarda la pregunta mal respondida para el reporte
+            $_SESSION['preguntas_respondidas'][] = $_SESSION['pregunta_actual_id'];
             //se guardan las ids en local para mostrarlas en gameover
             $idsRespondidos = $_SESSION['preguntas_respondidas'] ?? [];
             $preguntasRespondidasDetalle = [];
+
+
             if (!empty($idsRespondidos)) {
 
                 foreach ($idsRespondidos as $idPregunta) {
@@ -111,6 +115,9 @@ class PreguntaController {
                     $preguntasRespondidasDetalle[] = $this->preguntaModel->getPregunta($idPregunta);
                 }
             }
+
+
+
             // agarro el ID del usuario logueado.
             $usuarioId = $_SESSION['id'];
 
@@ -139,6 +146,7 @@ class PreguntaController {
         }
     }
     public function iniciarReporte(){
+        $origen = $_POST['origen'] ?? 'gameover';
         Log::info("iniciando reporte");
         //  Procesamos el reporte si viene por POST
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_pregunta_reportada'])) {
@@ -149,6 +157,15 @@ class PreguntaController {
                 // Guardamos el reporte en la DB
                 $this->preguntaModel->guardarReporte($idReportada, $motivoReporte);
             }
+        }
+
+        // 3. Redirección limpia para la lista de preguntas
+        if ($origen === 'lista_preguntas') {
+            // $_SERVER['HTTP_REFERER'] tiene la URL de la lista con sus filtros/paginado intactos
+            $urlOrigen = $_SERVER['HTTP_REFERER'] ?? '/index.php?controller=pregunta&method=list';
+
+            header("Location: " . $urlOrigen);
+            exit();
         }
 
         // para que vuelva al gameover y pueda ver si quiere reportar  mas preguntas

@@ -6,7 +6,7 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
-    <title>Preguntados - Jugando</title>
+    <title>Preguntados</title>
 </head>
 <body>
 {{> header}}
@@ -20,7 +20,7 @@
             <h1 class="fw-bold text-dark m-0">🚩 Preguntas Reportadas</h1>
             <p class="text-muted m-0">Gestiona los reportes emitidos por los usuarios de la plataforma.</p>
         </div>
-        <a href="/index.php?controller=PanelAdmin&method=mostrar" class="btn btn-outline-secondary">
+        <a href="PanelAdmin/mostrar" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left"></i> Volver al panel Admin
         </a>
     </div>
@@ -60,7 +60,7 @@
                             <td class="pe-4 py-3 text-end">
                                 <div class="d-inline-flex gap-2">
 
-                                    <a href="/index.php?controller=admin&method=editarPregunta&id={{id}}"
+                                    <a href="/PanelAdmin/verEditarPregunta?id={{id}}"
                                     class="btn btn-sm btn-warning fw-bold d-inline-flex align-items-center gap-1"
                                     title="Editar contenido o respuestas">
                                     <i class="bi bi-pencil-square"></i> Editar

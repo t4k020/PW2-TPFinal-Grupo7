@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/public/css/lobby.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
+    <title>Preguntados - Lobby</title>
+</head>
+<body>
+{{> header}}
+
+<main class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+
+            <div class="card shadow border-0 rounded-3">
+
+                {{#pregunta}}
+                    <div class="card-header text-white text-center py-4 border-0" style="background-color: {{categoria_color}};">
+                    <span class="badge bg-light text-dark uppercase fw-bold px-3 py-2 text-uppercase shadow-sm">
+                        {{categoria_nombre}}
+                    </span>
+                    </div>
+                {{/pregunta}}
+
+                <div class="card-body p-4 p-md-5">
+
+                    <form action="/index.php?controller=PanelAdmin&method=procesarEdicion" method="POST">
+                        {{#pregunta}}
+                            <input type="hidden" name="id" value="{{id}}">
+
+                            <div class="mb-4 text-start">
+                                <label for="texto" class="form-label fw-semibold text-secondary">Texto de la Pregunta</label>
+                                <input type="text" class="form-control form-control-lg bg-light border-0 py-3 shadow-sm"
+                                       id="texto" name="texto" value="{{texto}}" required>
+                            </div>
+
+                            <div class="row g-3 mb-4 text-start">
+                                <div class="col-md-4">
+                                    <label for="dificultad" class="form-label fw-semibold text-secondary small">Dificultad</label>
+                                    <input type="text" class="form-control bg-light border-0 shadow-sm" id="dificultad" name="dificultad" value="{{dificultad}}" readonly disabled>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="reportado" class="form-label fw-semibold text-secondary small">Motivo de Reporte</label>
+                                    <input type="text" class="form-control bg-light border-0 text-danger fw-medium shadow-sm" id="reportado" name="reportado" value="{{reportado}}" readonly disabled>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <h4 class="card-title mb-4 fw-semibold text-start">Opciones de Respuesta</h4>
+
+                            <div class="d-grid gap-3 text-start">
+                                {{#respuestas}}
+                                    <div class="input-group input-group-lg shadow-sm rounded border-0">
+                                        <div class="input-group-text bg-white border-0 px-4">
+                                            <input class="form-check-input" type="radio" name="respuesta_correcta_id" value="{{id}}"
+                                                   {{#es_correcta}}checked{{/es_correcta}} required style="transform: scale(1.3); cursor: pointer;">
+                                            <span class="ms-2 text-success small fw-bold d-none d-sm-inline">Correcta</span>
+                                        </div>
+
+                                        <input type="text" class="form-control border-0 bg-light px-3 py-3 text-start"
+                                               name="respuestas[{{id}}][texto]" value="{{texto}}" required>
+                                    </div>
+                                {{/respuestas}}
+                            </div>
+
+                            <hr class="my-5">
+
+                            <div class="d-flex justify-content-end gap-3">
+                                <a href="/PanelAdmin/verReportes"
+                                   class="btn btn-outline-secondary btn-lg px-4 py-2 border-0 fw-medium">
+                                    Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-lg px-5 py-2 text-white fw-bold shadow-sm"
+                                        style="background-color: {{categoria_color}}; border: none;">
+                                    Guardar Cambios
+                                </button>
+                            </div>
+                        {{/pregunta}}
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</main>
+
+{{> footer}}
+</body>
+</html>

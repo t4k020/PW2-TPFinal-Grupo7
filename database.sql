@@ -171,6 +171,45 @@ VALUES ('Saturno', 0, 9),
        ('Neptuno', 0, 9),
        ('La Tierra', 0, 9);
 
+-- insert para estadisticas
+
+INSERT INTO Usuario (nombreCompleto, anioNacimiento, sexo, pais, ciudad, mail, username, password)
+VALUES (
+           'Thiago Messi',
+           '2010-04-15',
+           'Masculino',
+           'Argentina',
+           'Rosario',
+           'thiago@mail.com',
+           'thiaguito10',
+           'password123'
+       );
+
+
+INSERT INTO Usuario (nombreCompleto, anioNacimiento, sexo, pais, ciudad, mail, username, password)
+VALUES (
+           'Franz Müller',
+           '1995-08-22',
+           'Masculino',
+           'Alemania',
+           'Múnich',
+           'franz@mail.com',
+           'franz_munich',
+           'password123'
+       );
+
+
+INSERT INTO Usuario (nombreCompleto, anioNacimiento, sexo, pais, ciudad, mail, username, password)
+VALUES (
+           'Marta Gómez',
+           '1965-11-03',
+           'Femenino',
+           'Argentina',
+           'Buenos Aires',
+           'marta@mail.com',
+           'martita65',
+           'password123'
+       );
 
 -- Cambia la regla para los usuarios NUEVOS
 ALTER TABLE Usuario MODIFY COLUMN maestria VARCHAR(20) DEFAULT 'Amateur';

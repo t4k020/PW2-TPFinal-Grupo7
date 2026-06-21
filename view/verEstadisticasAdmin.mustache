@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/public/css/lobby.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
+    <title>Preguntados - Lobby</title>
+</head>
+
+{{> header}}
+
+<main class="container py-4">
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow border-0 bg-dark text-white p-4 text-center rounded-3">
+                <h2 class="mb-1">📊 Estadísticas Generales</h2>
+                <p class="lead mb-0 text-white-50">El rendimiento global del juego en tiempo real</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-md-4">
+            <div class="card shadow border-0 h-100 rounded-3">
+                <div class="card-body text-center py-4">
+                    <div class="text-primary mb-2">
+                        <i class="bi bi-people-fill fs-1"></i>
+                    </div>
+                    <h4>Usuarios Totales</h4>
+                    <p class="display-6 fw-bold my-3 text-secondary">
+                        {{total_usuarios}}
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow border-0 h-100 rounded-3">
+                <div class="card-body text-center py-4">
+                    <div class="text-warning mb-2">
+                        <i class="bi bi-controller fs-1"></i>
+                    </div>
+                    <h4>Preguntas totales</h4>
+                    <p class="display-6 fw-bold my-3 text-secondary">
+                        {{total_preguntas}}
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow border-0 h-100 rounded-3">
+                <div class="card-body text-center py-4">
+                    <div class="text-success mb-2">
+                        <i class="bi bi-question-circle-fill fs-1"></i>
+                    </div>
+                    <h4>Usuarios por pais</h4>
+                    {{#usuarios_por_pais}}
+                        <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0 py-3">
+                            <span class="fw-medium text-secondary">
+                                 {{pais}}
+                            </span>
+                            <span class="badge bg-primary rounded-pill px-3 py-2 fs-6">
+                                {{cantidad}}
+                            </span>
+                        </li>
+                    {{/usuarios_por_pais}}
+
+                    {{^usuarios_por_pais}}
+                        <li class="list-group-item text-muted bg-transparent text-center py-4">
+                            No hay datos de ubicación disponibles.
+                        </li>
+                    {{/usuarios_por_pais}}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow border-0 h-100 rounded-3">
+                <div class="card-body text-center py-4">
+                    <h4 class="card-title mb-4 fw-semibold text-start">
+                        Usuarios por Rango de Edad
+                    </h4>
+
+                    <ul class="list-group list-group-flush text-start">
+                        {{#usuarios_por_edad}}
+                            <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0 py-3">
+                        <span class="fw-medium text-secondary">
+                             {{rango_edad}}
+                        </span>
+                                <span class="badge bg-dark rounded-pill px-3 py-2 fs-6">
+                                    {{cantidad}}
+                                </span>
+                            </li>
+                        {{/usuarios_por_edad}}
+
+                        {{^usuarios_por_edad}}
+                            <li class="list-group-item text-muted bg-transparent text-center py-4">
+                                No hay datos de edades disponibles.
+                            </li>
+                        {{/usuarios_por_edad}}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow border-0 h-100 rounded-3">
+                <div class="card-body text-center py-4">
+                    <h4 class="card-title mb-4 fw-semibold text-start"> Usuarios por Género</h4>
+                    <ul class="list-group list-group-flush text-start">
+                        {{#usuarios_por_sexo}}
+                            <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0 py-3">
+                                <span class="fw-medium text-secondary"> {{sexo}}</span>
+                                <span class="badge bg-info text-dark rounded-pill px-3 py-2 fs-6 fw-semibold">{{cantidad}}</span>
+                            </li>
+                        {{/usuarios_por_sexo}}
+
+                        {{^usuarios_por_sexo}}
+                            <li class="list-group-item text-muted bg-transparent text-center py-4">
+                                No hay datos de género disponibles.
+                            </li>
+                        {{/usuarios_por_sexo}}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow border-0 h-100 rounded-3">
+                <div class="card-body text-center py-4">
+                    <h4>Partidas Jugadas</h4>
+                    <p class="display-6 fw-bold my-3 text-secondary">
+                        {{total_partidas}}
+                    </p>
+                    <span class="badge bg-light text-dark border px-2 py-1">Histórico global</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow border-0 h-100 rounded-3">
+                <div class="card-body text-center py-4">
+                    <div class="text-success mb-2">
+                        <i class="bi bi-graph-up-arrow fs-1"></i>
+                    </div>
+                    <h4>Promedio de aciertos de todos los usuarios</h4>
+                    <p class="display-6 fw-bold my-3 text-success">
+                        {{acierto_global}}%
+                    </p>
+                    <span class="badge bg-light text-dark border px-2 py-1">Promedio general</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow border-0 h-100 rounded-3">
+                <div class="card-body text-center py-4">
+                    <div class="text-dark mb-2">
+                        <i class="bi bi-trophy-fill fs-1 text-warning"></i>
+                    </div>
+                    <h4>Preguntas hechas por usuarios</h4>
+                    <p class="display-6 fw-bold my-3 text-secondary">
+                        {{record_maximo}} 
+                    </p>
+                    <span class="badge bg-light text-dark border px-2 py-1">Por {{usuario_record}}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow border-0 h-100 rounded-3">
+                <div class="card-body text-center py-4">
+                    <div class="text-secondary mb-2">
+                        <i class="bi bi-calendar-check-fill fs-1 text-primary"></i>
+                    </div>
+                    <h4>Usuarios nuevos</h4>
+                    <p class="display-6 fw-bold my-3 text-secondary">
+                        {{registros_hoy}}
+                    </p>
+              </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <a href="/index.php?controller=lobby&method=mostrar" class="btn btn-outline-secondary btn-lg px-4 shadow-sm border-0 fw-medium">
+                Volver al Lobby
+            </a>
+        </div>
+    </div>
+
+</main>
+
+{{> footer}}
