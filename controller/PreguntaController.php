@@ -60,7 +60,7 @@ class PreguntaController {
             $this->partidaModel->guardarPartida($idUsuario, $puntajeTotal);
 
             // NUEVO: Verificamos si el usuario sube de rango después de su "partida perfecta"
-            $this->usuarioModel->actualizarMaestria($idUsuario);
+            $this->usuarioModel->actualizarNivelMaestria($idUsuario);
 
             $_SESSION['partida_puntaje'] = 0;
             unset($_SESSION['preguntas_respondidas']);
@@ -128,7 +128,7 @@ class PreguntaController {
             $this->partidaModel->guardarPartida($usuarioId, $puntajeFinal);
 
             // NUEVO: Verificamos si el usuario sube de rango después de esta partida
-            $this->usuarioModel->actualizarMaestria($usuarioId);
+            $this->usuarioModel->actualizarNivelMaestria($usuarioId);
 
             // si el usuario pierde se destruye la lista de p respondidas para que en la prox partida pueda ver todas las preguntas
             //  y se resetea la partida

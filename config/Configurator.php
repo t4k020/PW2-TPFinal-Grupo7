@@ -108,7 +108,8 @@ class Configurator {
             $this->getPreguntaModel(),
             $this->getPartidaModel(),
             $this->getRenderer(),
-            new Request()
+            new Request(),
+            $this->getUsuarioModel()
         );
     }
 

@@ -87,15 +87,15 @@ class UsuarioModel
 
         $porcentajeAciertos = ($totalAciertos / $totalPreguntasVistas) * 100;
 
-        // 4. Definimos los rangos (podés ajustar estos porcentajes a gusto del equipo)
+        // 4. Definimos los rangos
         $nuevaMaestria = 'Amateur'; // Por defecto
 
         if ($porcentajeAciertos >= 80) {
-            $nuevaMaestria = 'Leyenda';
+            $nuevaMaestria = 'Maestro';
         } elseif ($porcentajeAciertos >= 60) {
-            $nuevaMaestria = 'Avanzado';
-        } elseif ($porcentajeAciertos >= 40) {
-            $nuevaMaestria = 'Intermedio';
+            $nuevaMaestria = 'Amateur';
+        } else {
+            $nuevaMaestria = 'Aprendiz';
         }
 
         // 5. Actualizamos el rango en la base de datos
