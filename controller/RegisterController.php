@@ -1,7 +1,5 @@
 <?php
 
-use Endroid\QrCode\QrCode;
-use Endroid\QrCode\Writer\PngWriter;
 class RegisterController{
     private $model;
     private $renderer;
@@ -93,29 +91,6 @@ class RegisterController{
         Log::info("Usuario activado: " . $usuario["username"]);
 
         Redirect::to("/login");
-    }
-
-    private function generarQR($username)
-    {
-        $urlPerfil = "$this->urlBase/usuario/ver/$username";
-
-        $qrPath = "$username.png";
-        $filePath = __DIR__ . "/../public/img/qr/" . $username . ".png";
-
-        if (!file_exists($filePath)) {
-
-            $qr = \Endroid\QrCode\QrCode::create($urlPerfil)
-                ->setSize(300)
-                ->setMargin(10);
-
-            $writer = new \Endroid\QrCode\Writer\PngWriter();
-            $result = $writer->write($qr);
-            $result && Log::error("NO se pudo generar el QR");
-
-            $result->saveToFile($filePath);
-        }
-
-        return $qrPath;
     }
 }
 

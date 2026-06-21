@@ -22,8 +22,6 @@ class RegisterModel
         $sql = "SELECT * FROM Usuario WHERE token = ?";
 
         $filas = $this->database->query($sql, [$token]);
-        $sql = "INSERT INTO Usuario (nombreCompleto, anioNacimiento, sexo, pais, ciudad, mail, username, password, fotoPerfil) VALUES (?, ?, ?, ?,?,?,?,?,?)";
-
         Log::info("SQL: $sql");
 
         return !empty($filas) ? $filas[0] : null;
