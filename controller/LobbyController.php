@@ -27,8 +27,8 @@ class LobbyController {
             "fotoPerfil" => $usuario["fotoPerfil"],
             "puntaje" => $puntajeTotal,
             "trampitas" => $usuario["trampitas"],
-            "esAdmin"   => ($usuario["username"] === "Admin")
-
+            "esAdmin"   => ($usuario["username"] === "Admin"),
+            "maestria"  => $usuario["maestria"]
         ]);
 
     }

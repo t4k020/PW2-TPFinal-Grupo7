@@ -84,7 +84,8 @@ class Configurator {
             $this->getPreguntaModel(),
             $this->getPartidaModel(),
             $this->getRenderer(),
-            new Request()
+            new Request(),
+            $this->getUsuarioModel()
         );
     }
 
@@ -105,10 +106,7 @@ class Configurator {
         return new UsuarioModel($this->getDatabase());
     }
 
-    // Se agrega el servicio de Maestría inyectándole el modelo
-    public function getMaestriaService() {
-        return new MaestriaService($this->getUsuarioModel());
-    }
+
 
 
 
