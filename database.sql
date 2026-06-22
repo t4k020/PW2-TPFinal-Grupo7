@@ -22,6 +22,8 @@ CREATE TABLE Usuario
     maestria VARCHAR(20) DEFAULT 'Aprendiz', -- maestriaUsuario
     qr varchar(255),
     fechaCreacion date default (CURRENT_DATE)
+    maestria VARCHAR(20) DEFAULT 'Amateur', -- maestriaUsuario
+    qr varchar(255)
 ) ENGINE=InnoDB;
 
 # Todas las contraseñas hasheadas en insert representan a 1234
