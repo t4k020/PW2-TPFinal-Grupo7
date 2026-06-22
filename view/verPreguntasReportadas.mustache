@@ -60,11 +60,12 @@
                             <td class="pe-4 py-3 text-end">
                                 <div class="d-inline-flex gap-2">
 
-                                    <a href="/PanelAdmin/verEditarPregunta?id={{id}}"
-                                    class="btn btn-sm btn-warning fw-bold d-inline-flex align-items-center gap-1"
-                                    title="Editar contenido o respuestas">
-                                    <i class="bi bi-pencil-square"></i> Editar
-                                    </a>
+                                    <form action="/PanelAdmin/verEditarPregunta" method="POST" class="m-0">
+                                        <input type="hidden" name="id" value="{{id}}">
+                                        <button type="submit" class="btn btn-sm btn-warning fw-bold d-inline-flex align-items-center gap-1" title="Editar contenido o respuestas">
+                                            <i class="bi bi-pencil-square"></i> Editar
+                                        </button>
+                                    </form>
 
                                     <form action="/PanelAdmin/ignorarPregunta" method="POST" class="m-0">
                                         <input type="hidden" name="id_pregunta" value="{{id}}">

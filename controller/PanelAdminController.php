@@ -67,7 +67,7 @@ class PanelAdminController {
     public  function verEditarPregunta()
     {
         $this->verificarAdmin();
-        $id = $_GET['id'] ?? null;
+        $id = $_POST['id'] ?? null;
         $data['pregunta'] = $this->preguntaModel->getPregunta($id);
 
         $this->renderer->render("editarPregunta", $data);
