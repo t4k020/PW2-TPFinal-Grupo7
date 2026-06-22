@@ -22,7 +22,7 @@ class PreguntaController {
         $forzarReinicio = ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reiniciar_partida']));
 
         // O si viene navegando fresco desde el Lobby (limpieza por URL si es una nueva partida limpia)
-        $vieneDelLobby = (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'controller=lobby') !== false);
+        $vieneDelLobby = (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'controller=Lobby') !== false);
 
         if ($forzarReinicio || ($vieneDelLobby && !isset($_SESSION['pregunta_actual_id']))) {
             unset($_SESSION['preguntas_respondidas']);
@@ -63,7 +63,7 @@ class PreguntaController {
             unset($_SESSION['pregunta_actual_id']);
 
             echo "<h1>¡Increíble! Respondiste absolutamente todas las preguntas disponibles. 🏆</h1>";
-            echo "<a href='/index.php?controller=lobby&method=list'>Volver al Lobby</a>";
+            echo "<a href='/Lobby'>Volver al Lobby</a>";
             exit();
         }
 
@@ -81,7 +81,7 @@ class PreguntaController {
 
         //si el usuario borra o ingresa texto en la url, el intval le va a poner =0
         if ($idRespuesta === 0) {
-            header("Location: /index.php?controller=lobby&method=list");
+            header("Location: /Lobby");
             exit();
         }
 
@@ -94,12 +94,12 @@ class PreguntaController {
             }
             $_SESSION['partida_puntaje']++; //si el usuario responde bien, le sumamos un punto.
             unset($_SESSION['pregunta_actual_id']);
-            header("Location: /index.php?controller=pregunta&method=list");
+            header("Location: /Pregunta/list");
             exit();
         } else {
             //se guarda la pregunta mal respondida para el reporte
             $_SESSION['preguntas_respondidas'][] = $_SESSION['pregunta_actual_id'];
-            //se guardan las ids en local para mostrarlas en gameover
+            //se guardan las ids en local para mostrarlas en gameOver
             $idsRespondidos = $_SESSION['preguntas_respondidas'] ?? [];
             $preguntasRespondidasDetalle = [];
 
@@ -134,12 +134,12 @@ class PreguntaController {
                 "hubo_respuestas" => !empty($preguntasRespondidasDetalle) // Un booleano útil para Mustache
             ];
 
-            $this->renderer->render("gameover", $datosVista); //controller=pregunta&method=evaluar&id_respuesta=19
+            $this->renderer->render("gameOver", $datosVista); //controller=pregunta&method=evaluar&id_respuesta=19
             exit();
         }
     }
     public function iniciarReporte(){
-        $origen = $_POST['origen'] ?? 'gameover';
+        $origen = $_POST['origen'] ?? 'gameOver';
         Log::info("iniciando reporte");
         //  Procesamos el reporte si viene por POST
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_pregunta_reportada'])) {
@@ -155,13 +155,13 @@ class PreguntaController {
         // 3. Redirección limpia para la lista de preguntas
         if ($origen === 'lista_preguntas') {
             // $_SERVER['HTTP_REFERER'] tiene la URL de la lista con sus filtros/paginado intactos
-            $urlOrigen = $_SERVER['HTTP_REFERER'] ?? '/index.php?controller=pregunta&method=list';
+            $urlOrigen = $_SERVER['HTTP_REFERER'] ?? '/Pregunta/list';
 
             header("Location: " . $urlOrigen);
             exit();
         }
 
-        // para que vuelva al gameover y pueda ver si quiere reportar  mas preguntas
+        // para que vuelva al gameOver y pueda ver si quiere reportar  mas preguntas
         $idsRespondidos = $_SESSION['preguntas_respondidas'] ?? [];
         $preguntasRespondidasDetalle = [];
 
@@ -179,8 +179,26 @@ class PreguntaController {
             "hubo_respuestas" => !empty($preguntasRespondidasDetalle)
         ];
 
-        $this->renderer->render("gameover", $datosVista);
+        $this->renderer->render("gameOver", $datosVista);
         exit();
     }
 
+    public function sugerir() {
+        Log::info("Iniciando formulario sugerir");
+        $categorias = $this->preguntaModel->getCategorias();
+        $this->renderer->render("sugerirPregunta",
+                ["categorias" => $categorias,
+                "opciones" => [1,2,3,4]]);
+    }
+
+    public function enviarSugerencia() {
+        Log::info("Enviando sugerencia");
+        $categoriaId = $_POST['categoria_id'];
+        $pregunta  = $_POST['texto_pregunta'];
+        $respuestaCorrecta = $_POST['respuesta_correcta'];
+        $respuestas = $_POST['respuestas'];
+
+        $this->preguntaModel->guardarPreguntaYRespuestas($categoriaId, $pregunta, $respuestaCorrecta, $respuestas);
+        Redirect::toIndex();
+    }
 }
