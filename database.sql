@@ -19,7 +19,7 @@ CREATE TABLE Usuario
     trampitas int default 0,
     validado boolean default false,
     token varchar(255),
-    maestria VARCHAR(20) DEFAULT 'Aprendiz', -- maestriaUsuario
+    maestria VARCHAR(20) DEFAULT 'Amateur', -- maestriaUsuario
     qr varchar(255)
 ) ENGINE=InnoDB;
 
@@ -210,3 +210,4 @@ VALUES (
            'martita65',
            'password123'
        );
+
