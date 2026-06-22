@@ -109,4 +109,8 @@ class MyDatabase
             $this->conexion->close();
         }
     }
+
+    public function lastInsertId() {
+        return $this->conexion->insert_id;
+    }
 }

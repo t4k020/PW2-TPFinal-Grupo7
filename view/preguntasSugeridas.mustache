@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
+    <title>Preguntados - Preguntas Sugeridas</title>
+</head>
+<body>
+{{> header}}
+
+<main class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+
+            <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+                <div>
+                    <h1 class="fw-bold text-dark m-0">🚩 Preguntas Sugeridas</h1>
+                    <p class="text-muted m-0">Gestiona las sugerencias emitidas por los usuarios de la plataforma.</p>
+                </div>
+                <a href="PanelAdmin/mostrar" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver al panel Admin
+                </a>
+            </div>
+
+            {{#hubo_sugerencias}}
+                <div class="card shadow-sm border-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-dark text-uppercase fs-7">
+                            <tr>
+                                <th scope="col" class="ps-4 py-3" style="width: 45%;">Pregunta</th>
+                                <th scope="col" class="py-3" style="width: 15%;">Categoría</th>
+                                <th scope="col" class="py-3" style="width: 15%;">Estado</th>
+                                <th scope="col" class="pe-4 py-3 text-end" style="width: 25%;">Acciones</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{#lista_sugeridas}}
+                                <tr>
+                                    <td class="ps-4 py-3">
+                                        <span class="fw-semibold text-dark fs-5 d-block mb-1">{{texto}}</span>
+                                        <div class="mt-2 d-flex flex-wrap gap-2">
+                                            {{#respuestas}}
+                                                <span class="badge {{#es_correcta}}bg-success{{/es_correcta}}{{^es_correcta}}bg-secondary{{/es_correcta}}">
+                                                    {{texto}}
+                                                </span>
+                                            {{/respuestas}}
+                                        </div>
+                                    </td>
+
+                                    <td class="py-3">
+                                <span class="badge px-3 py-2 text-white" style="background-color: {{color}};">
+                                    {{nombre}}
+                                </span>
+                                    </td>
+
+                                    <td class="py-3">
+                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-2">
+                                    {{estado}}
+                                </span>
+                                    </td>
+
+                                    <td class="pe-4 py-3 text-end">
+                                        <div class="d-inline-flex gap-2">
+
+                                            <form action="/PanelAdmin/aprobarPregunta" method="POST" class="m-0">
+                                                <input type="hidden" name="id_pregunta" value="{{id}}">
+                                                <button type="submit" class="btn btn-sm btn-outline-success fw-bold d-inline-flex align-items-center gap-1" title="Descartar reporte">
+                                                    <i class="bi bi-check-circle"></i> Aprobar
+                                                </button>
+                                            </form>
+
+                                            <a href="/PanelAdmin/verEditarPregunta?id={{id}}"
+                                            class="btn btn-sm btn-warning fw-bold d-inline-flex align-items-center gap-1"
+                                            title="Editar contenido o respuestas">
+                                            <i class="bi bi-pencil-square"></i> Editar
+                                            </a>
+
+                                            <form action="/PanelAdmin/eliminarPregunta" method="POST" class="m-0" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta pregunta de forma permanente?');">
+                                                <input type="hidden" name="id_pregunta" value="{{id}}">
+                                                <button type="submit" class="btn btn-sm btn-danger fw-bold d-inline-flex align-items-center gap-1" title="Eliminar pregunta de la aplicación">
+                                                    <i class="bi bi-trash3"></i> Eliminar
+                                                </button>
+                                            </form>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            {{/lista_sugeridas}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {{/hubo_sugerencias}}
+
+            {{^hubo_sugerencias}}
+                <div class="card text-center shadow-sm border-0 p-5">
+                    <div class="display-1 text-success mb-3">🎉</div>
+                    <h3 class="fw-bold text-dark">¡Todo al día por aquí!</h3>
+                    <p class="text-muted mb-0">No se encontraron preguntas sugeridas en este momento.</p>
+                </div>
+            {{/hubo_sugerencias}}
+
+        </div>
+    </div>
+</main>
+
+{{> footer}}
+</body>
+</html>
