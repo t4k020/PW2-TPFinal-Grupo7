@@ -171,4 +171,31 @@ class PreguntaModel
 
         return 0;
     }
+
+    public function getCategorias() {
+        $sql = "SELECT * FROM Categoria";
+        $resultado = $this->database->query($sql);
+        if (empty($resultado))
+            return null;
+
+        return $resultado;
+    }
+
+    public function guardarPreguntaYRespuestas($categoriaId, $pregunta, $respuestaCorrecta, $respuestas) {
+        $sqlPregunta = "INSERT INTO Pregunta (categoria_id, texto) VALUES (?,?)";
+        $this->database->execute($sqlPregunta, [$categoriaId, $pregunta]);
+
+        $preguntaId = $this->database->lastInsertId();
+
+        $sqlRespuesta = "INSERT INTO Respuesta (pregunta_id, texto, es_correcta) VALUES (?,?,?)";
+        foreach ($respuestas as $indice => $textoRespuesta) {
+
+            $esCorrecta = ($indice == $respuestaCorrecta) ? 1 : 0;
+
+            $this->database->execute(
+                $sqlRespuesta,
+                [$preguntaId, $textoRespuesta, $esCorrecta]
+            );
+        }
+    }
 }

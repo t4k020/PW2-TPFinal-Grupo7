@@ -43,7 +43,7 @@
                                 </div>
 
                                 {{^ya_reportada}}
-                                    <form id="form-reporte-{{id}}" action="/index.php?controller=Pregunta&method=iniciarReporte" method="POST" style="display: none; margin-top: 12px; background: #fff; padding: 10px; border-left: 3px solid red;">
+                                    <form id="form-reporte-{{id}}" action="/Pregunta/iniciarReporte" method="POST" style="display: none; margin-top: 12px; background: #fff; padding: 10px; border-left: 3px solid red;">
                                         <input type="hidden" name="id_pregunta_reportada" value="{{id}}">
 
                                         <label for="motivo-{{id}}" style="display: block; font-size: 0.9rem; margin-bottom: 5px; font-weight: bold;">¿Cuál es el problema?</label>
@@ -80,13 +80,13 @@
                 <hr class="my-4">
 
                 <div class="d-grid gap-2">
-                    <form action="/index.php?controller=pregunta&method=list" method="POST" class="d-grid">
+                    <form action="/Pregunta/list" method="POST" class="d-grid">
                         <input type="hidden" name="reiniciar_partida" value="1">
                         <button type="submit" class="btn btn-primary btn-lg">
                             🔄 Intentar de nuevo
                         </button>
                     </form>
-                    <a href="/index.php?controller=lobby&method=list" class="btn btn-outline-secondary">
+                    <a href="/Lobby" class="btn btn-outline-secondary">
                         🏠 Volver al Lobby
                     </a>
                 </div>

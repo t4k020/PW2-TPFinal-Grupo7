@@ -138,5 +138,8 @@ class PanelAdminController {
         }
     }
 
-
+    public function verSugeridas() {
+        Log::info("Mostrando Preguntas Sugeridas");
+        $this->renderer->render("preguntasSugeridas");
+    }
 }
