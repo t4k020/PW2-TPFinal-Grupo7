@@ -20,7 +20,8 @@ CREATE TABLE Usuario
     validado boolean default false,
     token varchar(255),
     maestria VARCHAR(20) DEFAULT 'Aprendiz', -- maestriaUsuario
-    qr varchar(255)
+    qr varchar(255),
+    fechaCreacion date default (CURRENT_DATE)
 ) ENGINE=InnoDB;
 
 # Todas las contraseñas hasheadas en insert representan a 1234
@@ -48,7 +49,9 @@ CREATE TABLE IF NOT EXISTS Pregunta
     dificultad VARCHAR(20) NOT NULL DEFAULT 'FACIL',
     estado VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE',
     reportado ENUM('no reportado', 'Pregunta mal escrita', 'Respuesta equivocada') NOT NULL DEFAULT 'no reportado',
+    fechaCreacion date default (CURRENT_DATE),
     FOREIGN KEY (categoria_id) REFERENCES Categoria(id) ON DELETE CASCADE
+
 ) ENGINE=InnoDB;
 
 
@@ -66,7 +69,9 @@ CREATE TABLE Partida (
      usuario_id INT NOT NULL,
      puntaje INT NOT NULL,
      fecha_partida DATETIME NOT NULL,
+     fechaCreacion date default (CURRENT_DATE),
      FOREIGN KEY (usuario_id) REFERENCES Usuario(id)
+
 ) ENGINE=InnoDB;
 
 
@@ -132,8 +137,8 @@ VALUES ('Río Nilo', 1, 5),
        ('Río Yangtsé', 0, 5);
 
 -- Insert Pregunta 6
-INSERT INTO Pregunta (texto, categoria_id, dificultad, estado)
-VALUES ('¿Cuál es la capital de Australia?', 2, 'MEDIO', 'APROBADA');
+INSERT INTO Pregunta (texto, categoria_id, dificultad, estado, fechaCreacion)
+VALUES ('¿Cuál es la capital de Australia?', 2, 'MEDIO', 'APROBADA', '2026-02-10');
 
 INSERT INTO Respuesta (texto, es_correcta, pregunta_id)
 VALUES ('Sídney', 0, 6),
@@ -142,8 +147,8 @@ VALUES ('Sídney', 0, 6),
        ('Brisbane', 0, 6);
 
 -- Insert Pregunta 7
-INSERT INTO Pregunta (texto, categoria_id, dificultad, estado)
-VALUES ('¿Cuál es el elemento más abundante en el universo?', 3, 'MEDIO', 'APROBADA');
+INSERT INTO Pregunta (texto, categoria_id, dificultad, estado, fechaCreacion)
+VALUES ('¿Cuál es el elemento más abundante en el universo?', 3, 'MEDIO', 'APROBADA', '2026-06-17');
 
 INSERT INTO Respuesta (texto, es_correcta, pregunta_id)
 VALUES ('Oxígeno', 0, 7),
@@ -152,8 +157,8 @@ VALUES ('Oxígeno', 0, 7),
        ('Carbono', 0, 7);
 
 -- Insert Pregunta 8
-INSERT INTO Pregunta (texto, categoria_id, dificultad, estado)
-VALUES ('¿Qué tipo de carga eléctrica tiene un neutrón?', 3, 'MEDIO', 'APROBADA');
+INSERT INTO Pregunta (texto, categoria_id, dificultad, estado, fechaCreacion)
+VALUES ('¿Qué tipo de carga eléctrica tiene un neutrón?', 3, 'MEDIO', 'APROBADA', '2026-06-21');
 
 INSERT INTO Respuesta (texto, es_correcta, pregunta_id)
 VALUES ('Positiva', 0, 8),
@@ -173,7 +178,7 @@ VALUES ('Saturno', 0, 9),
 
 -- insert para estadisticas
 
-INSERT INTO Usuario (nombreCompleto, anioNacimiento, sexo, pais, ciudad, mail, username, password)
+INSERT INTO Usuario (nombreCompleto, anioNacimiento, sexo, pais, ciudad, mail, username, password, fechaCreacion)
 VALUES (
            'Thiago Messi',
            '2010-04-15',
@@ -182,12 +187,12 @@ VALUES (
            'Rosario',
            'thiago@mail.com',
            'thiaguito10',
-           'password123'
-       );
+           'password123',
+           '2026-02-15'
+       ),
 
 
-INSERT INTO Usuario (nombreCompleto, anioNacimiento, sexo, pais, ciudad, mail, username, password)
-VALUES (
+        (
            'Franz Müller',
            '1995-08-22',
            'Masculino',
@@ -195,12 +200,11 @@ VALUES (
            'Múnich',
            'franz@mail.com',
            'franz_munich',
-           'password123'
-       );
+           'password123',
+           '2026-05-30'
+       ),
 
-
-INSERT INTO Usuario (nombreCompleto, anioNacimiento, sexo, pais, ciudad, mail, username, password)
-VALUES (
+        (
            'Marta Gómez',
            '1965-11-03',
            'Femenino',
@@ -208,5 +212,18 @@ VALUES (
            'Buenos Aires',
            'marta@mail.com',
            'martita65',
-           'password123'
+           'password123',
+           '2026-06-21'
        );
+
+
+        INSERT INTO Partida (usuario_id, puntaje, fecha_partida, fechaCreacion)
+        VALUES (1, 5, '2026-06-21 15:30:00', '2026-06-21');
+
+
+        INSERT INTO Partida (usuario_id, puntaje, fecha_partida, fechaCreacion)
+        VALUES (2, 3, '2026-06-18 19:15:00', '2026-06-18');
+
+
+        INSERT INTO Partida (usuario_id, puntaje, fecha_partida, fechaCreacion)
+        VALUES (3, 8, '2026-02-20 11:00:00', '2026-02-20');

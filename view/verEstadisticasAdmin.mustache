@@ -18,9 +18,33 @@
         <div class="col-12">
             <div class="card shadow border-0 bg-dark text-white p-4 text-center rounded-3">
                 <h2 class="mb-1">📊 Estadísticas Generales</h2>
+                {{#filtro_todo}}<span class="badge bg-secondary border border-light-subtle fs-6 fw-normal">Histórico Completo</span>{{/filtro_todo}}
+                {{#filtro_hoy}}<span class="badge bg-success fs-6 fw-normal">Filtrado por: Hoy</span>{{/filtro_hoy}}
+                {{#filtro_semana}}<span class="badge bg-info text-dark fs-6 fw-normal">Filtrado por: Última Semana</span>{{/filtro_semana}}
+                {{#filtro_mes}}<span class="badge bg-warning text-dark fs-6 fw-normal">Filtrado por: Último Mes</span>{{/filtro_mes}}
+                {{#filtro_anio}}<span class="badge bg-danger fs-6 fw-normal">Filtrado por: Último Año</span>{{/filtro_anio}}
                 <p class="lead mb-0 text-white-50">El rendimiento global del juego en tiempo real</p>
             </div>
+            <div class="col-md-5">
+                <form action="/index.php" method="GET" class="d-flex gap-2 justify-content-md-end">
+                    <input type="hidden" name="controller" value="PanelAdmin">
+                    <input type="hidden" name="method" value="verEstadisticasAdmin">
+
+                    <select name="filtro_fecha" class="form-select w-auto shadow-sm" onchange="this.form.submit()">
+                        <option value="todo" {{#filtro_todo}}selected{{/filtro_todo}}>Histórico Completo</option>
+                        <option value="hoy" {{#filtro_hoy}}selected{{/filtro_hoy}}>Hoy</option>
+                        <option value="semana" {{#filtro_semana}}selected{{/filtro_semana}}>Última Semana</option>
+                        <option value="mes" {{#filtro_mes}}selected{{/filtro_mes}}>Último Mes</option>
+                        <option value="anio" {{#filtro_anio}}selected{{/filtro_anio}}>Último Año</option>
+
+                    </select>
+
+                </form>
+
+            </div>
+
         </div>
+
     </div>
 
     <div class="row g-4">
@@ -31,7 +55,7 @@
                     <div class="text-primary mb-2">
                         <i class="bi bi-people-fill fs-1"></i>
                     </div>
-                    <h4>Usuarios Totales</h4>
+                    <h4>Usuarios creados</h4>
                     <p class="display-6 fw-bold my-3 text-secondary">
                         {{total_usuarios}}
                     </p>
@@ -46,7 +70,7 @@
                     <div class="text-warning mb-2">
                         <i class="bi bi-controller fs-1"></i>
                     </div>
-                    <h4>Preguntas totales</h4>
+                    <h4>Preguntas creadas</h4>
                     <p class="display-6 fw-bold my-3 text-secondary">
                         {{total_preguntas}}
                     </p>
@@ -61,7 +85,7 @@
                     <div class="text-success mb-2">
                         <i class="bi bi-question-circle-fill fs-1"></i>
                     </div>
-                    <h4>Usuarios por pais</h4>
+                    <h4>Usuarios creados por pais</h4>
                     {{#usuarios_por_pais}}
                         <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0 py-3">
                             <span class="fw-medium text-secondary">
@@ -86,7 +110,7 @@
             <div class="card shadow border-0 h-100 rounded-3">
                 <div class="card-body text-center py-4">
                     <h4 class="card-title mb-4 fw-semibold text-start">
-                        Usuarios por Rango de Edad
+                        Usuarios creados por Rango de Edad
                     </h4>
 
                     <ul class="list-group list-group-flush text-start">
@@ -114,7 +138,7 @@
         <div class="col-md-4">
             <div class="card shadow border-0 h-100 rounded-3">
                 <div class="card-body text-center py-4">
-                    <h4 class="card-title mb-4 fw-semibold text-start"> Usuarios por Género</h4>
+                    <h4 class="card-title mb-4 fw-semibold text-start"> Usuarios creados por Género</h4>
                     <ul class="list-group list-group-flush text-start">
                         {{#usuarios_por_sexo}}
                             <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0 py-3">
@@ -168,7 +192,7 @@
                     </div>
                     <h4>Preguntas hechas por usuarios</h4>
                     <p class="display-6 fw-bold my-3 text-secondary">
-                        {{record_maximo}} 
+                        {{record_maximo}}
                     </p>
                     <span class="badge bg-light text-dark border px-2 py-1">Por {{usuario_record}}</span>
                 </div>

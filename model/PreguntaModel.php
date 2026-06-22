@@ -160,9 +160,13 @@ class PreguntaModel
     }
     //estadisticas
 
-    public function getTotalPreguntas()
+    public function getTotalPreguntas($fechaDesde = null)
     {
-        $sql = "SELECT COUNT(*) as total FROM Pregunta";
+        $sql = "SELECT COUNT(*) as total FROM Pregunta ";
+
+        if ($fechaDesde) {
+            $sql .= " where fechaCreacion >= '" . $fechaDesde . "'";
+        }
         $resultado = $this->database->query($sql);
 
         if (!empty($resultado)) {

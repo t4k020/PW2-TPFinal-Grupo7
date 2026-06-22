@@ -101,14 +101,35 @@ class PanelAdminController {
 
     public  function verEstadisticasAdmin()
     {
+        $filtro = $_GET['filtro_fecha'] ?? 'todo';
+
+        $fechaDesde = null;
+
+        switch ($filtro) {
+            case 'hoy':
+                $fechaDesde = date('Y-m-d 00:00:00');
+                break;
+            case 'semana':
+                $fechaDesde = date('Y-m-d H:i:s', strtotime('-7 days'));
+                break;
+            case 'mes':
+                $fechaDesde = date('Y-m-d H:i:s', strtotime('-30 days'));
+                break;
+            case 'anio':
+                $fechaDesde = date('Y-m-d H:i:s', strtotime('-1 year'));
+                break;
+            default:
+                $fechaDesde = null; // 'todo' no filtra por fecha
+                break;
+        }
         $this->verificarAdmin();
-        $totalUsuarios = $this->usuarioModel->getTotalUsuarios();
-        $totalPreguntas = $this->preguntaModel->getTotalPreguntas();
-        $usuariosPorPais = $this->usuarioModel->getUsuariosPorPais();
-        $usuariosPorEdad = $this->usuarioModel->getUsuariosPorEdad();
-        $usuariosPorSexo = $this->usuarioModel->getUsuariosPorSexo();
-        $totalPartidas = $this->partidaModel->getTotalPartidas();
-        $aciertoGlobal = $this->partidaModel->getPorcentajeAciertoGlobal();
+        $totalUsuarios = $this->usuarioModel->getTotalUsuarios($fechaDesde);
+        $totalPreguntas = $this->preguntaModel->getTotalPreguntas($fechaDesde);
+        $usuariosPorPais = $this->usuarioModel->getUsuariosPorPais($fechaDesde);
+        $usuariosPorEdad = $this->usuarioModel->getUsuariosPorEdad($fechaDesde);
+        $usuariosPorSexo = $this->usuarioModel->getUsuariosPorSexo($fechaDesde);
+        $totalPartidas = $this->partidaModel->getTotalPartidas($fechaDesde);
+        $aciertoGlobal = $this->partidaModel->getPorcentajeAciertoGlobal($fechaDesde);
 
         $datosVista = [
             "total_usuarios" => $totalUsuarios,
@@ -117,7 +138,13 @@ class PanelAdminController {
             "usuarios_por_edad" => $usuariosPorEdad,
             "usuarios_por_sexo" => $usuariosPorSexo,
             "total_partidas" => $totalPartidas,
-            "acierto_global" => $aciertoGlobal
+            "acierto_global" => $aciertoGlobal,
+
+            "filtro_todo"   => $filtro === 'todo',
+            "filtro_hoy"    => $filtro === 'hoy',
+            "filtro_semana" => $filtro === 'semana',
+            "filtro_mes"    => $filtro === 'mes',
+            "filtro_anio"   => $filtro === 'anio'
 
 
         ];

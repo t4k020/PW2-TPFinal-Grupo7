@@ -66,9 +66,12 @@ class UsuarioModel
 
 
 // para estadisticas
-    public function getTotalUsuarios()
+    public function getTotalUsuarios($fechaDesde = null)
     {
-        $sql = "SELECT COUNT(*) as total FROM Usuario";
+        $sql = "SELECT COUNT(*) as total FROM Usuario ";
+        if ($fechaDesde) {
+            $sql .= " where fechaCreacion >= '" . $fechaDesde . "'";
+        }
         $resultado = $this->database->query($sql);
 
         if (!empty($resultado)) {
@@ -78,19 +81,27 @@ class UsuarioModel
         return 0;
     }
 
-    public function getUsuariosPorPais()
+    public function getUsuariosPorPais($fechaDesde = null)
     {
+        // base de la consulta y las condiciones iniciales
         $sql = "SELECT pais, COUNT(*) as cantidad 
             FROM Usuario 
-            WHERE pais IS NOT NULL AND pais != ''
-            GROUP BY pais 
-            ORDER BY cantidad DESC";
+            WHERE pais IS NOT NULL AND pais != ''";
+
+        // Si hay fecha, la acoplamos inmediatamente al WHERE mediante un AND
+        if ($fechaDesde) {
+            $sql .= " AND fechaCreacion >= '" . $fechaDesde . "'";
+        }
+
+        //  agrupamos y ordenamos los resultados
+        $sql .= " GROUP BY pais ORDER BY cantidad DESC";
 
         return $this->database->query($sql);
     }
 
-    public function getUsuariosPorEdad()
+    public function getUsuariosPorEdad($fechaDesde = null)
     {
+        //  Iniciamos la consulta
         $sql = "SELECT 
                 CASE 
                     WHEN TIMESTAMPDIFF(YEAR, anioNacimiento, CURDATE()) < 18 THEN 'Menores de 18'
@@ -99,19 +110,35 @@ class UsuarioModel
                 END as rango_edad,
                 COUNT(*) as cantidad
             FROM Usuario
-            WHERE anioNacimiento IS NOT NULL
-            GROUP BY rango_edad
-            ORDER BY FIELD(rango_edad, 'Menores de 18', 'Entre 18 y 50', 'Mayores de 50 (Jubilados)')";
+            WHERE anioNacimiento IS NOT NULL";
+
+        //  Si viene el filtro de fecha, lo sumamos al WHERE
+        if ($fechaDesde) {
+            $sql .= " AND fechaCreacion >= '" . $fechaDesde . "'";
+        }
+
+        // 3. Cerramos la consulta
+        $sql .= " GROUP BY rango_edad
+              ORDER BY FIELD(rango_edad, 'Menores de 18', 'Entre 18 y 50', 'Mayores de 50 (Jubilados)')";
 
         return $this->database->query($sql);
     }
 
-    public function getUsuariosPorSexo()
+    public function getUsuariosPorSexo($fechaDesde = null)
     {
+        // Iniciamos la consulta
         $sql = "SELECT sexo, COUNT(*) as cantidad 
             FROM Usuario 
-            GROUP BY sexo 
-            ORDER BY cantidad DESC";
+            WHERE 1=1";
+
+        //  Si hay filtro de fecha, lo sumamos al WHERE
+        if ($fechaDesde) {
+            $sql .= " AND fechaCreacion >= '" . $fechaDesde . "'";
+        }
+
+
+        $sql .= " GROUP BY sexo 
+              ORDER BY cantidad DESC";
 
         return $this->database->query($sql);
     }

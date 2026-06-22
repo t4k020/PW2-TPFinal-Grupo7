@@ -51,9 +51,12 @@ class PartidaModel{
     }
 
 // estadisticas
-    public function getTotalPartidas()
+    public function getTotalPartidas($fechaDesde= null)
     {
-        $sql = "SELECT COUNT(*) as total FROM Partida";
+        $sql = "SELECT COUNT(*) as total FROM Partida ";
+        if ($fechaDesde) {
+            $sql .= " where fechaCreacion >= '" . $fechaDesde . "'";
+        }
         $resultado = $this->database->query($sql);
 
         if (!empty($resultado)) {
@@ -62,12 +65,15 @@ class PartidaModel{
 
         return 0;
     }
-    public function getPorcentajeAciertoGlobal()
+    public function getPorcentajeAciertoGlobal($fechaDesde= null)
     {
         $sql = "SELECT 
                 SUM(puntaje) as total_correctas,
                 SUM(puntaje + 1) as total_preguntas
-            FROM Partida";
+            FROM Partida ";
+        if ($fechaDesde) {
+            $sql .= " where fechaCreacion >= '" . $fechaDesde . "'";
+        }
 
         $resultado = $this->database->query($sql);
 
