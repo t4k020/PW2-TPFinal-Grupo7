@@ -112,6 +112,14 @@ class PreguntaModel
         return $resultadoReporte;
     }
 
+    public function aprobarPregunta($id) {
+        $id = intval($id);
+        Log::info("Aprobando pregunta $id");
+        $sql = "UPDATE Pregunta 
+                 SET estado = 'APROBADA'
+                 WHERE id = " . $id;
+        $this->database->query($sql);
+    }
     public function  borrarPregunta($id)
     {
 
@@ -173,7 +181,7 @@ class PreguntaModel
     }
 
     public function getCategorias() {
-        $sql = "SELECT * FROM Categoria";
+        $sql = "SELECT id, nombre, color FROM Categoria";
         $resultado = $this->database->query($sql);
         if (empty($resultado))
             return null;
@@ -197,5 +205,33 @@ class PreguntaModel
                 [$preguntaId, $textoRespuesta, $esCorrecta]
             );
         }
+    }
+
+    public function getPreguntasSugeridas(){
+        log::info("Obteniendo preguntas sugeridas..");
+
+        $sqlPregunta = "SELECT p.id, 
+                          p.texto, 
+                          p.estado, 
+                          c.nombre, 
+                          c.color
+                        FROM Pregunta p
+                        JOIN Categoria c ON p.categoria_id = c.id 
+                        WHERE p.estado IN ('PENDIENTE') ";
+
+
+        $preguntas = $this->database->query($sqlPregunta);
+
+        foreach ($preguntas as &$pregunta) {
+
+            $sqlRespuestas = "SELECT id, texto, es_correcta
+                          FROM Respuesta
+                          WHERE pregunta_id = ?";
+
+            $pregunta["respuestas"] =
+                $this->database->query($sqlRespuestas, [$pregunta["id"]]);
+        }
+
+        return $preguntas;
     }
 }

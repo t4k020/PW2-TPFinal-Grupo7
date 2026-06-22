@@ -43,6 +43,13 @@ class PanelAdminController {
         $this->renderer->render("verPreguntasReportadas", $datosVista);
     }
 
+    public function aprobarPregunta(){
+        $this->verificarAdmin();
+        $idPregunta = isset($_POST['id_pregunta']) ? intval($_POST['id_pregunta']) : 0;
+        $this->preguntaModel->aprobarPregunta($idPregunta);
+        $this->verSugeridas();
+    }
+
     public function eliminarPregunta(){
         $this->verificarAdmin();
         $idPregunta = isset($_POST['id_pregunta']) ? intval($_POST['id_pregunta']) : 0;
@@ -140,6 +147,9 @@ class PanelAdminController {
 
     public function verSugeridas() {
         Log::info("Mostrando Preguntas Sugeridas");
-        $this->renderer->render("preguntasSugeridas");
+        $preguntasSugeridas = $this->preguntaModel->getPreguntasSugeridas();
+        $this->renderer->render("preguntasSugeridas",[
+            "lista_sugeridas" => $preguntasSugeridas,
+            "hubo_sugerencias" => !empty($preguntasSugeridas)]);
     }
 }
