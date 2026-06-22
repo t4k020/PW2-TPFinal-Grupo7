@@ -130,7 +130,7 @@ class PanelAdminController {
         ];
 
 
-        $this->renderer->render("verEstadisticasAdmin.mustache", $datosVista);
+        $this->renderer->render("verEstadisticasAdmin", $datosVista);
     }
 
 
