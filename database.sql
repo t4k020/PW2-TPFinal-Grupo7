@@ -19,11 +19,9 @@ CREATE TABLE Usuario
     trampitas int default 0,
     validado boolean default false,
     token varchar(255),
-    maestria VARCHAR(20) DEFAULT 'Aprendiz', -- maestriaUsuario
+    maestria VARCHAR(20) DEFAULT 'Amateur', -- maestriaUsuario
     qr varchar(255),
     fechaCreacion date default (CURRENT_DATE)
-    maestria VARCHAR(20) DEFAULT 'Amateur', -- maestriaUsuario
-    qr varchar(255)
 ) ENGINE=InnoDB;
 
 # Todas las contraseñas hasheadas en insert representan a 1234
