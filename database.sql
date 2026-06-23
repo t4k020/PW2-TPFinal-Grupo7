@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS Pregunta
     estado VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE',
     reportado ENUM('no reportado', 'Pregunta mal escrita', 'Respuesta equivocada') NOT NULL DEFAULT 'no reportado',
     fechaCreacion date default (CURRENT_DATE),
+    creadoPor varchar(50) not null default 'ADMIN',
     FOREIGN KEY (categoria_id) REFERENCES Categoria(id) ON DELETE CASCADE
 
 ) ENGINE=InnoDB;

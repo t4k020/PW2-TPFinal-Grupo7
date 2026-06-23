@@ -22,15 +22,13 @@ class PreguntaController {
         //para resetear cuando haga click en "jugar de nuevo"
         $forzarReinicio = ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reiniciar_partida']));
 
-        // O si viene navegando fresco desde el Lobby (limpieza por URL si es una nueva partida limpia)
-        $vieneDelLobby = (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'controller=Lobby') !== false);
-
-        if ($forzarReinicio || ($vieneDelLobby && !isset($_SESSION['pregunta_actual_id']))) {
+        if ($forzarReinicio) {
             unset($_SESSION['preguntas_respondidas']);
             unset($_SESSION['partida_puntaje']);
             unset($_SESSION['pregunta_actual_id']);
         }
-        //si el usuario nunca jugó se crea una lista nueva, a partir de la segunda vez que juega usa su lista creada
+
+        // Si el usuario nunca jugó o se acaba de resetear, se crea la lista limpia
         if (!isset($_SESSION['preguntas_respondidas'])) {
             $_SESSION['preguntas_respondidas'] = [];
             $_SESSION['partida_puntaje'] = 0;

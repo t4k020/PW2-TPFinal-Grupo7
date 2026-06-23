@@ -167,12 +167,11 @@ class UsuarioModel
     {
         // Iniciamos la consulta
         $sql = "SELECT sexo, COUNT(*) as cantidad 
-            FROM Usuario 
-            WHERE 1=1";
+            FROM Usuario ";
 
         //  Si hay filtro de fecha, lo sumamos al WHERE
         if ($fechaDesde) {
-            $sql .= " AND fechaCreacion >= '" . $fechaDesde . "'";
+            $sql .= " where fechaCreacion >= '" . $fechaDesde . "'";
         }
 
 
