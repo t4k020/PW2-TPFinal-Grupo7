@@ -41,7 +41,15 @@ class PreguntaController {
         } else {
             // si viene del lobby o de responder bien:
             $listaIgnorar = $_SESSION['preguntas_respondidas'];
-            $preguntaCompleta = $this->preguntaModel->getRandomPregunta($listaIgnorar);
+
+            // Atrapamos la categoría que nos mandó la ruleta por la URL
+            $idCategoria = isset($_GET['categoria']) ? intval($_GET['categoria']) : null;
+
+            // TODO: Para el futuro inyectar la maestría real del usuario. Por ahora se hardcodea con 'Amateur'
+            $maestriaJugador = 'Amateur';
+
+            // Pasamos la categoría al modelo
+            $preguntaCompleta = $this->preguntaModel->getRandomPregunta($listaIgnorar, $maestriaJugador, $idCategoria);
 
             if ($preguntaCompleta !== null) {
                 // guardo el id de le nueva pregunta
@@ -206,4 +214,24 @@ class PreguntaController {
         $this->preguntaModel->guardarPreguntaYRespuestas($categoriaId, $pregunta, $respuestaCorrecta, $respuestas);
         Redirect::toIndex();
     }
+
+    public function ruleta() {
+        Log::info("Mostrando pantalla de ruleta");
+
+        // Usamos la función getCategorias del modelo
+        $categorias = $this->preguntaModel->getCategorias();
+
+        // Si por algún motivo no hay categorías, lo mandamos al lobby por seguridad
+        if (empty($categorias)) {
+            Redirect::to("/Lobby");
+        }
+
+        // Renderizamos la vista de la ruleta pasándole el array de categorías
+        $this->renderer->render("ruletaView", [
+            "categorias" => $categorias
+        ]);
+    }
+
+
+
 }

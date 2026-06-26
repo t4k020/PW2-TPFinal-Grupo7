@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preguntados - Juego</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
+    <style>
+        .ruleta-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #2b2b2b; /* Fondo oscuro para que resalten los colores */
+            color: white;
+        }
+        .categoria-display {
+            width: 250px;
+            height: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: white;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: background-color 0.05s ease;
+            margin-bottom: 2rem;
+            border: 8px solid white;
+        }
+        /* Animación de latido mientras gira */
+        .girando {
+            animation: palpitar 0.3s infinite alternate;
+        }
+        @keyframes palpitar {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body>
+<div class="ruleta-container">
+    <h2 class="mb-5">🎲 Sorteando Categoría...</h2>
+
+    <!-- El círculo mágico donde ocurre la acción -->
+    <div id="categoriaDisplay" class="categoria-display girando" style="background-color: #555;">
+        ❓
+    </div>
+
+    <h3 id="mensajeEstado" class="text-light">¡Girando!</h3>
+</div>
+
+<!-- Script de lógica de la ruleta -->
+<script>
+    // Mustache inyecta acá las categorías que va a mandar tu Controlador
+    const categorias = [
+        {{#categorias}}
+            { id: {{id}}, nombre: "{{nombre}}", color: "{{color}}" },
+        {{/categorias}}
+    ];
+
+    const display = document.getElementById('categoriaDisplay');
+    const mensaje = document.getElementById('mensajeEstado');
+
+    let tiempoGiro = 3000; // Gira durante 3 segundos
+    let velocidad = 100; // Cambia de categoría cada 100 milisegundos
+    let intervalo;
+
+    function iniciarRuleta() {
+        // 1. Efecto de parpadeo rápido
+        intervalo = setInterval(() => {
+            const randomIdx = Math.floor(Math.random() * categorias.length);
+            const cat = categorias[randomIdx];
+            display.innerText = cat.nombre;
+            display.style.backgroundColor = cat.color;
+        }, velocidad);
+
+        // 2. Detener la ruleta después de los 3 segundos
+        setTimeout(() => {
+            clearInterval(intervalo);
+
+            // Elegir la categoría ganadora definitiva
+            const ganadoraIdx = Math.floor(Math.random() * categorias.length);
+            const ganadora = categorias[ganadoraIdx];
+
+            // Frizar la pantalla con la ganadora
+            display.innerText = ganadora.nombre;
+            display.style.backgroundColor = ganadora.color;
+            display.classList.remove('girando'); // Frena el latido
+
+            mensaje.innerText = "¡Te tocó " + ganadora.nombre + "!";
+            mensaje.classList.add('text-warning'); // Lo pintamos de amarillo
+
+            // 3. Redirigir al backend pidiendo la pregunta de esta categoría
+            setTimeout(() => {
+                window.location.href = '/pregunta/list?categoria=' + ganadora.id;
+            }, 1500); // Le damos 1.5 segundos al jugador para que festeje o sufra
+
+        }, tiempoGiro);
+    }
+
+    // Arrancamos la ruleta automáticamente apenas carga la página
+    window.onload = iniciarRuleta;
+</script>
+</body>
+</html>
