@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preguntados - Girando Ruleta</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
+    <style>
+        /* Contenedor principal de la ruleta */
+        .ruleta-wrapper {
+            position: relative;
+            width: 300px; /* Un poco más chica para que encaje bien en la tarjeta */
+            height: 300px;
+            margin: 2rem auto; /* Centrado automático */
+        }
+
+        /* La flecha indicadora superior */
+        .flecha {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 30px solid #dc3545; /* Roja para que contraste con la tarjeta blanca */
+            z-index: 10;
+            filter: drop-shadow(0px 4px 2px rgba(0, 0, 0, 0.2));
+        }
+
+        /* El círculo de la ruleta */
+        .ruleta {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 8px solid #212529; /* Borde más suave */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.1, 1.05);
+            transform: rotate(0deg);
+        }
+
+        /* El botón blanco del centro */
+        .btn-centro {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background-color: white;
+            border-radius: 50%;
+            border: 4px solid #e0e0e0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1rem;
+            font-weight: 900;
+            color: #333;
+            cursor: pointer;
+            z-index: 5;
+            transition: transform 0.1s, background-color 0.4s ease, font-size 0.4s ease;
+        }
+
+        .btn-centro:hover {
+            background-color: #f8f9fa;
+        }
+
+        .btn-centro:active {
+            transform: translate(-50%, -50%) scale(0.95);
+        }
+
+        .btn-centro:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        /* Los íconos flotantes de las categorías */
+        .icono-ruleta {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            font-size: 3rem; /* Tamaño del emoji */
+            z-index: 2; /* Por encima del fondo, por debajo del botón central */
+            user-select: none; /* Para que no se pinten de azul al hacer clic */
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.4)); /* Sombra para que resalte */
+        }
+
+    </style>
+</head>
+<body>
+
+{{> header}}
+
+<main class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+
+            <div class="card shadow border-0">
+                <div class="card-header text-white text-center py-3 bg-dark">
+                    <span class="badge bg-light text-dark uppercase fw-bold px-3 py-2 fs-6">
+                        RULETA DE CATEGORÍAS
+                    </span>
+                </div>
+
+                <div class="card-body text-center p-4">
+                    <h3 class="card-title my-2 fw-semibold text-dark">
+                        ¡Girá la ruleta!
+                    </h3>
+
+                    <div class="ruleta-wrapper">
+                        <div class="flecha"></div>
+                        <div class="ruleta" id="ruleta"></div>
+                        <button class="btn-centro" id="btnGirar">GIRAR</button>
+                    </div>
+
+                    <h4 id="mensajeEstado" class="text-secondary mt-3">Toca el centro para empezar</h4>
+
+                    <div class="mt-4">
+                        <button onclick="confirmarSalida()" class="btn btn-outline-danger btn-sm px-4 rounded-pill">
+                            Terminar Partida
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+{{> footer}}
+
+<script>
+    const categorias = [
+        {{#categorias}}
+            {id: {{id}}, nombre: "{{nombre}}", color: "{{color}}"},
+        {{/categorias}}
+    ];
+
+    const ruleta = document.getElementById('ruleta');
+    const btnGirar = document.getElementById('btnGirar');
+    const mensaje = document.getElementById('mensajeEstado');
+
+    const totalCategorias = categorias.length;
+    const gradosPorPorcion = 360 / totalCategorias;
+    let rotacionActual = 0;
+
+    // Diccionario Global de Emojis
+    const iconos = {
+        "Historia": "🏛️",
+        "Geografía": "🌍",
+        "Ciencia": "🧪"
+    };
+
+    function dibujarRuleta() {
+        let gradientString = "";
+        ruleta.innerHTML = ""; // Limpiamos html por si acaso
+
+        categorias.forEach((cat, index) => {
+            // 1. Calculamos el inicio y fin para pintar el fondo de la porción
+            let inicio = index * gradosPorPorcion;
+            let fin = inicio + gradosPorPorcion;
+            gradientString += `${cat.color} ${inicio}deg ${fin}deg, `;
+
+            // 2. Calculamos el ÁNGULO CENTRAL de esta porción específica
+            let anguloCentro = inicio + (gradosPorPorcion / 2);
+
+            // 3. Creamos el elemento HTML para el emoji
+            let iconoElement = document.createElement('div');
+            iconoElement.className = 'icono-ruleta';
+            iconoElement.innerText = iconos[cat.nombre] || "⭐";
+
+            // 4. MATEMATICA DEL POSICIONAMIENTO RADIAL:
+            iconoElement.style.transform = `
+                translate(-50%, -50%)
+                rotate(${anguloCentro}deg)
+                translateY(-100px)
+                rotate(-${anguloCentro}deg)
+            `;
+
+            // 5. Inyectamos el ícono en la ruleta
+            ruleta.appendChild(iconoElement);
+        });
+
+        // Aplicamos los colores de fondo
+        gradientString = gradientString.slice(0, -2);
+        ruleta.style.background = `conic-gradient(${gradientString})`;
+    }
+
+    function girarRuleta() {
+        btnGirar.disabled = true;
+        mensaje.innerText = "¡Girando...";
+        mensaje.className = "text-secondary mt-3";
+
+        const vueltasExtra = Math.floor(Math.random() * 5) + 5;
+        const gradosAleatorios = Math.floor(Math.random() * 360);
+        const giroTotal = (vueltasExtra * 360) + gradosAleatorios;
+
+        rotacionActual += giroTotal;
+        ruleta.style.transform = `rotate(${rotacionActual}deg)`;
+
+        setTimeout(() => {
+            calcularGanadora();
+        }, 4000);
+    }
+
+    function calcularGanadora() {
+        const gradosFinales = rotacionActual % 360;
+        let gradoPuntero = 360 - gradosFinales;
+        if (gradoPuntero === 360) gradoPuntero = 0;
+
+        const indiceGanador = Math.floor(gradoPuntero / gradosPorPorcion);
+        const catGanadora = categorias[indiceGanador];
+
+
+        // 2. Transformamos el botón del centro
+        // Si no encuentra el nombre, pone una estrella por defecto
+        btnGirar.innerText = iconos[catGanadora.nombre] || "⭐";
+        btnGirar.style.fontSize = "3rem"; // Hacemos el emoji gigante
+        btnGirar.style.backgroundColor = catGanadora.color; // Lo pintamos con el color de la categoría
+        btnGirar.style.border = "4px solid white";
+
+        // 3. Actualizamos el mensaje de abajo
+        mensaje.innerText = "¡Te tocó " + catGanadora.nombre + "!";
+        mensaje.className = "mt-3 fs-3 fw-bold";
+        mensaje.style.color = catGanadora.color;
+
+        // 4. Redirigimos después de 2 segundos para que el jugador vea la categoria ganadorea
+        setTimeout(() => {
+            window.location.href = '/pregunta/list?categoria=' + catGanadora.id;
+        }, 2000);
+    }
+
+    dibujarRuleta();
+    btnGirar.addEventListener('click', girarRuleta);
+
+    //Sirve para poner un pop-up de confirmacion al boton de terminar partida, se integra con la libreria SweetAlert2
+    function confirmarSalida() {
+        Swal.fire({
+            title: '¿Abandonar partida?',
+            text: "Se guardará tu puntaje, pero cortarás tu racha actual.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33', // Rojo peligro
+            cancelButtonColor: '#6c757d', // Gris secundario
+            confirmButtonText: 'Sí, salir',
+            cancelButtonText: 'Seguir jugando',
+            background: '#ffffff', // Fondo limpio
+            borderRadius: '15px'
+        }).then((result) => {
+            // Si el jugador toca el botón rojo de confirmar...
+            if (result.isConfirmed) {
+                // ... Recién ahí lo mandamos al controlador
+                window.location.href = '/pregunta/terminarPartida';
+            }
+        });
+    }
+
+
+</script>
+</body>
+</html>

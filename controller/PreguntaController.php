@@ -41,7 +41,15 @@ class PreguntaController {
         } else {
             // si viene del lobby o de responder bien:
             $listaIgnorar = $_SESSION['preguntas_respondidas'];
-            $preguntaCompleta = $this->preguntaModel->getRandomPregunta($listaIgnorar);
+
+            // Atrapamos la categoría que nos mandó la ruleta por la URL
+            $idCategoria = isset($_GET['categoria']) ? intval($_GET['categoria']) : null;
+
+            // TODO: Para el futuro inyectar la maestría real del usuario. Por ahora se hardcodea con 'Amateur'
+            $maestriaJugador = 'Amateur';
+
+            // Pasamos la categoría al modelo
+            $preguntaCompleta = $this->preguntaModel->getRandomPregunta($listaIgnorar, $maestriaJugador, $idCategoria);
 
             if ($preguntaCompleta !== null) {
                 // guardo el id de le nueva pregunta
@@ -96,7 +104,7 @@ class PreguntaController {
             }
             $_SESSION['partida_puntaje']++; //si el usuario responde bien, le sumamos un punto.
             unset($_SESSION['pregunta_actual_id']);
-            header("Location: /Pregunta/list");
+            header("Location: /Pregunta/ruleta"); // vuelve a la ruleta
             exit();
         } else {
             //se guarda la pregunta mal respondida para el reporte
@@ -206,4 +214,81 @@ class PreguntaController {
         $this->preguntaModel->guardarPreguntaYRespuestas($categoriaId, $pregunta, $respuestaCorrecta, $respuestas);
         Redirect::toIndex();
     }
+
+    // calcula categorias y gira la ruleta
+    public function ruleta() {
+        Log::info("Calculando categorías para la ruleta...");
+
+        // 1. Traemos la lista de lo que el jugador ya respondió en esta partida
+        $listaIgnorar = $_SESSION['preguntas_respondidas'] ?? [];
+
+        // 2. Le pedimos al modelo solo las categorías que tienen preguntas sin responder
+        $categorias = $this->preguntaModel->getCategoriasDisponibles($listaIgnorar);
+        $cantidadCategorias = count($categorias);
+
+        // ESCENARIO A: Vació toda la base de datos (Partida Perfecta)
+        if ($cantidadCategorias === 0) {
+            // Lo mandamos al méto do list() sin categoría para que dispare la pantalla de victoria
+            header("Location: /Pregunta/list");
+            exit();
+        }
+
+        // ESCENARIO B: Queda una sola categoría, aca hacemos que el usuario vaya directamente a responder esa categoria y no vaya a la ruleta de nuevo.
+        if ($cantidadCategorias === 1) {
+            $idUnicaCategoria = $categorias[0]['id'];
+            // Salteamos la vista de la ruleta y lo mandamos directo a jugar esa categoría
+            header("Location: /Pregunta/list?categoria=" . $idUnicaCategoria);
+            exit();
+        }
+
+        // ESCENARIO C: Quedan 2 o más categorías (Juego Normal)
+        // Renderizamos la vista de la ruleta pasándole el array de categorías
+        $this->renderer->render("ruletaView", [
+            "categorias" => $categorias
+        ]);
+    }
+
+    //hace limpieza general y luego empuja al jugador hacia la ruleta
+    public function nuevaPartida() {
+        Log::info("Iniciando una partida completamente nueva");
+
+        // Destruimos cualquier rastro de la partida anterior
+        unset($_SESSION['preguntas_respondidas']);
+        unset($_SESSION['partida_puntaje']);
+        unset($_SESSION['pregunta_actual_id']);
+
+        // Redirigimos a la ruleta con la pizarra en blanco
+        header("Location: /pregunta/ruleta");
+        exit();
+    }
+
+    public function terminarPartida() {
+        Log::info("El jugador decidió terminar la partida prematuramente");
+
+        // 1. Agarramos los datos actuales
+        $usuarioId = $_SESSION['id'];
+        $puntajeFinal = isset($_SESSION['partida_puntaje']) ? $_SESSION['partida_puntaje'] : 0;
+
+        // 2. Guardamos la partida con el puntaje que haya logrado (aunque sea 0)
+        $this->partidaModel->guardarPartida($usuarioId, $puntajeFinal);
+
+        // 3. Verificamos si este puntaje le alcanza para subir de maestría
+        $this->usuarioModel->actualizarNivelMaestria($usuarioId);
+
+        // 4. Limpiamos la session para el próximo juego
+        unset($_SESSION['preguntas_respondidas']);
+        unset($_SESSION['pregunta_actual_id']);
+        unset($_SESSION['partida_puntaje']);
+
+        // 5. Lo mandamos al Lobby
+        header("Location: /Lobby");
+        exit();
+    }
+
+
+
+
+
+
+
 }

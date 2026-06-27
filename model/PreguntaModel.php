@@ -8,7 +8,7 @@ class PreguntaModel
         $this->database = $database;
     }
 
-    // Cambio 1: cambio de nombre de las tablas preguntas, categorias y respuestas, linea 16,17 y 31
+
     // Metodo para traer una pregunta específica con sus 4 respuestas
     public function getPregunta($id) {
         //Traigo los datos de la pregunta y su categoría
@@ -39,7 +39,7 @@ class PreguntaModel
         return $pregunta;
     }
 
-    //Cambio 2: cambio de nombre tabla respuestas
+
     public function verificarRespuesta($idRespuesta) {
         // Consulta para traer el campo es_correcta
         $sql = "SELECT es_correcta FROM Respuesta WHERE id = " . intval($idRespuesta);
@@ -56,26 +56,31 @@ class PreguntaModel
         return $fila['es_correcta'] == 1;
     }
 
-    //Cambio 3: cambio de nombre tabla preguntas
-    public function getRandomPregunta($listaIgnorar = []) {
-        // Base de la query
-        $sql = "SELECT id FROM Pregunta";
 
-        // Si hay IDs para ignorar, los transformamos a un string separado por comas (ej: "1,4,5")
-        // y modificamos la consulta SQL
-        if (!empty($listaIgnorar)) {
-            // implode junta los elementos de un array con el conector que le pidas
-            $idsString = implode(',', array_map('intval', $listaIgnorar));
-            $sql .= " WHERE id NOT IN (" . $idsString . ")";
+    public function getRandomPregunta($listaIgnorar = [],$maestriaJugador = 'Amateur', $idCategoria = null) {
+
+        $stringIdsIgnorados = !empty($listaIgnorar) ? implode(',', array_map('intval', $listaIgnorar)) : '0';
+
+        // Lógica de dificultad adaptativa (que prepararemos para el futuro)
+        $dificultadesPermitidas = "('FACIL', 'MEDIO', 'DIFICIL')";
+
+        // Se arma el filtro dinámico de categoría
+        $filtroCategoria = "";
+        if ($idCategoria !== null) {
+            $filtroCategoria = " AND categoria_id = " . intval($idCategoria);
         }
 
-        // Le sumamos el orden aleatorio
-        $sql .= " ORDER BY RAND() LIMIT 1";
+        $sql = "SELECT * FROM Pregunta 
+                WHERE estado = 'APROBADA' 
+                $filtroCategoria
+                AND dificultad IN $dificultadesPermitidas 
+                AND id NOT IN ($stringIdsIgnorados) 
+                ORDER BY RAND() LIMIT 1";
 
         $resultado = $this->database->query($sql);
 
         if (empty($resultado)) {
-            return null; // No quedan más preguntas disponibles que no hayan sido respondidas
+            return null; // No quedan preguntas o se terminó el juego
         }
 
         $idAzar = $resultado[0]['id'];
@@ -238,4 +243,26 @@ class PreguntaModel
 
         return $preguntas;
     }
+
+    public function getCategoriasDisponibles($listaIgnorar = []) {
+        // Esto hace que no nos devuelva la misma categoría repetida por cada pregunta que tenga
+        $sql = "SELECT DISTINCT c.id, c.nombre, c.color 
+                FROM Categoria c
+                JOIN Pregunta p ON c.id = p.categoria_id
+                WHERE p.estado = 'APROBADA'";
+
+        // Si el usuario ya respondió preguntas de manera correcta , filtramos para que no cuente esas
+        if (!empty($listaIgnorar)) {
+            $idsString = implode(',', array_map('intval', $listaIgnorar));
+            $sql .= " AND p.id NOT IN (" . $idsString . ")";
+        }
+
+        $resultado = $this->database->query($sql);
+
+        return $resultado ?: []; // Si no hay nada, devolvemos un array vacío por seguridad
+    }
+
+
+
+
 }
