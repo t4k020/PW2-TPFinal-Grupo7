@@ -243,4 +243,26 @@ class PreguntaModel
 
         return $preguntas;
     }
+
+    public function getCategoriasDisponibles($listaIgnorar = []) {
+        // Esto hace que no nos devuelva la misma categoría repetida por cada pregunta que tenga
+        $sql = "SELECT DISTINCT c.id, c.nombre, c.color 
+                FROM Categoria c
+                JOIN Pregunta p ON c.id = p.categoria_id
+                WHERE p.estado = 'APROBADA'";
+
+        // Si el usuario ya respondió preguntas de manera correcta , filtramos para que no cuente esas
+        if (!empty($listaIgnorar)) {
+            $idsString = implode(',', array_map('intval', $listaIgnorar));
+            $sql .= " AND p.id NOT IN (" . $idsString . ")";
+        }
+
+        $resultado = $this->database->query($sql);
+
+        return $resultado ?: []; // Si no hay nada, devolvemos un array vacío por seguridad
+    }
+
+
+
+
 }

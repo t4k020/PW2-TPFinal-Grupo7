@@ -104,7 +104,7 @@ class PreguntaController {
             }
             $_SESSION['partida_puntaje']++; //si el usuario responde bien, le sumamos un punto.
             unset($_SESSION['pregunta_actual_id']);
-            header("Location: /Pregunta/list");
+            header("Location: /Pregunta/ruleta"); // vuelve a la ruleta
             exit();
         } else {
             //se guarda la pregunta mal respondida para el reporte
@@ -215,22 +215,55 @@ class PreguntaController {
         Redirect::toIndex();
     }
 
+    // calcula categorias y gira la ruleta
     public function ruleta() {
-        Log::info("Mostrando pantalla de ruleta");
+        Log::info("Calculando categorías para la ruleta...");
 
-        // Usamos la función getCategorias del modelo
-        $categorias = $this->preguntaModel->getCategorias();
+        // 1. Traemos la lista de lo que el jugador ya respondió en esta partida
+        $listaIgnorar = $_SESSION['preguntas_respondidas'] ?? [];
 
-        // Si por algún motivo no hay categorías, lo mandamos al lobby por seguridad
-        if (empty($categorias)) {
-            Redirect::to("/Lobby");
+        // 2. Le pedimos al modelo solo las categorías que tienen preguntas sin responder
+        $categorias = $this->preguntaModel->getCategoriasDisponibles($listaIgnorar);
+        $cantidadCategorias = count($categorias);
+
+        // ESCENARIO A: Vació toda la base de datos (Partida Perfecta)
+        if ($cantidadCategorias === 0) {
+            // Lo mandamos al méto do list() sin categoría para que dispare la pantalla de victoria
+            header("Location: /Pregunta/list");
+            exit();
         }
 
+        // ESCENARIO B: Queda una sola categoría, aca hacemos que el usuario vaya directamente a responder esa categoria y no vaya a la ruleta de nuevo.
+        if ($cantidadCategorias === 1) {
+            $idUnicaCategoria = $categorias[0]['id'];
+            // Salteamos la vista de la ruleta y lo mandamos directo a jugar esa categoría
+            header("Location: /Pregunta/list?categoria=" . $idUnicaCategoria);
+            exit();
+        }
+
+        // ESCENARIO C: Quedan 2 o más categorías (Juego Normal)
         // Renderizamos la vista de la ruleta pasándole el array de categorías
         $this->renderer->render("ruletaView", [
             "categorias" => $categorias
         ]);
     }
+
+    //hace limpieza general y luego empuja al jugador hacia la ruleta
+    public function nuevaPartida() {
+        Log::info("Iniciando una partida completamente nueva");
+
+        // Destruimos cualquier rastro de la partida anterior
+        unset($_SESSION['preguntas_respondidas']);
+        unset($_SESSION['partida_puntaje']);
+        unset($_SESSION['pregunta_actual_id']);
+
+        // Redirigimos a la ruleta con la pizarra en blanco
+        header("Location: /pregunta/ruleta");
+        exit();
+    }
+
+
+
 
 
 
