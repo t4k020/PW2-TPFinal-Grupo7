@@ -81,7 +81,7 @@ CREATE TABLE Partida (
 -- Insert Categoria
 INSERT INTO Categoria (nombre, color) VALUES
 ('Historia', '#DEC100'),
-('Geografía', '#2196F3'),
+('Geografía', '#00d2ff'),
 ('Ciencia', '#4CAF50');
 
 -- Insert preguntas, se le agrego a todas las preguntas estado y dificultad

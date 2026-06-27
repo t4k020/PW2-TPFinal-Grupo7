@@ -75,6 +75,18 @@
             cursor: not-allowed;
             opacity: 0.8;
         }
+
+        /* Los íconos flotantes de las categorías */
+        .icono-ruleta {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            font-size: 3rem; /* Tamaño del emoji */
+            z-index: 2; /* Por encima del fondo, por debajo del botón central */
+            user-select: none; /* Para que no se pinten de azul al hacer clic */
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.4)); /* Sombra para que resalte */
+        }
+
     </style>
 </head>
 <body>
@@ -94,7 +106,7 @@
 
                 <div class="card-body text-center p-4">
                     <h3 class="card-title my-2 fw-semibold text-dark">
-                        ¡Probá tu suerte!
+                        ¡Girá la ruleta!
                     </h3>
 
                     <div class="ruleta-wrapper">
@@ -136,13 +148,44 @@
     const gradosPorPorcion = 360 / totalCategorias;
     let rotacionActual = 0;
 
+    // Diccionario Global de Emojis
+    const iconos = {
+        "Historia": "🏛️",
+        "Geografía": "🌍",
+        "Ciencia": "🧪"
+    };
+
     function dibujarRuleta() {
         let gradientString = "";
+        ruleta.innerHTML = ""; // Limpiamos html por si acaso
+
         categorias.forEach((cat, index) => {
+            // 1. Calculamos el inicio y fin para pintar el fondo de la porción
             let inicio = index * gradosPorPorcion;
             let fin = inicio + gradosPorPorcion;
             gradientString += `${cat.color} ${inicio}deg ${fin}deg, `;
+
+            // 2. Calculamos el ÁNGULO CENTRAL de esta porción específica
+            let anguloCentro = inicio + (gradosPorPorcion / 2);
+
+            // 3. Creamos el elemento HTML para el emoji
+            let iconoElement = document.createElement('div');
+            iconoElement.className = 'icono-ruleta';
+            iconoElement.innerText = iconos[cat.nombre] || "⭐";
+
+            // 4. MATEMATICA DEL POSICIONAMIENTO RADIAL:
+            iconoElement.style.transform = `
+                translate(-50%, -50%)
+                rotate(${anguloCentro}deg)
+                translateY(-100px)
+                rotate(-${anguloCentro}deg)
+            `;
+
+            // 5. Inyectamos el ícono en la ruleta
+            ruleta.appendChild(iconoElement);
         });
+
+        // Aplicamos los colores de fondo
         gradientString = gradientString.slice(0, -2);
         ruleta.style.background = `conic-gradient(${gradientString})`;
     }
@@ -172,18 +215,10 @@
         const indiceGanador = Math.floor(gradoPuntero / gradosPorPorcion);
         const catGanadora = categorias[indiceGanador];
 
-        // 1. Diccionario de Emojis
-        const iconos = {
-            "Historia": "📜",
-            "Geografía": "🌍",
-            "Ciencia": "🧪"
-        };
-
-        // Si no encuentra el nombre, pone una estrella por defecto
-        const iconoGanador = iconos[catGanadora.nombre] || "⭐";
 
         // 2. Transformamos el botón del centro
-        btnGirar.innerText = iconoGanador;
+        // Si no encuentra el nombre, pone una estrella por defecto
+        btnGirar.innerText = iconos[catGanadora.nombre] || "⭐";
         btnGirar.style.fontSize = "3rem"; // Hacemos el emoji gigante
         btnGirar.style.backgroundColor = catGanadora.color; // Lo pintamos con el color de la categoría
         btnGirar.style.border = "4px solid white";
