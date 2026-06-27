@@ -30,22 +30,28 @@
                         {{/ya_reportada}}
 
                         {{^ya_reportada}}
-                            <button type="button" onclick="conmutarFormulario({{id}})" title="Reportar pregunta" style="background: none; border: none; color: red; font-size: 1.3rem; cursor: pointer;">
+                            <button type="button" onclick="conmutarFormulario({{id}})" title="Reportar pregunta"
+                                    style="background: none; border: none; color: red; font-size: 1.3rem; cursor: pointer;">
                                 🚩
                             </button>
                         {{/ya_reportada}}
                         {{^ya_reportada}}
-                            <form id="form-reporte-{{id}}" action="/Pregunta/iniciarReporte" method="POST" style="display: none; margin-top: 12px; background: #fff; padding: 10px; border-left: 3px solid red;">
+                            <form id="form-reporte-{{id}}" action="/Pregunta/iniciarReporte" method="POST"
+                                  style="display: none; margin-top: 12px; background: #fff; padding: 10px; border-left: 3px solid red;">
                                 <input type="hidden" name="id_pregunta_reportada" value="{{id}}">
                                 <input type="hidden" name="origen" value="lista_preguntas">
 
-                                <label for="motivo-{{id}}" style="display: block; font-size: 0.9rem; margin-bottom: 5px; font-weight: bold;">¿Cuál es el problema?</label>
+                                <label for="motivo-{{id}}"
+                                       style="display: block; font-size: 0.9rem; margin-bottom: 5px; font-weight: bold;">¿Cuál
+                                    es el problema?</label>
                                 <div style="display: flex; gap: 10px;">
-                                    <select name="motivo_reporte" id="motivo-{{id}}" required style="padding: 5px; flex-grow: 1;">
+                                    <select name="motivo_reporte" id="motivo-{{id}}" required
+                                            style="padding: 5px; flex-grow: 1;">
                                         <option value="Respuesta equivocada">Respuesta equivocada</option>
                                         <option value="Pregunta mal escrita">Pregunta mal escrita</option>
                                     </select>
-                                    <button type="submit" style="background: red; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; font-weight: bold;">
+                                    <button type="submit"
+                                            style="background: red; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; font-weight: bold;">
                                         Enviar Reporte
                                     </button>
                                 </div>
@@ -66,6 +72,12 @@
                             </a>
                         {{/respuestas}}
                     </div>
+
+                    <div class="mt-5 text-center">
+                        <button onclick="confirmarSalida()" class="btn btn-outline-danger btn-sm px-4 rounded-pill">
+                            Terminar Partida
+                        </button>
+                    </div>
                 </div>
 
             </div>
@@ -73,6 +85,8 @@
         </div>
     </div>
 </main>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 {{> footer}}
 <script>
@@ -84,6 +98,32 @@
             formulario.style.display = 'none';
         }
     }
+
+    //Sirve para poner un pop-up de confirmacion al boton de terminar partida, se integra con la libreria SweetAlert2
+    function confirmarSalida() {
+        Swal.fire({
+            title: '¿Abandonar partida?',
+            text: "Se guardará tu puntaje, pero cortarás tu racha actual.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33', // Rojo peligro
+            cancelButtonColor: '#6c757d', // Gris secundario
+            confirmButtonText: 'Sí, salir',
+            cancelButtonText: 'Seguir jugando',
+            background: '#ffffff', // Fondo limpio
+            borderRadius: '15px'
+        }).then((result) => {
+            // Si el jugador toca el botón rojo de confirmar...
+            if (result.isConfirmed) {
+                // ... Recién ahí lo mandamos al controlador
+                window.location.href = '/pregunta/terminarPartida';
+            }
+        });
+    }
+
+
+
+
 </script>
 </body>
 </html>

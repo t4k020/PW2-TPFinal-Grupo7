@@ -26,7 +26,7 @@
             border-right: 20px solid transparent;
             border-top: 30px solid #dc3545; /* Roja para que contraste con la tarjeta blanca */
             z-index: 10;
-            filter: drop-shadow(0px 4px 2px rgba(0,0,0,0.2));
+            filter: drop-shadow(0px 4px 2px rgba(0, 0, 0, 0.2));
         }
 
         /* El círculo de la ruleta */
@@ -35,7 +35,7 @@
             height: 100%;
             border-radius: 50%;
             border: 8px solid #212529; /* Borde más suave */
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
             transition: transform 4s cubic-bezier(0.17, 0.67, 0.1, 1.05);
             transform: rotate(0deg);
         }
@@ -51,7 +51,7 @@
             background-color: white;
             border-radius: 50%;
             border: 4px solid #e0e0e0;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -104,6 +104,12 @@
                     </div>
 
                     <h4 id="mensajeEstado" class="text-secondary mt-3">Toca el centro para empezar</h4>
+
+                    <div class="mt-4">
+                        <button onclick="confirmarSalida()" class="btn btn-outline-danger btn-sm px-4 rounded-pill">
+                            Terminar Partida
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -111,12 +117,14 @@
     </div>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 {{> footer}}
 
 <script>
     const categorias = [
         {{#categorias}}
-            { id: {{id}}, nombre: "{{nombre}}", color: "{{color}}" },
+            {id: {{id}}, nombre: "{{nombre}}", color: "{{color}}"},
         {{/categorias}}
     ];
 
@@ -193,6 +201,30 @@
 
     dibujarRuleta();
     btnGirar.addEventListener('click', girarRuleta);
+
+    //Sirve para poner un pop-up de confirmacion al boton de terminar partida, se integra con la libreria SweetAlert2
+    function confirmarSalida() {
+        Swal.fire({
+            title: '¿Abandonar partida?',
+            text: "Se guardará tu puntaje, pero cortarás tu racha actual.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33', // Rojo peligro
+            cancelButtonColor: '#6c757d', // Gris secundario
+            confirmButtonText: 'Sí, salir',
+            cancelButtonText: 'Seguir jugando',
+            background: '#ffffff', // Fondo limpio
+            borderRadius: '15px'
+        }).then((result) => {
+            // Si el jugador toca el botón rojo de confirmar...
+            if (result.isConfirmed) {
+                // ... Recién ahí lo mandamos al controlador
+                window.location.href = '/pregunta/terminarPartida';
+            }
+        });
+    }
+
+
 </script>
 </body>
 </html>

@@ -262,6 +262,30 @@ class PreguntaController {
         exit();
     }
 
+    public function terminarPartida() {
+        Log::info("El jugador decidió terminar la partida prematuramente");
+
+        // 1. Agarramos los datos actuales
+        $usuarioId = $_SESSION['id'];
+        $puntajeFinal = isset($_SESSION['partida_puntaje']) ? $_SESSION['partida_puntaje'] : 0;
+
+        // 2. Guardamos la partida con el puntaje que haya logrado (aunque sea 0)
+        $this->partidaModel->guardarPartida($usuarioId, $puntajeFinal);
+
+        // 3. Verificamos si este puntaje le alcanza para subir de maestría
+        $this->usuarioModel->actualizarNivelMaestria($usuarioId);
+
+        // 4. Limpiamos la session para el próximo juego
+        unset($_SESSION['preguntas_respondidas']);
+        unset($_SESSION['pregunta_actual_id']);
+        unset($_SESSION['partida_puntaje']);
+
+        // 5. Lo mandamos al Lobby
+        header("Location: /Lobby");
+        exit();
+    }
+
+
 
 
 
