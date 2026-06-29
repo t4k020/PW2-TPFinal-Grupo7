@@ -47,15 +47,16 @@ class PreguntaController {
         if (isset($_SESSION['pregunta_actual_id'])) {
             $idPreguntaEnCurso = $_SESSION['pregunta_actual_id'];
             $preguntaCompleta = $this->preguntaModel->getPregunta($idPreguntaEnCurso);
-
-            //Calculamos el tiempo restante si recargo la pagina
-            $tiempoRestante = $_SESSION['tiempo_limite']
-                - (time() - $_SESSION['inicio_pregunta']);
+            $tiempoRestante = $_SESSION['tiempo_limite'] - (time() - $_SESSION['inicio_pregunta']);
 
             if ($tiempoRestante < 0) {
                 $tiempoRestante = 0;
             }
             $preguntaCompleta['tiempo_restante'] = $tiempoRestante;
+            if ($preguntaCompleta['tiempo_restante'] <= 0) {
+                header("Location: /Pregunta/evaluar?timeout=1");
+                exit();
+            }
         } else {
             // Si viene de la ruleta o de responder bien:
             $listaIgnorar = $_SESSION['preguntas_respondidas'];
@@ -68,14 +69,11 @@ class PreguntaController {
             $maestriaJugador = $usuarioDatos['maestria'] ?? 'Amateur';
 
             $preguntaCompleta = $this->preguntaModel->getRandomPregunta($listaIgnorar, $maestriaJugador, $idCategoria);
-
-            // Se inicia el tiempo SOLO una vez
-            $_SESSION['inicio_pregunta'] = time();
-            $_SESSION['tiempo_limite'] = 15;
-            $preguntaCompleta['tiempo_restante'] = 15;
-
             if ($preguntaCompleta !== null) {
                 $_SESSION['pregunta_actual_id'] = $preguntaCompleta['id'];
+                $_SESSION['inicio_pregunta'] = time();
+                $_SESSION['tiempo_limite'] = 15;
+                $preguntaCompleta['tiempo_restante'] = 15;
             }
         }
 
@@ -109,46 +107,56 @@ class PreguntaController {
 
     public function evaluar() {
         Log::info("evaluando pregunta");
+        $usuarioId = $_SESSION['id'];
+        $idPreguntaActual = $_SESSION['pregunta_actual_id'] ?? null;
 
+        // Si se terminó el tiempo
         if (isset($_GET['timeout'])) {
 
-            $_SESSION['preguntas_respondidas'][] = $_SESSION['pregunta_actual_id'];
+            if ($idPreguntaActual) {
+                $_SESSION['preguntas_respondidas'][] = $idPreguntaActual;
+
+                // Guardamos la respuesta como incorrecta
+                $this->preguntaModel->guardarHistorialUsuario($usuarioId, $idPreguntaActual, 0);
+
+                // Actualizamos estadísticas
+                $this->preguntaModel->actualizarEstadisticasYDificultad($idPreguntaActual, false);
+            }
 
             $idsRespondidos = $_SESSION['preguntas_respondidas'] ?? [];
             $preguntasRespondidasDetalle = [];
 
             foreach ($idsRespondidos as $idPregunta) {
-                $preguntasRespondidasDetalle[] = $this->preguntaModel->getPregunta($idPregunta);
+                $pregunta = $this->preguntaModel->getPregunta($idPregunta);
+                if ($pregunta) {
+                    $preguntasRespondidasDetalle[] = $pregunta;
+                }
             }
 
-            $usuarioId = $_SESSION['id'];
             $puntajeFinal = $_SESSION['partida_puntaje'] ?? 0;
-
             $this->partidaModel->guardarPartida($usuarioId, $puntajeFinal);
             $this->usuarioModel->actualizarNivelMaestria($usuarioId);
 
-            unset($_SESSION['pregunta_actual_id']);
-            unset($_SESSION['partida_puntaje']);
+            // Limpiamos toda la sesión de la partida
             unset($_SESSION['inicio_pregunta']);
             unset($_SESSION['tiempo_limite']);
+            unset($_SESSION['preguntas_respondidas']);
+            unset($_SESSION['pregunta_actual_id']);
+            unset($_SESSION['partida_puntaje']);
 
-            $datosVista = [
+            $this->renderer->render("gameOver", [
                 "historial_preguntas" => $preguntasRespondidasDetalle,
                 "hubo_respuestas" => !empty($preguntasRespondidasDetalle)
-            ];
-
-            $this->renderer->render("gameOver", $datosVista);
+            ]);
             exit();
         }
+
         $idRespuesta = intval($this->request->get('id_respuesta'));
 
         if ($idRespuesta === 0) {
             header("Location: /Lobby");
             exit();
         }
-
-        $usuarioId = $_SESSION['id'];
-        $idPreguntaActual = $_SESSION['pregunta_actual_id'] ?? null;
 
         $esCorrecta = $this->preguntaModel->verificarRespuesta($idRespuesta);
 
@@ -166,8 +174,7 @@ class PreguntaController {
             unset($_SESSION['pregunta_actual_id']);
             unset($_SESSION['inicio_pregunta']);
             unset($_SESSION['tiempo_limite']);
-
-            header("Location: /Pregunta/ruleta"); // vuelve a la ruleta
+            header("Location: /Pregunta/ruleta");
             exit();
 
         } else {
@@ -333,6 +340,8 @@ class PreguntaController {
         $this->usuarioModel->actualizarNivelMaestria($usuarioId);
 
         // 4. Limpiamos la session para el próximo juego
+        unset($_SESSION['inicio_pregunta']);
+        unset($_SESSION['tiempo_limite']);
         unset($_SESSION['preguntas_respondidas']);
         unset($_SESSION['pregunta_actual_id']);
         unset($_SESSION['partida_puntaje']);

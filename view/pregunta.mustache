@@ -58,10 +58,15 @@
                             </form>
                         {{/ya_reportada}}
                     </div>
-                    <div id="timer">{{tiempo_restante}}</div>
                     <h3 class="card-title my-4 fw-semibold">
                         {{texto}}
                     </h3>
+                    <div class="d-flex justify-content-center">
+                        <div id="timer" class="badge  fs-4 text-dark"
+                             style="background-color: {{categoria_color}};">
+                            {{tiempo_restante}}
+                        </div>
+                    </div>
 
                     <hr class="my-4">
 

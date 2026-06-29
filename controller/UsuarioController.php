@@ -25,10 +25,12 @@ class UsuarioController
             throw new Exception("Usuario no encontrado");
 
         $partidas = $this->partidaModel->getPartidasPorUsuario($usuario['id']);
+        $puntajeTotal = $this->partidaModel->getPuntajeTotalUsuario($usuario['id']);
 
         $this->renderer->render("verUsuarioView",
             ['Usuario' => $usuario,
-            'Partidas' => $partidas]);
+                'puntaje' => $puntajeTotal,
+                'Partidas' => $partidas]);
     }
 
     public function eliminar()
