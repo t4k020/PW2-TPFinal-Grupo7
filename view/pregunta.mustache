@@ -58,6 +58,7 @@
                             </form>
                         {{/ya_reportada}}
                     </div>
+                    <div id="timer">{{tiempo_restante}}</div>
                     <h3 class="card-title my-4 fw-semibold">
                         {{texto}}
                     </h3>
@@ -121,7 +122,23 @@
         });
     }
 
+    let tiempo = {{tiempo_restante}};
 
+    const timer = document.getElementById("timer");
+
+    const intervalo = setInterval(() => {
+
+        timer.textContent = tiempo;
+
+        if (tiempo <= 0) {
+            clearInterval(intervalo);
+
+            window.location.href = "/Pregunta/evaluar?timeout=1";
+        }
+
+        tiempo--;
+
+    }, 1000);
 
 
 </script>

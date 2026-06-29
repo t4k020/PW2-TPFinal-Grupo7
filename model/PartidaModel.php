@@ -115,7 +115,7 @@ class PartidaModel{
                 puntaje,
                 fecha_partida
             FROM Partida
-            WHERE usuario_id = ? AND puntaje > 0
+            WHERE usuario_id = ?
             ORDER BY puntaje DESC";
 
         $params = [$usuarioId];
