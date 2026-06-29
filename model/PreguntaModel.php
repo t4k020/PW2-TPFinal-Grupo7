@@ -4,13 +4,15 @@ class PreguntaModel
 {
     private $database;
 
-    public function __construct($database){
+    public function __construct($database)
+    {
         $this->database = $database;
     }
 
 
     // Metodo para traer una pregunta específica con sus 4 respuestas
-    public function getPregunta($id) {
+    public function getPregunta($id)
+    {
         //Traigo los datos de la pregunta y su categoría
         $sqlPregunta = "SELECT p.id, p.texto, p.dificultad, p.estado, p.reportado, 
                            c.nombre AS categoria_nombre, 
@@ -39,7 +41,8 @@ class PreguntaModel
         return $pregunta;
     }
 
-    public function verificarRespuesta($idRespuesta) {
+    public function verificarRespuesta($idRespuesta)
+    {
         // Consulta para traer el campo es_correcta
         $sql = "SELECT es_correcta FROM Respuesta WHERE id = " . intval($idRespuesta);
 
@@ -55,7 +58,8 @@ class PreguntaModel
         return $fila['es_correcta'] == 1;
     }
 
-    public function getRandomPregunta($listaIgnorar = [], $maestriaJugador = 'Amateur', $idCategoria = null) {
+    public function getRandomPregunta($listaIgnorar = [], $maestriaJugador = 'Amateur', $idCategoria = null)
+    {
 
         $stringIdsIgnorados = !empty($listaIgnorar) ? implode(',', array_map('intval', $listaIgnorar)) : '0';
 
@@ -86,14 +90,45 @@ class PreguntaModel
         $resultado = $this->database->query($sql);
 
         if (empty($resultado)) {
+
             return null;
+//            // Si no hay más preguntas que correspondan a su maestría abrimos el abanico a cualquier dificultad, pero manteniendo los ignorados
+//            $sqlFallback = "SELECT * FROM Pregunta
+//            WHERE estado = 'APROBADA'
+//            $filtroCategoria
+//            AND id NOT IN ($stringIdsIgnorados)
+//            ORDER BY RAND() LIMIT 1";
+//
+//            $resultado = $this->database->query($sqlFallback);
+//
+//            // Si el jugador respondió tódo lo que le apareció
+//            // Para no trabarlo, ignoramos la lista de respondidas y le dejamos repetir preguntas
+//            if (empty($resultado)) {
+//                Log::info("El usuario ya respondió todo. Reseteando lista de ignorados para que pueda seguir jugando.");
+//
+//                // Buscamos cualquier pregunta aprobada de su nivel, sin usar el NOT IN
+//                $sqlVueltaAEmpezar = "SELECT * FROM Pregunta
+//             WHERE estado = 'APROBADA'
+//             $filtroCategoria
+//             AND dificultad IN $dificultadesPermitidas
+//             ORDER BY RAND() LIMIT 1";
+//
+//                $resultado = $this->database->query($sqlVueltaAEmpezar);
+//
+//                // Si aun así da vacío (cosa rarísima), tiramos la última opción sin importar dificultad ni categoría
+//                if (empty($resultado)) {
+//                    $sqlDesesperado = "SELECT * FROM Pregunta WHERE estado = 'APROBADA' ORDER BY RAND() LIMIT 1";
+//                    $resultado = $this->database->query($sqlDesesperado);
+//                }
+//            }
         }
 
         $idAzar = $resultado[0]['id'];
         return $this->getPregunta($idAzar);
     }
 
-    public function guardarReporte($idPregunta, $motivoReporte) {
+    public function guardarReporte($idPregunta, $motivoReporte)
+    {
         //  asegura que sea un numero
         $id = intval($idPregunta);
 
@@ -106,7 +141,8 @@ class PreguntaModel
         return $this->database->query($sql);
     }
 
-    public function getPreguntasReportadas(){
+    public function getPreguntasReportadas()
+    {
         log::info("trayendo preguntas reportadas..");
 
         $sqlReporte = "SELECT p.id, 
@@ -124,7 +160,8 @@ class PreguntaModel
         return $resultadoReporte;
     }
 
-    public function aprobarPregunta($id) {
+    public function aprobarPregunta($id)
+    {
         $id = intval($id);
         Log::info("Aprobando pregunta $id");
         $sql = "UPDATE Pregunta 
@@ -133,16 +170,17 @@ class PreguntaModel
         $this->database->query($sql);
     }
 
-    public function  borrarPregunta($id)
+    public function borrarPregunta($id)
     {
 
         log::info("borrando pregunta $id");
         $id = intval($id);
         $sql = "DELETE FROM Pregunta WHERE id = " . $id;
-         $this->database->query($sql);
+        $this->database->query($sql);
     }
 
-    public function ignorarPregunta($id){
+    public function ignorarPregunta($id)
+    {
         $id = intval($id);
         log::info("Ignorando pregunta $id");
         $sql = "update Pregunta 
@@ -179,6 +217,7 @@ class PreguntaModel
 
         return true;
     }
+
     //estadisticas
 
     public function getTotalPreguntas($fechaDesde = null)
@@ -197,7 +236,8 @@ class PreguntaModel
         return 0;
     }
 
-    public function getCategorias() {
+    public function getCategorias()
+    {
         $sql = "SELECT id, nombre, color FROM Categoria";
         $resultado = $this->database->query($sql);
         if (empty($resultado))
@@ -206,7 +246,8 @@ class PreguntaModel
         return $resultado;
     }
 
-    public function guardarPreguntaYRespuestas($categoriaId, $pregunta, $respuestaCorrecta, $respuestas) {
+    public function guardarPreguntaYRespuestas($categoriaId, $pregunta, $respuestaCorrecta, $respuestas)
+    {
         $sqlPregunta = "INSERT INTO Pregunta (categoria_id, texto) VALUES (?,?)";
         $this->database->execute($sqlPregunta, [$categoriaId, $pregunta]);
 
@@ -224,7 +265,8 @@ class PreguntaModel
         }
     }
 
-    public function getPreguntasSugeridas(){
+    public function getPreguntasSugeridas()
+    {
         log::info("Obteniendo preguntas sugeridas..");
 
         $sqlPregunta = "SELECT p.id, 
@@ -252,7 +294,8 @@ class PreguntaModel
         return $preguntas;
     }
 
-    public function getCategoriasDisponibles($listaIgnorar = []) {
+    public function getCategoriasDisponibles($listaIgnorar = [])
+    {
         // Esto hace que no nos devuelva la misma categoría repetida por cada pregunta que tenga
         $sql = "SELECT DISTINCT c.id, c.nombre, c.color 
                 FROM Categoria c
@@ -271,13 +314,15 @@ class PreguntaModel
     }
 
     // Métod para guardar el registro en la tabla intermedia
-    public function guardarHistorialUsuario($usuarioId, $preguntaId, $fueCorrecta) {
+    public function guardarHistorialUsuario($usuarioId, $preguntaId, $fueCorrecta)
+    {
         $sql = "INSERT INTO usuario_pregunta (usuario_id, pregunta_id, fue_correcta) VALUES (?, ?, ?)";
         $this->database->execute($sql, [$usuarioId, $preguntaId, $fueCorrecta]);
     }
 
     // Métod que Suma los contadores de la pregunta y recalcula su dificultad global
-    public function actualizarEstadisticasYDificultad($preguntaId, $esCorrecta) {
+    public function actualizarEstadisticasYDificultad($preguntaId, $esCorrecta)
+    {
         // Primero, sumamos los contadores
         $sumarCorrecta = $esCorrecta ? 1 : 0;
         $sqlCounters = "UPDATE Pregunta 
@@ -307,7 +352,6 @@ class PreguntaModel
             $this->database->execute($sqlUpdate, [$nuevaDificultad, $preguntaId]);
         }
     }
-
 
 
 }
