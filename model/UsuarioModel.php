@@ -39,9 +39,6 @@ class UsuarioModel
         $this->database->execute($sql, [$id]);
     }
 
-
-
-
 // Maestria de usuario
 
     // 1. Sirve para saber cuántas respondió y cuántas acertó el usuario
@@ -62,47 +59,43 @@ class UsuarioModel
 
     public function actualizarNivelMaestria($usuarioId) {
 
-        // 1. Contamos cuántas partidas jugó en total este usuario
+        // 1. Contamos cuántas partidas jugó (esto lo podemos dejar igual para la regla de las 10 partidas)
         $sqlPartidas = "SELECT COUNT(id) as total_partidas FROM Partida WHERE usuario_id = ?";
         $resultadoPartidas = $this->database->query($sqlPartidas, [$usuarioId]);
         $totalPartidas = $resultadoPartidas[0]['total_partidas'] ?? 0;
 
-        // REGLA DE NEGOCIO: Si no tiene 10 partidas de posicionamiento, cortamos la ejecución acá.
         if ($totalPartidas < 10) {
-            return;
+            return; // No llegó a las 10 partidas de posicionamiento
         }
 
-        // 2. Sumamos todos los puntos históricos (respuestas correctas)
-        $sqlPuntos = "SELECT SUM(puntaje) as total_puntos FROM Partida WHERE usuario_id = ?";
-        $resultadoPuntos = $this->database->query($sqlPuntos, [$usuarioId]);
-        $totalAciertos = $resultadoPuntos[0]['total_puntos'] ?? 0;
+        // AGREGADO -> Buscamos el total de preguntas respondidas en la tabla intermedia
+        $sqlTotal = "SELECT COUNT(*) as total FROM usuario_pregunta WHERE usuario_id = ?";
+        $resTotal = $this->database->query($sqlTotal, [$usuarioId]);
+        $totalPreguntasVistas = $resTotal[0]['total'] ?? 0;
 
-        // 3. Calculamos el porcentaje de efectividad
-        // Total de preguntas vistas = Aciertos + Errores (1 error por partida perdida)
-        $totalPreguntasVistas = $totalAciertos + $totalPartidas;
+        if ($totalPreguntasVistas == 0) return;
 
-        if ($totalPreguntasVistas == 0) {
-            return; // Previene la división por cero por seguridad
-        }
+        // AGREGADO ->  Buscamos cuántas fueron correctas (fue_correcta = 1)
+        $sqlCorrectas = "SELECT COUNT(*) as correctas FROM usuario_pregunta WHERE usuario_id = ? AND fue_correcta = 1";
+        $resCorrectas = $this->database->query($sqlCorrectas, [$usuarioId]);
+        $totalAciertos = $resCorrectas[0]['correctas'] ?? 0;
 
+        // Se calcula el porcentaje real
         $porcentajeAciertos = ($totalAciertos / $totalPreguntasVistas) * 100;
 
-        // 4. Definimos los rangos
-        $nuevaMaestria = 'Amateur'; // Por defecto
-
-        if ($porcentajeAciertos >= 80) {
+        // 5. Asignamos los rangos del Usuario (Maestro, Amateur, Aprendiz)
+        if ($porcentajeAciertos > 70) {
             $nuevaMaestria = 'Maestro';
-        } elseif ($porcentajeAciertos >= 60) {
-            $nuevaMaestria = 'Amateur';
-        } else {
+        } elseif ($porcentajeAciertos < 30) {
             $nuevaMaestria = 'Aprendiz';
+        } else {
+            $nuevaMaestria = 'Amateur';
         }
 
-        // 5. Actualizamos el rango en la base de datos
+        // Se actualiza el rango del usuario
         $sqlUpdate = "UPDATE Usuario SET maestria = ? WHERE id = ?";
         $this->database->execute($sqlUpdate, [$nuevaMaestria, $usuarioId]);
     }
-
 
 // para estadisticas
     public function getTotalUsuarios($fechaDesde = null)

@@ -50,7 +50,7 @@ class PartidaModel{
         return $this->database->query($sql);
     }
 
-// estadisticas
+    // estadisticas
     public function getTotalPartidas($fechaDesde= null)
     {
         $sql = "SELECT COUNT(*) as total FROM Partida ";
@@ -65,6 +65,7 @@ class PartidaModel{
 
         return 0;
     }
+
     public function getPorcentajeAciertoGlobal($fechaDesde= null)
     {
         $sql = "SELECT 

@@ -228,3 +228,19 @@ VALUES (
 
         INSERT INTO Partida (usuario_id, puntaje, fecha_partida, fechaCreacion)
         VALUES (3, 8, '2026-02-20 11:00:00', '2026-02-20');
+
+-- Creo la tabla intermedia para el historial
+CREATE TABLE IF NOT EXISTS usuario_pregunta (
+id INT AUTO_INCREMENT PRIMARY KEY,
+usuario_id INT NOT NULL,
+pregunta_id INT NOT NULL,
+fue_correcta TINYINT(1) NOT NULL, -- 1 si acertó, 0 si falló
+fecha DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Agrego las columnas de contadores y dificultad a la tabla Pregunta
+ALTER TABLE Pregunta ADD COLUMN IF NOT EXISTS veces_mostrada INT DEFAULT 0;
+ALTER TABLE Pregunta ADD COLUMN IF NOT EXISTS veces_correcta INT DEFAULT 0;
+
+-- Modifico el default de la dificultad de la pregunta, lo arrancamos en dificultad media (por lo charlado con los profes)
+ALTER TABLE Pregunta ALTER COLUMN dificultad SET DEFAULT 'MEDIO';
