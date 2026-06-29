@@ -5,12 +5,15 @@ class UsuarioController
     private $model;
     private $renderer;
     private $request;
+    private $partidaModel;
 
-    public function __construct($model, $renderer, $request)
+
+    public function __construct($model, $renderer, $request, $partidaModel)
     {
         $this->model = $model;
         $this->renderer = $renderer;
         $this->request = $request;
+        $this->partidaModel = $partidaModel;
     }
 
     public function ver($username)
@@ -21,13 +24,27 @@ class UsuarioController
         if (!$usuario)
             throw new Exception("Usuario no encontrado");
 
-        $this->renderer->render("verUsuarioView", ['Usuario' => $usuario]);
+        $partidas = $this->partidaModel->getPartidasPorUsuario($usuario['id']);
+
+        $this->renderer->render("verUsuarioView",
+            ['Usuario' => $usuario,
+            'Partidas' => $partidas]);
     }
 
-    public function alta()
+    public function eliminar()
     {
-        Log::info("UsuarioController::alta (form)");
-        $this->renderer->render("formAltaUsuarioView");
+        $id = $this->request->get('id');
+
+        if (!is_numeric($id)) {
+            Log::warning("UsuarioController::eliminar -id invalido: $id");
+            Redirect::toIndex();
+            return;
+        }
+
+        $id = (int)$id;
+        Log::info("UsuarioController::eliminar - id=$id");
+        $this->model->eliminar($id);
+        Redirect::toIndex();
     }
 
     // que se le permite editar al usuario?
@@ -64,20 +81,4 @@ class UsuarioController
 //        $this->model->editar($id, $nombre, $this->request->post('apodo'), $this->request->post('clan'), $fuerza);
 //        Redirect::toIndex();
 //    }
-
-    public function eliminar()
-    {
-        $id = $this->request->get('id');
-
-        if (!is_numeric($id)) {
-            Log::warning("UsuarioController::eliminar -id invalido: $id");
-            Redirect::toIndex();
-            return;
-        }
-
-        $id = (int)$id;
-        Log::info("UsuarioController::eliminar - id=$id");
-        $this->model->eliminar($id);
-        Redirect::toIndex();
-    }
 }

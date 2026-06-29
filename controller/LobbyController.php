@@ -16,16 +16,15 @@ class LobbyController {
 
     public function mostrar()
     {
-        if (!isset($_SESSION["id"])) {
-            Redirect::to("/login");
-            return;
-        }
         $usuario = $this->model->obtenerDatosUsuario($_SESSION["id"]);
-        $puntajeTotal = $this->partidaModel->getPuntajeTotalUsuario($_SESSION["id"]);
+        $mejorPartida = $this->partidaModel->getPartidaConMejorPuntajePorUsuario($_SESSION["id"]);
+        $mejorPuntaje = $mejorPartida["puntaje"] ?? 0;
+        $mejorFecha = $mejorPartida["fecha_partida"] ?? '';
         $this->renderer->render("lobbyView", [
             "usuario" => $usuario["username"],
             "fotoPerfil" => $usuario["fotoPerfil"],
-            "puntaje" => $puntajeTotal,
+            "mejorPuntaje" => $mejorPuntaje,
+            "mejorFecha" => $mejorFecha,
             "trampitas" => $usuario["trampitas"],
             "esAdmin"   => ($usuario["username"] === "Admin"),
             "maestria"  => $usuario["maestria"]

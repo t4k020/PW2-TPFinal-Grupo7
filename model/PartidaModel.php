@@ -87,4 +87,45 @@ class PartidaModel{
 
         return 0; // Si no hay partidas jugadas, da 0%
     }
+
+    public function getPartidaConMejorPuntajePorUsuario($usuarioId) {
+
+        $sql = "SELECT puntaje, fecha_partida
+            FROM Partida
+            WHERE usuario_id = ?
+            ORDER BY puntaje DESC
+            LIMIT 1";
+
+        $params = [$usuarioId];
+
+        $resultado = $this->database->query($sql, $params);
+
+        if (!empty($resultado)) {
+            return $resultado[0];
+        }
+
+        return null;
+    }
+
+    public function getPartidasPorUsuario($usuarioId)
+    {
+        $sql = "SELECT 
+                id,
+                usuario_id,
+                puntaje,
+                fecha_partida
+            FROM Partida
+            WHERE usuario_id = ? AND puntaje > 0
+            ORDER BY puntaje DESC";
+
+        $params = [$usuarioId];
+
+        $resultado = $this->database->query($sql, $params);
+
+        if (!empty($resultado)) {
+            return $resultado;
+        }
+
+        return [];
+    }
 }

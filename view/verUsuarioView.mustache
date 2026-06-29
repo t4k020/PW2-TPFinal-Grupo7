@@ -84,30 +84,28 @@
             <!-- Partidas jugadas -->
             <div class="card shadow mb-4">
                 <div class="card-body">
+
                     <h4 class="mb-3">Partidas jugadas</h4>
 
-                    <div class="row">
-                        <div class="col-md-4 text-center">
-                            <strong class="text-muted">Partida</strong>
-                            <p class="text-muted mb-0">
-                                #{{Partida.id}}
-                            </p>
-                        </div>
-
-                        <div class="col-md-4 text-center">
-                            <strong class="text-muted">Preguntas Correctas</strong>
-                            <p class="text-primary mb-0">
-                                {{Partida.preguntasCorrectas}}
-                            </p>
-                        </div>
-
-                        <div class="col-md-4 text-center">
-                            <strong class="text-muted">Puntos Ganados</strong>
-                            <p class="text-success mb-0">
-                                {{Partida.puntosGanados}}
-                            </p>
-                        </div>
+                    <div class="row text-center fw-bold text-muted pb-2 mb-2">
+                        <div class="col-4">Partida</div>
+                        <div class="col-4">Puntos</div>
+                        <div class="col-4">Fecha y Hora</div>
                     </div>
+
+                    {{#Partidas}}
+                        <div class="row text-center align-items-center border-top py-2">
+
+                            <div class="col-4 text-muted">#{{id}}</div>
+                            <div class="col-4 fw-bold text-success">{{puntaje}} pts</div>
+                            <div class="col-4 small text-primary">{{fecha_partida}}</div>
+
+                        </div>
+                    {{/Partidas}}
+
+                    {{^Partidas}}
+                        <p class="text-muted mb-0">Este usuario todavía no jugó partidas.</p>
+                    {{/Partidas}}
 
                 </div>
             </div>
