@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/public/css/lobby.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
+    <title>Partida Perfecta</title>
+</head>
+<body>
+{{> header}}
+<div class="container text-center my-5">
+    <div class="card p-5 shadow-lg">
+        <h1 class="text-success mb-4">{{mensaje_victoria}}</h1>
+        <p class="lead">Hiciste historia en el juego. No quedan más preguntas de tu nivel por responder.</p>
+        <hr class="my-4">
+        <a href="/Lobby" class="btn btn-primary btn-lg">Volver al Lobby a disfrutar tu gloria</a>
+    </div>
+</div>
+{{> footer}}

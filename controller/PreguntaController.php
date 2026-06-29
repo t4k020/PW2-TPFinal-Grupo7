@@ -28,6 +28,15 @@ class PreguntaController {
             unset($_SESSION['pregunta_actual_id']);
         }
 
+        // Atrapamos la categoría de la URL
+        $idCategoria = isset($_GET['categoria']) ? intval($_GET['categoria']) : null;
+
+        // CONTROL DE ACCESO: Si no hay pregunta en curso Y tampoco viene una categoría de la ruleta, al Lobby.
+        if (!isset($_SESSION['pregunta_actual_id']) && $idCategoria === null) {
+            header("Location: /Lobby");
+            exit();
+        }
+
         // Si el usuario nunca jugó o se acaba de resetear, se crea la lista limpia
         if (!isset($_SESSION['preguntas_respondidas'])) {
             $_SESSION['preguntas_respondidas'] = [];
@@ -39,42 +48,40 @@ class PreguntaController {
             $idPreguntaEnCurso = $_SESSION['pregunta_actual_id'];
             $preguntaCompleta = $this->preguntaModel->getPregunta($idPreguntaEnCurso);
         } else {
-            // si viene del lobby o de responder bien:
+            // Si viene de la ruleta o de responder bien:
             $listaIgnorar = $_SESSION['preguntas_respondidas'];
 
-            // Atrapamos la categoría que nos mandó la ruleta por la URL
-            $idCategoria = isset($_GET['categoria']) ? intval($_GET['categoria']) : null;
+            // Buscamos el username de la sesión (asegurate de usar la clave exacta que guardan al loguearse, ej: 'username' o 'usuario')
+            $username = $_SESSION['username'] ?? null;
+            $usuarioDatos = $this->usuarioModel->getUsuario($username);
 
-            // TODO: Para el futuro inyectar la maestría real del usuario. Por ahora se hardcodea con 'Amateur'
-            $maestriaJugador = 'Amateur';
+            // Si encontramos al usuario, usamos su maestría real de la BD. Si no, fallback a 'Amateur'
+            $maestriaJugador = $usuarioDatos['maestria'] ?? 'Amateur';
 
-            // Pasamos la categoría al modelo
             $preguntaCompleta = $this->preguntaModel->getRandomPregunta($listaIgnorar, $maestriaJugador, $idCategoria);
-
             if ($preguntaCompleta !== null) {
-                // guardo el id de le nueva pregunta
                 $_SESSION['pregunta_actual_id'] = $preguntaCompleta['id'];
             }
         }
 
-        // si ya no hay más preguntas que responder, salimos.
+        // Si ya no hay más preguntas disponibles en esta categoría/nivel (Partida Perfecta)
         if ($preguntaCompleta === null) {
-
             $puntajeTotal = isset($_SESSION['partida_puntaje']) ? $_SESSION['partida_puntaje'] : 0;
-            $idUsuario = $_SESSION['id'];
+            $idUsuario = isset($_SESSION['id']) ? $_SESSION['id'] : null;
 
-            $this->partidaModel->guardarPartida($idUsuario, $puntajeTotal);
+            if ($idUsuario) {
+                $this->partidaModel->guardarPartida($idUsuario, $puntajeTotal);
+                $this->usuarioModel->actualizarNivelMaestria($idUsuario);
+            }
 
-            // NUEVO: Verificamos si el usuario sube de rango después de su "partida perfecta"
-            $this->usuarioModel->actualizarNivelMaestria($idUsuario);
-
-            $_SESSION['partida_puntaje'] = 0;
+            // Limpiamos la sesión de juego
+            unset($_SESSION['partida_puntaje']);
             unset($_SESSION['preguntas_respondidas']);
             unset($_SESSION['pregunta_actual_id']);
 
-            echo "<h1>¡Increíble! Respondiste absolutamente todas las preguntas disponibles. 🏆</h1>";
-            echo "<a href='/Lobby'>Volver al Lobby</a>";
-            exit();
+            $data['mensaje_victoria'] = "¡Increíble! Respondiste absolutamente todas las preguntas disponibles. 🏆";
+            $this->renderer->render("partida_perfecta", $data);
+            return;
         }
 
         // se mezclan las respuestas, para que no esté siempre en la misma posición
@@ -89,68 +96,69 @@ class PreguntaController {
         Log::info("evaluando pregunta");
         $idRespuesta = intval($this->request->get('id_respuesta'));
 
-        //si el usuario borra o ingresa texto en la url, el intval le va a poner =0
         if ($idRespuesta === 0) {
             header("Location: /Lobby");
             exit();
         }
 
+        $usuarioId = $_SESSION['id'];
+        $idPreguntaActual = $_SESSION['pregunta_actual_id'] ?? null;
+
         $esCorrecta = $this->preguntaModel->verificarRespuesta($idRespuesta);
 
         if ($esCorrecta) {
-            // si la respuesta es correcta, anota el id de la pregunta actual para que no la vuelva a mostrar
-            if (isset($_SESSION['pregunta_actual_id'])) {
-                $_SESSION['preguntas_respondidas'][] = $_SESSION['pregunta_actual_id'];
+            // --- TABLA INTERMEDIA Y ESTADÍSTICAS ---
+            if ($idPreguntaActual) {
+                $_SESSION['preguntas_respondidas'][] = $idPreguntaActual;
+                // Guardamos en la tabla intermedia (1 = correcta)
+                $this->preguntaModel->guardarHistorialUsuario($usuarioId, $idPreguntaActual, 1);
+                // Actualizamos contadores y dificultad de la pregunta
+                $this->preguntaModel->actualizarEstadisticasYDificultad($idPreguntaActual, true);
             }
-            $_SESSION['partida_puntaje']++; //si el usuario responde bien, le sumamos un punto.
+
+            $_SESSION['partida_puntaje']++;
             unset($_SESSION['pregunta_actual_id']);
-            header("Location: /Pregunta/ruleta"); // vuelve a la ruleta
+            header("Location: /Pregunta/ruleta");
             exit();
+
         } else {
-            //se guarda la pregunta mal respondida para el reporte
-            $_SESSION['preguntas_respondidas'][] = $_SESSION['pregunta_actual_id'];
-            //se guardan las ids en local para mostrarlas en gameOver
+            // --- TABLA INTERMEDIA Y ESTADÍSTICAS ---
+            if ($idPreguntaActual) {
+                $_SESSION['preguntas_respondidas'][] = $idPreguntaActual;
+                // Guardamos en la tabla intermedia (0 = incorrecta)
+                $this->preguntaModel->guardarHistorialUsuario($usuarioId, $idPreguntaActual, 0);
+                // Actualizamos contadores y dificultad de la pregunta
+                $this->preguntaModel->actualizarEstadisticasYDificultad($idPreguntaActual, false);
+            }
+
             $idsRespondidos = $_SESSION['preguntas_respondidas'] ?? [];
             $preguntasRespondidasDetalle = [];
 
-
             if (!empty($idsRespondidos)) {
-
                 foreach ($idsRespondidos as $idPregunta) {
-                    // Traer los datos de cada pregunta
                     $preguntasRespondidasDetalle[] = $this->preguntaModel->getPregunta($idPregunta);
                 }
             }
 
-
-
-            // agarro el ID del usuario logueado.
-            $usuarioId = $_SESSION['id'];
-
-            // tomo el puntaje acumulado de la sesión, si por alguna razón no existe, le asignamos 0 por defecto.
             $puntajeFinal = isset($_SESSION['partida_puntaje']) ? $_SESSION['partida_puntaje'] : 0;
-
-            // uso el metodo de PartidaModel para que guarde tod o de forma segura
             $this->partidaModel->guardarPartida($usuarioId, $puntajeFinal);
 
-            // NUEVO: Verificamos si el usuario sube de rango después de esta partida
+            // RECALCULAR MAESTRÍA JUGADOR: Va a usar el método nuevo con la tabla intermedia
             $this->usuarioModel->actualizarNivelMaestria($usuarioId);
+            unset($_SESSION['preguntas_respondidas']);
+            unset($_SESSION['pregunta_actual_id']);
+            unset($_SESSION['partida_puntaje']);
 
-            // si el usuario pierde se destruye la lista de p respondidas para que en la prox partida pueda ver todas las preguntas
-            //  y se resetea la partida
-//            unset($_SESSION['preguntas_respondidas']);
-              unset($_SESSION['pregunta_actual_id']);
-              unset($_SESSION['partida_puntaje']);
             $datosVista = [
-                //nombre que se usan en moustache => contenido
                 "historial_preguntas" => $preguntasRespondidasDetalle,
-                "hubo_respuestas" => !empty($preguntasRespondidasDetalle) // Un booleano útil para Mustache
+                "hubo_respuestas" => !empty($preguntasRespondidasDetalle)
             ];
 
-            $this->renderer->render("gameOver", $datosVista); //controller=pregunta&method=evaluar&id_respuesta=19
+            $this->renderer->render("gameOver", $datosVista);
             exit();
         }
     }
+
     public function iniciarReporte(){
         $origen = $_POST['origen'] ?? 'gameOver';
         Log::info("iniciando reporte");
