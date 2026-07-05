@@ -244,3 +244,7 @@ ALTER TABLE Pregunta ADD COLUMN IF NOT EXISTS veces_correcta INT DEFAULT 0;
 
 -- Modifico el default de la dificultad de la pregunta, lo arrancamos en dificultad media (por lo charlado con los profes)
 ALTER TABLE Pregunta ALTER COLUMN dificultad SET DEFAULT 'MEDIO';
+
+-- Agrego un nuevo campo en la tabla intermedia, este campo es el que vamos a usar para que cuando el jugador
+--responda todas las preguntas, se "eliminen" y pueda seguir jugando sin perder las estadísticas.
+ALTER TABLE usuario_pregunta ADD COLUMN visto_en_partida TINYINT(1) DEFAULT 1;
