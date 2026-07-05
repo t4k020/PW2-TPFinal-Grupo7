@@ -91,7 +91,7 @@ class PreguntaController {
             $data['mensaje_victoria'] = "¡Increíble! Respondiste absolutamente todas las preguntas disponibles. 🏆";
             $data['puntaje_final'] = $puntajeTotal;
 
-            // 🔥 EL CAMBIO DEFINITIVO: NO usamos unset() acá.
+            // EL CAMBIO DEFINITIVO: NO usamos unset() acá.
             // Dejamos que las variables mueran recién cuando el usuario decida salir o reiniciar.
             // Solo limpiamos el ID de la pregunta para que no se quede trabado en el F5.
             unset($_SESSION['pregunta_actual_id']);
