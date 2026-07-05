@@ -41,21 +41,9 @@ class UsuarioModel
 
 // Maestria de usuario
 
-    // 1. Sirve para saber cuántas respondió y cuántas acertó el usuario
-    public function obtenerEstadisticasJugador($idUsuario) {
-        // ATENCIÓN: Esta consulta depende de cómo guarden ustedes el historial.
-        // Suponiendo que tienen una tabla donde guardan cada respuesta de la partida:
-        $sql = "SELECT 
-                    COUNT(*) as total_respondidas, 
-                    SUM(acerto) as total_correctas 
-                FROM Historial_respuestas 
-                WHERE id_usuario = ?";
 
-        $resultado = $this->database->query($sql, [$idUsuario]);
-        return $resultado[0];
-    }
 
-    // 2. Sirve para poder actualizar el nivel del usuario
+    //Sirve para poder actualizar el nivel del usuario
 
     public function actualizarNivelMaestria($usuarioId) {
 
