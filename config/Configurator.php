@@ -1,6 +1,7 @@
 <?php
 
-class Configurator {
+class Configurator
+{
 
     private $config;
 
@@ -27,7 +28,7 @@ class Configurator {
     //Lobby
     public function getLobbyController()
     {
-        return new LobbyController($this->getLobbyModel(), $this->getPartidaModel() ,$this->getRenderer(), new Request());
+        return new LobbyController($this->getLobbyModel(), $this->getPartidaModel(), $this->getRenderer(), new Request());
     }
 
     private function getLobbyModel()
@@ -37,8 +38,8 @@ class Configurator {
 
     public function getPanelAdminController()
     {
-        return new PanelAdminController($this->getLobbyModel(),$this->getRenderer(), new Request(), $this->getPreguntaModel()
-                                        , $this->getUsuarioModel(), $this->getPartidaModel());
+        return new PanelAdminController($this->getLobbyModel(), $this->getRenderer(), new Request(), $this->getPreguntaModel()
+            , $this->getUsuarioModel(), $this->getPartidaModel());
     }
 
     //Login
@@ -79,7 +80,8 @@ class Configurator {
         return $this->{$defaultGetter}();
     }
 
-    public function getPreguntaController() {
+    public function getPreguntaController()
+    {
         return new PreguntaController(
             $this->getPreguntaModel(),
             $this->getPartidaModel(),
@@ -89,11 +91,13 @@ class Configurator {
         );
     }
 
-    public function getPreguntaModel() {
+    public function getPreguntaModel()
+    {
         return new PreguntaModel($this->getDatabase());
     }
 
-    public function getPartidaModel() {
+    public function getPartidaModel()
+    {
         return new PartidaModel($this->getDatabase());
     }
 
@@ -102,13 +106,16 @@ class Configurator {
         return new UsuarioController($this->getUsuarioModel(), $this->getRenderer(), new Request(), $this->getPartidaModel());
     }
 
-    public function getUsuarioModel() {
+    public function getUsuarioModel()
+    {
         return new UsuarioModel($this->getDatabase());
     }
 
 
-
-
+    public function getPanelEditorController()
+    {
+        return new PanelEditorController($this->getPreguntaModel(), $this->getUsuarioModel(), $this->getRenderer(), new Request());
+    }
 
 
 }

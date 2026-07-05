@@ -1,6 +1,6 @@
 <?php
 
-class EditorController {
+class PanelEditorController {
     private $preguntaModel;
     private $usuarioModel;
     private $renderer;
@@ -27,7 +27,7 @@ class EditorController {
         // Buscamos los datos del usuario logueado usando su sesión
         $usuario = $this->usuarioModel->getUsuario($_SESSION["username"]);
 
-        $this->renderer->render("editorView", [
+        $this->renderer->render("panelEditorView", [
             "usuario" => $usuario["username"],
             "esEditor" => true
         ]);
@@ -58,7 +58,7 @@ class EditorController {
         $this->verificarPermisos();
         $idPregunta = isset($_POST['id_pregunta']) ? intval($_POST['id_pregunta']) : 0;
         $this->preguntaModel->aprobarPregunta($idPregunta);
-        header("Location: /Editor/verSugeridas");
+        header("Location: /PanelEditor/verSugeridas");
         exit();
     }
 
@@ -66,7 +66,7 @@ class EditorController {
         $this->verificarPermisos();
         $idPregunta = isset($_POST['id_pregunta']) ? intval($_POST['id_pregunta']) : 0;
         $this->preguntaModel->borrarPregunta($idPregunta);
-        header("Location: /Editor/verReportes");
+        header("Location: /PanelEditor/verReportes");
         exit();
     }
 
@@ -74,7 +74,7 @@ class EditorController {
         $this->verificarPermisos();
         $idPregunta = isset($_POST['id_pregunta']) ? intval($_POST['id_pregunta']) : 0;
         $this->preguntaModel->ignorarPregunta($idPregunta);
-        header("Location: /Editor/verReportes");
+        header("Location: /PanelEditor/verReportes");
         exit();
     }
 
@@ -83,14 +83,14 @@ class EditorController {
         $id = $_POST['id'] ?? null;
         $data['pregunta'] = $this->preguntaModel->getPregunta($id);
 
-        $data['url_procesar'] = "/Editor/procesarEdicion";
+        $data['url_procesar'] = "/PanelEditor/procesarEdicion";
         $this->renderer->render("editarPregunta", $data);
     }
 
     public function procesarEdicion() {
         $this->verificarPermisos();
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['id'])) {
-            header("Location: /Editor/mostrar");
+            header("Location: /PanelEditor/mostrar");
             exit();
         }
 
@@ -104,9 +104,9 @@ class EditorController {
         );
 
         if ($exito) {
-            header("Location: /Editor/verReportes");
+            header("Location: /PanelEditor/verReportes");
         } else {
-            header("Location: /Editor/mostrar");
+            header("Location: /PanelEditor/mostrar");
         }
         exit();
     }

@@ -166,9 +166,9 @@ class PanelAdminController {
      */
     public function verificarAdmin(): void
     {
-        if (!isset($_SESSION["id"])) {
-            Redirect::to("/lobby");
-
+        if (!isset($_SESSION["rol"]) || $_SESSION["rol"] !== "ADMIN") {
+            header("Location: /lobby");
+            exit();
         }
     }
 
