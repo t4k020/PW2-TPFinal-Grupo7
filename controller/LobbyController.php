@@ -26,8 +26,10 @@ class LobbyController {
             "mejorPuntaje" => $mejorPuntaje,
             "mejorFecha" => $mejorFecha,
             "trampitas" => $usuario["trampitas"],
-            "esAdmin"   => ($usuario["username"] === "Admin"),
-            "maestria"  => $usuario["maestria"]
+            "maestria"  => $usuario["maestria"],
+            // Validacion por rol
+            "esAdmin"   => ($usuario["rol"] === "ADMIN"),
+            "esEditor"  => ($usuario["rol"] === "EDITOR")
         ]);
 
     }

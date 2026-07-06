@@ -28,9 +28,10 @@
 
                 <div class="card-body p-4 p-md-5">
 
-                    <form action="/PanelAdmin/procesarEdicion" method="POST">
+                    <form action="{{url_procesar}}" method="POST">
                         {{#pregunta}}
                             <input type="hidden" name="id" value="{{id}}">
+                            <input type="hidden" name="estado_pregunta" value="{{estado}}">
 
                             <div class="mb-4 text-start">
                                 <label for="texto" class="form-label fw-semibold text-secondary">Texto de la Pregunta</label>
@@ -72,7 +73,7 @@
                             <hr class="my-5">
 
                             <div class="d-flex justify-content-end gap-3">
-                                <a href="/PanelAdmin/verReportes"
+                                <a href="javascript:history.back()"
                                    class="btn btn-outline-secondary btn-lg px-4 py-2 border-0 fw-medium">
                                     Cancelar
                                 </a>

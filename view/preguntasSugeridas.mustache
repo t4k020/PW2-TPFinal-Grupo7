@@ -20,8 +20,8 @@
                     <h1 class="fw-bold text-dark m-0">🚩 Preguntas Sugeridas</h1>
                     <p class="text-muted m-0">Gestiona las sugerencias emitidas por los usuarios de la plataforma.</p>
                 </div>
-                <a href="PanelAdmin/mostrar" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left"></i> Volver al panel Admin
+                <a href="{{base_url}}/mostrar" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver a {{nombre_panel}}
                 </a>
             </div>
 
@@ -66,20 +66,20 @@
                                     <td class="pe-4 py-3 text-end">
                                         <div class="d-inline-flex gap-2">
 
-                                            <form action="/PanelAdmin/aprobarPregunta" method="POST" class="m-0">
+                                            <form action="{{base_url}}/aprobarPregunta" method="POST" class="m-0">
                                                 <input type="hidden" name="id_pregunta" value="{{id}}">
-                                                <button type="submit" class="btn btn-sm btn-outline-success fw-bold d-inline-flex align-items-center gap-1" title="Descartar reporte">
+                                                <button type="submit" class="btn btn-sm btn-outline-success fw-bold d-inline-flex align-items-center gap-1" title="Aprobar pregunta sugerida">
                                                     <i class="bi bi-check-circle"></i> Aprobar
                                                 </button>
                                             </form>
 
-                                            <a href="/PanelAdmin/verEditarPregunta?id={{id}}"
+                                            <a href="{{base_url}}/verEditarPregunta?id={{id}}"
                                             class="btn btn-sm btn-warning fw-bold d-inline-flex align-items-center gap-1"
                                             title="Editar contenido o respuestas">
                                             <i class="bi bi-pencil-square"></i> Editar
                                             </a>
 
-                                            <form action="/PanelAdmin/eliminarPregunta" method="POST" class="m-0" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta pregunta de forma permanente?');">
+                                            <form action="{{base_url}}/eliminarPregunta" method="POST" class="m-0" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta pregunta de forma permanente?');">
                                                 <input type="hidden" name="id_pregunta" value="{{id}}">
                                                 <button type="submit" class="btn btn-sm btn-danger fw-bold d-inline-flex align-items-center gap-1" title="Eliminar pregunta de la aplicación">
                                                     <i class="bi bi-trash3"></i> Eliminar
