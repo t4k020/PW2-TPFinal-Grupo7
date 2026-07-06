@@ -141,18 +141,12 @@ class PanelAdminController
         }
         $this->verificarAdmin();
         $totalUsuarios = $this->usuarioModel->getTotalUsuarios($fechaDesde);
-        $totalUsuariosHoy    = $this->usuarioModel->getTotalUsuarios(date('Y-m-d 00:00:00'));
-        $totalUsuariosSemana = $this->usuarioModel->getTotalUsuarios(date('Y-m-d H:i:s', strtotime('-7 days')));
-        $totalUsuariosMes    = $this->usuarioModel->getTotalUsuarios(date('Y-m-d H:i:s', strtotime('-30 days')));
-        $totalUsuariosAnio   = $this->usuarioModel->getTotalUsuarios(date('Y-m-d H:i:s', strtotime('-1 year')));
-        $totalUsuariosTodo   = $this->usuarioModel->getTotalUsuarios(null);
-        $datosTotalUsuariosEscalera = [
-            ["periodo" => "Hoy", "cantidad" => $totalUsuariosHoy],
-            ["periodo" => "Últ. Semana", "cantidad" => $totalUsuariosSemana],
-            ["periodo" => "Últ. Mes", "cantidad" => $totalUsuariosMes],
-            ["periodo" => "Últ. Año", "cantidad" => $totalUsuariosAnio],
-            ["periodo" => "Histórico", "cantidad" => $totalUsuariosTodo]
-        ];
+
+        $datosTotalUsuariosEscalera = $this->usuarioModel->getUsuariosGrafico();
+        $preguntasTotalEscalera = $this->preguntaModel->getPreguntasGrafico();
+        $partidasTotalEscalera = $this->partidaModel->getPartidasGrafico();
+
+
 
 
         $totalPreguntas = $this->preguntaModel->getTotalPreguntas($fechaDesde);
@@ -161,6 +155,11 @@ class PanelAdminController
         $usuariosPorSexo = $this->usuarioModel->getUsuariosPorSexo($fechaDesde);
         $totalPartidas = $this->partidaModel->getTotalPartidas($fechaDesde);
         $aciertoGlobal = $this->partidaModel->getPorcentajeAciertoGlobal($fechaDesde);
+        $error = 100 - $aciertoGlobal;
+        $datosDonaAciertos = [
+            ["tipo" => "Aciertos", "porcentaje" => $aciertoGlobal],
+            ["tipo" => "Errores", "porcentaje" => $error]
+        ];
 
         $datosVista = [
             "total_usuarios" => $totalUsuarios,
@@ -172,10 +171,13 @@ class PanelAdminController
             "acierto_global" => $aciertoGlobal,
 
             // JSON para los graficos
+            "json_preguntas_tiempo" => json_encode($preguntasTotalEscalera),
             "json_usuarios_tiempo" => json_encode($datosTotalUsuariosEscalera),
             "json_pais" => json_encode($usuariosPorPais ?: []),
             "json_edad" => json_encode($usuariosPorEdad ?: []),
             "json_sexo" => json_encode($usuariosPorSexo ?: []),
+            "json_partidas_tiempo" => json_encode($partidasTotalEscalera),
+            "json_acierto_dona" => json_encode($datosDonaAciertos),
 
             "filtro_todo" => $filtro === 'todo',
             "filtro_hoy" => $filtro === 'hoy',
@@ -224,6 +226,9 @@ class PanelAdminController
             $imgEdad   = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_edad']);
             $imgGenero = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_genero']);
             $imgTiempo  = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_usuarios_tiempo']);
+            $imgPreguntas = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_preguntas_tiempo']);
+            $imgPartidas  = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_partidas_tiempo']);
+            $imgAciertos = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_acierto_dona']);
 
 
             // Html del Pdf
@@ -284,9 +289,14 @@ class PanelAdminController
                 </div>
                 
                 <div class='chart-box'>
-                <div class='chart-title'>Evolución Acumulativa de Usuarios Registrados</div>
-                <img class='chart-img' src='{$imgTiempo}' />
+                    <div class='chart-title'>Evolución Acumulativa de Usuarios Registrados</div>
+                    <img class='chart-img' src='{$imgTiempo}' />
                  </div>
+                 
+                <div class='chart-box'>
+                    <div class='chart-title'>Evolución Acumulativa de Preguntas Creadas</div>
+                    <img class='chart-img' src='{$imgPreguntas}' />
+                </div>
             
                 <div class='chart-box'>
                     <div class='chart-title'>Distribución de Usuarios por País</div>
@@ -301,6 +311,15 @@ class PanelAdminController
                 <div class='chart-box'>
                     <div class='chart-title'>Distribución de Usuarios por Género</div>
                     <img class='chart-img' src='{$imgGenero}' />
+                </div>
+                <div class='chart-box'>
+                    <div class='chart-title'>Evolución Acumulativa de Partidas Jugadas</div>
+                    <img class='chart-img' src='{$imgPartidas}' />
+                </div>
+                
+                 <div class='chart-box'>
+                    <div class='chart-title'>Evolución Acumulativa de Partidas Jugadas</div>
+                    <img class='chart-img' src='{$imgAciertos}' />
                 </div>
             
                 <div class='footer'>
