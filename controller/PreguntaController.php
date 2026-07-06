@@ -260,23 +260,14 @@ class PreguntaController {
         exit();
     }
 
-    public function sugerir() {
+    public function crearPregunta() {
         Log::info("Iniciando formulario sugerir");
+        $redirect = $_POST['redirect'] ?? "";
         $categorias = $this->preguntaModel->getCategorias();
-        $this->renderer->render("sugerirPregunta",
-                ["categorias" => $categorias,
-                "opciones" => [1,2,3,4]]);
-    }
-
-    public function enviarSugerencia() {
-        Log::info("Enviando sugerencia");
-        $categoriaId = $_POST['categoria_id'];
-        $pregunta  = $_POST['texto_pregunta'];
-        $respuestaCorrecta = $_POST['respuesta_correcta'];
-        $respuestas = $_POST['respuestas'];
-
-        $this->preguntaModel->guardarPreguntaYRespuestas($categoriaId, $pregunta, $respuestaCorrecta, $respuestas);
-        Redirect::toIndex();
+        $this->renderer->render("crearPregunta",
+                    ["categorias" => $categorias,
+                    "opciones" => [1,2,3,4],
+                    "redirect" => $redirect]);
     }
 
     // calcula categorias y gira la ruleta

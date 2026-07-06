@@ -14,7 +14,7 @@ class PreguntaModel
     public function getPregunta($id)
     {
         //Traigo los datos de la pregunta y su categoría
-        $sqlPregunta = "SELECT p.id, p.texto, p.dificultad, p.estado, p.reportado, 
+        $sqlPregunta = "SELECT p.id, p.texto, p.dificultad, p.estado, p.reportado, p.categoria_id, 
                            c.nombre AS categoria_nombre, 
                            c.color AS categoria_color
                         FROM Pregunta p 
@@ -213,9 +213,6 @@ class PreguntaModel
             // Ejecutamos el update de esta respuesta de forma segura
             $this->database->execute($sqlRespuesta, $paramsRespuesta);
         }
-        $this->ignorarPregunta($idPregunta);
-
-        return true;
     }
 
     //estadisticas
@@ -246,10 +243,10 @@ class PreguntaModel
         return $resultado;
     }
 
-    public function guardarPreguntaYRespuestas($categoriaId, $pregunta, $respuestaCorrecta, $respuestas)
+    public function guardarPreguntaYRespuestas($categoriaId, $pregunta, $respuestaCorrecta, $respuestas, $estado)
     {
-        $sqlPregunta = "INSERT INTO Pregunta (categoria_id, texto) VALUES (?,?)";
-        $this->database->execute($sqlPregunta, [$categoriaId, $pregunta]);
+        $sqlPregunta = "INSERT INTO Pregunta (categoria_id, texto, estado) VALUES (?,?,?)";
+        $this->database->execute($sqlPregunta, [$categoriaId, $pregunta, $estado]);
 
         $preguntaId = $this->database->lastInsertId();
 
@@ -353,5 +350,31 @@ class PreguntaModel
         }
     }
 
+    public function getPreguntasAprobadas() {
+        Log::info("Obteniendo las preguntas activas..");
+
+        $sqlPregunta = "SELECT p.id, 
+                          p.texto, 
+                          p.estado, 
+                          c.nombre, 
+                          c.color
+                        FROM Pregunta p
+                        JOIN Categoria c ON p.categoria_id = c.id
+                        WHERE p.estado IN ('APROBADA') ";
+
+        $preguntas = $this->database->query($sqlPregunta);
+
+        foreach ($preguntas as &$pregunta) {
+
+            $sqlRespuestas = "SELECT id, texto, es_correcta
+                          FROM Respuesta
+                          WHERE pregunta_id = ?";
+
+            $pregunta["respuestas"] =
+                $this->database->query($sqlRespuestas, [$pregunta["id"]]);
+        }
+
+        return $preguntas;
+    }
 
 }

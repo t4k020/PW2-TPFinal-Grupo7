@@ -1,5 +1,7 @@
 <?php
-class PanelAdminController {
+
+class PanelAdminController
+{
     private $model;
     private $renderer;
     private $request;
@@ -7,31 +9,32 @@ class PanelAdminController {
     private $preguntaModel;
     private $usuarioModel;
     private $partidaModel;
+
     public function __construct($model, $renderer, $request, $preguntaModel, $usuarioModel, $partidaModel)
     {
-    $this->model = $model;
-    $this->renderer = $renderer;
-    $this->request = $request;
-    $this->preguntaModel = $preguntaModel;
-    $this->usuarioModel = $usuarioModel;
-    $this->partidaModel = $partidaModel;
+        $this->model = $model;
+        $this->renderer = $renderer;
+        $this->request = $request;
+        $this->preguntaModel = $preguntaModel;
+        $this->usuarioModel = $usuarioModel;
+        $this->partidaModel = $partidaModel;
     }
 
-    public function mostrar(){
+    public function mostrar()
+    {
         Log::info("panelAdminController::mostrar");
         $this->verificarAdmin();
         $usuario = $this->model->obtenerDatosUsuario($_SESSION["id"]);
 
-        $this->renderer->render("panelAdminView", [
-            "usuario" => $usuario["username"],
+        $this->renderer->render("panelAdminView",
+            ["usuario" => $usuario["username"],
             "puntaje" => $usuario["puntaje"],
             "trampitas" => $usuario["trampitas"],
-            "esAdmin"   => ($usuario["username"] === "Admin")
-
-        ]);
+            "esAdmin" => ($usuario["username"] === "Admin")]);
 
     }
-    public  function verReportes()
+
+    public function verReportes()
     {
         $this->verificarAdmin();
 
@@ -43,34 +46,44 @@ class PanelAdminController {
         $this->renderer->render("verPreguntasReportadas", $datosVista);
     }
 
-    public function aprobarPregunta(){
+    public function aprobarPregunta() {
         $this->verificarAdmin();
         $idPregunta = isset($_POST['id_pregunta']) ? intval($_POST['id_pregunta']) : 0;
         $this->preguntaModel->aprobarPregunta($idPregunta);
         $this->verSugeridas();
     }
 
-    public function eliminarPregunta(){
+    public function eliminarPregunta() {
         $this->verificarAdmin();
+        $redirect = $_POST["redirect"] ?? "";
         $idPregunta = isset($_POST['id_pregunta']) ? intval($_POST['id_pregunta']) : 0;
         $this->preguntaModel->borrarPregunta($idPregunta);
-        $this->verReportes();
+        header("Location: /PanelAdmin$redirect");
     }
 
-    public function ignorarPregunta(){
+    public function ignorarPregunta()
+    {
         $this->verificarAdmin();
-        $idPregunta = isset($_POST['id_pregunta']) ? intval($_POST['id_pregunta']) : 0;
+        $idPregunta = isset($_POST['id']) ? intval($_POST['id']) : 0;
         $this->preguntaModel->ignorarPregunta($idPregunta);
         $this->verReportes();
     }
 
-    public  function verEditarPregunta()
+    public function verEditarPregunta()
     {
         $this->verificarAdmin();
         $id = $_POST['id'] ?? null;
-        $data['pregunta'] = $this->preguntaModel->getPregunta($id);
+        $redirect = $_POST["redirect"] ?? "";
+        $categorias = $this->preguntaModel->getCategorias();
+        $pregunta = $this->preguntaModel->getPregunta($id);
 
-        $this->renderer->render("editarPregunta", $data);
+        foreach ($categorias as &$categoria) {
+            $categoria["seleccionada"] = ($categoria['id'] == $pregunta['categoria_id']);
+        }
+        $this->renderer->render("editarPregunta",
+            ["pregunta" => $pregunta,
+                "categorias" => $categorias,
+                "redirect" => $redirect]);
     }
 
     public function procesarEdicion()
@@ -83,31 +96,51 @@ class PanelAdminController {
         }
 
         $idPregunta = intval($_POST['id']);
+        $redirect = $_POST["redirect"] ?? "";
         $nuevoTextoPregunta = $_POST['texto'] ?? '';
         $idRespuestaCorrecta = intval($_POST['respuesta_correcta_id'] ?? 0);
         $respuestasData = $_POST['respuestas'] ?? []; // Trae el array indexado [id => ['texto' => '...']]
 
         //Mandamos los datos al modelo
-        $exito = $this->preguntaModel->updatePreguntaYRespuestas(
+        $this->preguntaModel->updatePreguntaYRespuestas(
             $idPregunta,
             $nuevoTextoPregunta,
             $idRespuestaCorrecta,
             $respuestasData
         );
+        if (str_contains($redirect,"verReportes"))
+            $this->ignorarPregunta();
 
-        // 3. Redirigimos según el resultado
-        if ($exito) {
-            // Podés agregar un mensaje de éxito si tenés variables de sesión
-            log::info("se modificaron exitosamente");
-            header("Location: /PanelAdmin/verReportes");
-        } else {
-            log::error("No se modificaron exitosamente ");
-       }
+        log::info("se modificaron exitosamente");
+        header("Location: /PanelAdmin$redirect");
         exit();
     }
 
-    public  function verEstadisticasAdmin()
+    public function guardarCreacion()
     {
+        Log::info("Guardando pregunta nueva...");
+        $redirect = $_POST["redirect"] ?? "";
+        $estado = "PENDIENTE";
+        if ($redirect != "") {
+            $this->verificarAdmin();
+            $estado = "APROBADA";
+        }
+
+        $categoriaId = $_POST['categoria_id'];
+        $pregunta = $_POST['texto_pregunta'];
+        $respuestaCorrecta = $_POST['respuesta_correcta'];
+        $respuestas = $_POST['respuestas'];
+
+        $this->preguntaModel->guardarPreguntaYRespuestas($categoriaId, $pregunta, $respuestaCorrecta, $respuestas, $estado);
+        if ($redirect != "") {
+            header("Location: $redirect");
+            exit();
+        }
+        Redirect::toIndex();
+        exit();
+    }
+
+    public function verEstadisticasAdmin() {
         $filtro = $_GET['filtro_fecha'] ?? 'todo';
 
         $fechaDesde = null;
@@ -147,11 +180,11 @@ class PanelAdminController {
             "total_partidas" => $totalPartidas,
             "acierto_global" => $aciertoGlobal,
 
-            "filtro_todo"   => $filtro === 'todo',
-            "filtro_hoy"    => $filtro === 'hoy',
+            "filtro_todo" => $filtro === 'todo',
+            "filtro_hoy" => $filtro === 'hoy',
             "filtro_semana" => $filtro === 'semana',
-            "filtro_mes"    => $filtro === 'mes',
-            "filtro_anio"   => $filtro === 'anio'
+            "filtro_mes" => $filtro === 'mes',
+            "filtro_anio" => $filtro === 'anio'
 
 
         ];
@@ -173,10 +206,19 @@ class PanelAdminController {
     }
 
     public function verSugeridas() {
-        Log::info("Mostrando Preguntas Sugeridas");
+        Log::info("[Editor] Mostrar Sugeridas");
         $preguntasSugeridas = $this->preguntaModel->getPreguntasSugeridas();
-        $this->renderer->render("preguntasSugeridas",[
+        $this->renderer->render("verPreguntasSugeridas", [
             "lista_sugeridas" => $preguntasSugeridas,
             "hubo_sugerencias" => !empty($preguntasSugeridas)]);
     }
+
+    public function verPreguntas() {
+        Log::info("[Editor] Mostrar Preguntas");
+        $preguntasSugeridas = $this->preguntaModel->getPreguntasAprobadas();
+        $this->renderer->render("verTodasLasPreguntas", [
+            "lista_preguntas" => $preguntasSugeridas,
+            "hubo_preguntas" => !empty($preguntasSugeridas)]);
+    }
+
 }

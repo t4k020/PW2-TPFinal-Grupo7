@@ -17,19 +17,14 @@
 
             <div class="card shadow border-0 rounded-3">
 
-                <form action="/Pregunta/enviarSugerencia" method="POST">
-                    <div id="headerCategoria" class="card-header text-white text-center py-4 border-0">
-                        <select id="categoria_id" name="categoria_id" class="badge bg-light text-dark
-                         uppercase fw-bold px-3 py-2 text-uppercase shadow-sm" required>
-                            {{#categorias}}
-                                <option value="{{id}}" data-color="{{color}}">
-                                    {{nombre}}
-                                </option>
-                            {{/categorias}}
-                        </select>
-                    </div>
-                    <div class="card-body p-4 p-md-5">
+                <div id="headerCategoria" class="card-header text-white text-center py-3 border-0">
+                    <span class="fw-bold fs-2 text-white m-0">Sugerir Pregunta</span>
+                </div>
 
+                <form action="/PanelAdmin/guardarCreacion" method="POST">
+
+                    <div class="card-body p-4 p-md-5">
+                        <input type="hidden" name="redirect" value="{{redirect}}">
                         <div class="mb-4 text-start">
                             <label for="texto" class="form-label fw-semibold text-secondary">Texto de la
                                 Pregunta</label>
@@ -37,8 +32,21 @@
                                    id="texto" name="texto_pregunta" placeholder="Ingrese su pregunta" required>
                         </div>
 
-                        <hr class="my-4">
+                        <div class="row g-3 mb-4 text-start">
 
+                            <div class="col-md-4">
+                                <label for="categoria_id" class="form-label fw-semibold
+                                text-secondary">Categoría</label>
+                                <select id="categoria_id" name="categoria_id" class="form-select
+                                bg-light border-0 shadow-sm py-2" required>
+                                    {{#categorias}}
+                                        <option value="{{id}}" data-color="{{color}}">{{nombre}}</option>
+                                    {{/categorias}}
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
                         <h4 class="card-title mb-4 fw-semibold text-start">Opciones de Respuesta</h4>
 
                         <div class="d-grid gap-3 text-start">
@@ -55,7 +63,6 @@
                                 </div>
                             {{/opciones}}
                         </div>
-
                         <hr class="my-5">
 
                         <div class="d-flex justify-content-end gap-3">
@@ -80,19 +87,5 @@
 </main>
 {{> footer}}
 </body>
-<script>
-    const select = document.getElementById("categoria_id");
-    const header = document.getElementById("headerCategoria");
-    const submit = document.getElementById("submitColor");
-
-    function actualizarColor() {
-        const color = select.options[select.selectedIndex].dataset.color;
-        header.style.backgroundColor = color;
-        submit.style.backgroundColor = color;
-    }
-
-    select.addEventListener("change", actualizarColor);
-
-    actualizarColor();
-</script>
+<script src="/public/js/colorEditarCategoria.js"></script>
 </html>

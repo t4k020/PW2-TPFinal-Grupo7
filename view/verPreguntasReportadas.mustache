@@ -15,14 +15,20 @@
 <div class="row justify-content-center">
 <div class="col-12 col-xl-10">
 
-    <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
-        <div>
-            <h1 class="fw-bold text-dark m-0">🚩 Preguntas Reportadas</h1>
-            <p class="text-muted m-0">Gestiona los reportes emitidos por los usuarios de la plataforma.</p>
+    <div class="bg-danger text-white rounded-top-4 shadow-sm p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h1 class="display-5 fw-bold mb-1">
+                    Preguntas Reportadas
+                </h1>
+                <p class="lead mb-0 text-light">
+                    Gestiona los reportes emitidos por los usuarios de la plataforma.                </p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="/PanelAdmin/mostrar" class="btn btn-outline-light btn-lg">
+                    Volver al Panel</a>
+            </div>
         </div>
-        <a href="/PanelAdmin/mostrar" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Volver al panel Admin
-        </a>
     </div>
 
     {{#hubo_reportes}}
@@ -62,13 +68,14 @@
 
                                     <form action="/PanelAdmin/verEditarPregunta" method="POST" class="m-0">
                                         <input type="hidden" name="id" value="{{id}}">
+                                        <input type="hidden" name="redirect" value="/verReportes">
                                         <button type="submit" class="btn btn-sm btn-warning fw-bold d-inline-flex align-items-center gap-1" title="Editar contenido o respuestas">
                                             <i class="bi bi-pencil-square"></i> Editar
                                         </button>
                                     </form>
 
                                     <form action="/PanelAdmin/ignorarPregunta" method="POST" class="m-0">
-                                        <input type="hidden" name="id_pregunta" value="{{id}}">
+                                        <input type="hidden" name="id" value="{{id}}">
                                         <button type="submit" class="btn btn-sm btn-outline-success fw-bold d-inline-flex align-items-center gap-1" title="Descartar reporte">
                                             <i class="bi bi-check-circle"></i> Ignorar
                                         </button>
@@ -76,6 +83,7 @@
 
                                     <form action="/PanelAdmin/eliminarPregunta" method="POST" class="m-0" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta pregunta de forma permanente?');">
                                         <input type="hidden" name="id_pregunta" value="{{id}}">
+                                        <input type="hidden" name="redirect" value="/verReportes">
                                         <button type="submit" class="btn btn-sm btn-danger fw-bold d-inline-flex align-items-center gap-1" title="Eliminar pregunta de la aplicación">
                                             <i class="bi bi-trash3"></i> Eliminar
                                         </button>
