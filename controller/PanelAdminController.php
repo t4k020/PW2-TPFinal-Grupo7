@@ -1,5 +1,9 @@
 <?php
-class PanelAdminController {
+
+use Dompdf\Dompdf;
+use Dompdf\Options;
+class PanelAdminController
+{
     private $model;
     private $renderer;
     private $request;
@@ -7,17 +11,19 @@ class PanelAdminController {
     private $preguntaModel;
     private $usuarioModel;
     private $partidaModel;
+
     public function __construct($model, $renderer, $request, $preguntaModel, $usuarioModel, $partidaModel)
     {
-    $this->model = $model;
-    $this->renderer = $renderer;
-    $this->request = $request;
-    $this->preguntaModel = $preguntaModel;
-    $this->usuarioModel = $usuarioModel;
-    $this->partidaModel = $partidaModel;
+        $this->model = $model;
+        $this->renderer = $renderer;
+        $this->request = $request;
+        $this->preguntaModel = $preguntaModel;
+        $this->usuarioModel = $usuarioModel;
+        $this->partidaModel = $partidaModel;
     }
 
-    public function mostrar(){
+    public function mostrar()
+    {
         Log::info("panelAdminController::mostrar");
         $this->verificarAdmin();
         $usuario = $this->model->obtenerDatosUsuario($_SESSION["id"]);
@@ -26,12 +32,13 @@ class PanelAdminController {
             "usuario" => $usuario["username"],
             "puntaje" => $usuario["puntaje"],
             "trampitas" => $usuario["trampitas"],
-            "esAdmin"   => ($usuario["username"] === "Admin")
+            "esAdmin" => ($usuario["username"] === "Admin")
 
         ]);
 
     }
-    public  function verReportes()
+
+    public function verReportes()
     {
         $this->verificarAdmin();
 
@@ -45,14 +52,16 @@ class PanelAdminController {
         $this->renderer->render("verPreguntasReportadas", $datosVista);
     }
 
-    public function aprobarPregunta(){
+    public function aprobarPregunta()
+    {
         $this->verificarAdmin();
         $idPregunta = isset($_POST['id_pregunta']) ? intval($_POST['id_pregunta']) : 0;
         $this->preguntaModel->aprobarPregunta($idPregunta);
         $this->verSugeridas();
     }
 
-    public function eliminarPregunta(){
+    public function eliminarPregunta()
+    {
         $this->verificarAdmin();
         $idPregunta = isset($_POST['id_pregunta']) ? intval($_POST['id_pregunta']) : 0;
         $this->preguntaModel->borrarPregunta($idPregunta);
@@ -66,14 +75,15 @@ class PanelAdminController {
 
     }
 
-    public function ignorarPregunta(){
+    public function ignorarPregunta()
+    {
         $this->verificarAdmin();
         $idPregunta = isset($_POST['id_pregunta']) ? intval($_POST['id_pregunta']) : 0;
         $this->preguntaModel->ignorarPregunta($idPregunta);
         $this->verReportes();
     }
 
-    public  function verEditarPregunta()
+    public function verEditarPregunta()
     {
         $this->verificarAdmin();
         $id = $_GET['id'] ?? $_POST['id'] ?? null;
@@ -131,7 +141,7 @@ class PanelAdminController {
         exit();
     }
 
-    public  function verEstadisticasAdmin()
+    public function verEstadisticasAdmin()
     {
         $filtro = $_GET['filtro_fecha'] ?? 'todo';
 
@@ -156,12 +166,25 @@ class PanelAdminController {
         }
         $this->verificarAdmin();
         $totalUsuarios = $this->usuarioModel->getTotalUsuarios($fechaDesde);
+
+        $datosTotalUsuariosEscalera = $this->usuarioModel->getUsuariosGrafico();
+        $preguntasTotalEscalera = $this->preguntaModel->getPreguntasGrafico();
+        $partidasTotalEscalera = $this->partidaModel->getPartidasGrafico();
+
+
+
+
         $totalPreguntas = $this->preguntaModel->getTotalPreguntas($fechaDesde);
         $usuariosPorPais = $this->usuarioModel->getUsuariosPorPais($fechaDesde);
         $usuariosPorEdad = $this->usuarioModel->getUsuariosPorEdad($fechaDesde);
         $usuariosPorSexo = $this->usuarioModel->getUsuariosPorSexo($fechaDesde);
         $totalPartidas = $this->partidaModel->getTotalPartidas($fechaDesde);
         $aciertoGlobal = $this->partidaModel->getPorcentajeAciertoGlobal($fechaDesde);
+        $error = 100 - $aciertoGlobal;
+        $datosDonaAciertos = [
+            ["tipo" => "Aciertos", "porcentaje" => $aciertoGlobal],
+            ["tipo" => "Errores", "porcentaje" => $error]
+        ];
 
         $datosVista = [
             "total_usuarios" => $totalUsuarios,
@@ -172,11 +195,20 @@ class PanelAdminController {
             "total_partidas" => $totalPartidas,
             "acierto_global" => $aciertoGlobal,
 
-            "filtro_todo"   => $filtro === 'todo',
-            "filtro_hoy"    => $filtro === 'hoy',
+            // JSON para los graficos
+            "json_preguntas_tiempo" => json_encode($preguntasTotalEscalera),
+            "json_usuarios_tiempo" => json_encode($datosTotalUsuariosEscalera),
+            "json_pais" => json_encode($usuariosPorPais ?: []),
+            "json_edad" => json_encode($usuariosPorEdad ?: []),
+            "json_sexo" => json_encode($usuariosPorSexo ?: []),
+            "json_partidas_tiempo" => json_encode($partidasTotalEscalera),
+            "json_acierto_dona" => json_encode($datosDonaAciertos),
+
+            "filtro_todo" => $filtro === 'todo',
+            "filtro_hoy" => $filtro === 'hoy',
             "filtro_semana" => $filtro === 'semana',
-            "filtro_mes"    => $filtro === 'mes',
-            "filtro_anio"   => $filtro === 'anio'
+            "filtro_mes" => $filtro === 'mes',
+            "filtro_anio" => $filtro === 'anio'
 
 
         ];
@@ -197,14 +229,154 @@ class PanelAdminController {
         }
     }
 
-    public function verSugeridas() {
+    public function verSugeridas()
+    {
         Log::info("Mostrando Preguntas Sugeridas");
         $preguntasSugeridas = $this->preguntaModel->getPreguntasSugeridas();
-        $this->renderer->render("preguntasSugeridas",[
+        $this->renderer->render("preguntasSugeridas", [
             "lista_sugeridas" => $preguntasSugeridas,
             "hubo_sugerencias" => !empty($preguntasSugeridas),
             "base_url" => "/PanelAdmin",
             "nombre_panel" => "Panel Admin"
         ]);
+    }
+
+
+    //NECESITA ACTIVAR EXTENSION GD EN APACHE (php.ini) para dibujar las graficas en el pdf
+    public function generarReportePdf()
+    {
+        // Verificamos que los datos hayan llegado por POST y que existan las imágenes
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['img_pais'])) {
+
+            // capturamos y limpiamos los Base64 eliminando espacios o saltos de línea
+            // los graficos esta codificado en base64 para que pueda ser reescrito en pdf
+            $imgPais   = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_pais']);
+            $imgEdad   = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_edad']);
+            $imgGenero = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_genero']);
+            $imgTiempo  = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_usuarios_tiempo']);
+            $imgPreguntas = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_preguntas_tiempo']);
+            $imgPartidas  = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_partidas_tiempo']);
+            $imgAciertos = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_acierto_dona']);
+
+
+            // Html del Pdf
+            $htmlPdf = "
+            <!DOCTYPE html>
+            <html lang='es'>
+            <head>
+                <meta charset='UTF-8'>
+                <style>
+                    body { 
+                        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+                        color: #333; 
+                        margin: 30px; 
+                    }
+                    .header { 
+                        text-align: center; 
+                        border-bottom: 2px solid #212529; 
+                        padding-bottom: 10px; 
+                        margin-bottom: 30px; 
+                    }
+                    h1 { color: #212529; margin-bottom: 5px; font-size: 24px; }
+                    .subtitle { color: #666; font-size: 14px; }
+                    .chart-box { 
+                        text-align: center; 
+                        margin-bottom: 30px; 
+                        page-break-inside: avoid; 
+                    }
+                    .chart-title {
+                        font-size: 16px;
+                        color: #495057;
+                        margin-bottom: 10px;
+                        text-align: left;
+                        border-left: 4px solid #0d6efd;
+                        padding-left: 10px;
+                    }
+                    .chart-img { 
+                        width: 100%; 
+                        max-width: 550px; 
+                        border: 1px solid #dee2e6; 
+                        padding: 10px; 
+                        background: #fff; 
+                        border-radius: 6px;
+                    }
+                    .footer { 
+                        text-align: center; 
+                        font-size: 10px; 
+                        color: #adb5bd; 
+                        position: fixed; 
+                        bottom: 0; 
+                        width: 100%; 
+                    }
+                </style>
+            </head>
+            <body>
+                <div class='header'>
+                    <h1>Preguntados - Reporte Estadístico de Administración</h1>
+                    <p class='subtitle'>Generado en tiempo real el " . date('d/m/Y H:i') . "</p>
+                </div>
+                
+                <div class='chart-box'>
+                    <div class='chart-title'>Evolución Acumulativa de Usuarios Registrados</div>
+                    <img class='chart-img' src='{$imgTiempo}' />
+                 </div>
+                 
+                <div class='chart-box'>
+                    <div class='chart-title'>Evolución Acumulativa de Preguntas Creadas</div>
+                    <img class='chart-img' src='{$imgPreguntas}' />
+                </div>
+            
+                <div class='chart-box'>
+                    <div class='chart-title'>Distribución de Usuarios por País</div>
+                    <img class='chart-img' src='{$imgPais}' />
+                </div>
+            
+                <div class='chart-box'>
+                    <div class='chart-title'>Distribución de Usuarios por Rango de Edad</div>
+                    <img class='chart-img' src='{$imgEdad}' />
+                </div>
+            
+                <div class='chart-box'>
+                    <div class='chart-title'>Distribución de Usuarios por Género</div>
+                    <img class='chart-img' src='{$imgGenero}' />
+                </div>
+                <div class='chart-box'>
+                    <div class='chart-title'>Evolución Acumulativa de Partidas Jugadas</div>
+                    <img class='chart-img' src='{$imgPartidas}' />
+                </div>
+                
+                 <div class='chart-box'>
+                    <div class='chart-title'>Evolución Acumulativa de Partidas Jugadas</div>
+                    <img class='chart-img' src='{$imgAciertos}' />
+                </div>
+            
+                <div class='footer'>
+                    Preguntados - Panel Administrativo Confidencial
+                </div>
+            </body>
+            </html>
+            ";
+
+            // se crea el objeto que configura el motor DoomPdf
+            $options = new Options();
+            // permite intepretar Base64 para los graficos
+            $options->set('isRemoteEnabled', true);
+            // que use el html moderno
+            $options->set('isHtml5ParserEnabled', true);
+            //define el directorio root
+            $options->set('chroot', __DIR__ . '/..');
+            //al iniciar el motor se le pasa el objeto para que sea configurado
+            $dompdf = new Dompdf($options);
+            $dompdf->loadHtml($htmlPdf);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+
+            // Fuerza la descarga del archivo
+            $dompdf->stream("Reporte_Estadisticas_Preguntados_" . date('Ymd') . ".pdf", array("Attachment" => true));
+            exit;
+        }
+
+        header("Location: /PanelAdmin/verEstadisticasAdmin");
+        exit;
     }
 }

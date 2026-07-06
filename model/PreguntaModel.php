@@ -60,7 +60,7 @@ class PreguntaModel
 
     public function getRandomPregunta($listaIgnorar = [], $maestriaJugador = 'Amateur', $idCategoria = null)
     {
-
+        // Convertimos la lista de IDs a un string separado por comas válido para SQL: "1,4,7"
         $stringIdsIgnorados = !empty($listaIgnorar) ? implode(',', array_map('intval', $listaIgnorar)) : '0';
 
         // Armo las dificultades permitidas según la maestría que calculó el controlador
@@ -70,7 +70,7 @@ class PreguntaModel
         } elseif ($maestriaJugador === 'Maestro') {
             $dificultadesPermitidas = "('DIFICIL')";
         } else {
-            // Si es 'Amateur' o si es un usuario nuevo (que por defecto le pusimos 'MEDIO' o 'Amateur')
+            // Si es 'Amateur' o si es un usuario nuevo
             $dificultadesPermitidas = "('MEDIO')";
         }
 
@@ -80,6 +80,7 @@ class PreguntaModel
             $filtroCategoria = " AND categoria_id = " . intval($idCategoria);
         }
 
+        //Buscamos la pregunta que cumpla con todos los filtros y que no haya sido vista hitoricamente
         $sql = "SELECT * FROM Pregunta 
             WHERE estado = 'APROBADA' 
             $filtroCategoria
@@ -89,40 +90,25 @@ class PreguntaModel
 
         $resultado = $this->database->query($sql);
 
+        //Si no encuentra nada, devuelve null, el controlador se va a encargar de resetear el historial
+        //en la BD y volver a llamar a este metood
         if (empty($resultado)) {
+            Log::info("No hay preguntas disponibles para el nivel: $maestriaJugador. Abriendo abanico a otras dificultades.");
+            $sqlFallback = "SELECT * FROM Pregunta 
+                        WHERE estado = 'APROBADA' 
+                        $filtroCategoria
+                        AND id NOT IN ($stringIdsIgnorados) 
+                        ORDER BY RAND() LIMIT 1";
 
-            return null;
-//            // Si no hay más preguntas que correspondan a su maestría abrimos el abanico a cualquier dificultad, pero manteniendo los ignorados
-//            $sqlFallback = "SELECT * FROM Pregunta
-//            WHERE estado = 'APROBADA'
-//            $filtroCategoria
-//            AND id NOT IN ($stringIdsIgnorados)
-//            ORDER BY RAND() LIMIT 1";
-//
-//            $resultado = $this->database->query($sqlFallback);
-//
-//            // Si el jugador respondió tódo lo que le apareció
-//            // Para no trabarlo, ignoramos la lista de respondidas y le dejamos repetir preguntas
-//            if (empty($resultado)) {
-//                Log::info("El usuario ya respondió todo. Reseteando lista de ignorados para que pueda seguir jugando.");
-//
-//                // Buscamos cualquier pregunta aprobada de su nivel, sin usar el NOT IN
-//                $sqlVueltaAEmpezar = "SELECT * FROM Pregunta
-//             WHERE estado = 'APROBADA'
-//             $filtroCategoria
-//             AND dificultad IN $dificultadesPermitidas
-//             ORDER BY RAND() LIMIT 1";
-//
-//                $resultado = $this->database->query($sqlVueltaAEmpezar);
-//
-//                // Si aun así da vacío (cosa rarísima), tiramos la última opción sin importar dificultad ni categoría
-//                if (empty($resultado)) {
-//                    $sqlDesesperado = "SELECT * FROM Pregunta WHERE estado = 'APROBADA' ORDER BY RAND() LIMIT 1";
-//                    $resultado = $this->database->query($sqlDesesperado);
-//                }
-//            }
+            $resultado = $this->database->query($sqlFallback);
         }
 
+        //Si aun abriendo el abanico da vacío, devolvemos null (aquí sí el usuario ya vio literal toodo lo que existe en la BD de esa categoría)
+        if (empty($resultado)) {
+            return null;
+        }
+
+        //Si encontró, recuperamos la estructura completa de la pregunta con sus respuestas asociadas.
         $idAzar = $resultado[0]['id'];
         return $this->getPregunta($idAzar);
     }
@@ -236,6 +222,39 @@ class PreguntaModel
         return 0;
     }
 
+    public function getPreguntasGrafico()
+    {
+        $hoy    = date('Y-m-d 00:00:00');
+        $semana = date('Y-m-d H:i:s', strtotime('-7 days'));
+        $mes    = date('Y-m-d H:i:s', strtotime('-30 days'));
+        $anio   = date('Y-m-d H:i:s', strtotime('-1 year'));
+
+
+        $sql = "SELECT 
+                SUM(CASE WHEN fechaCreacion >= '{$hoy}' THEN 1 ELSE 0 END) as hoy,
+                SUM(CASE WHEN fechaCreacion >= '{$semana}' THEN 1 ELSE 0 END) as semana,
+                SUM(CASE WHEN fechaCreacion >= '{$mes}' THEN 1 ELSE 0 END) as mes,
+                SUM(CASE WHEN fechaCreacion >= '{$anio}' THEN 1 ELSE 0 END) as anio,
+                COUNT(*) as todo
+            FROM Pregunta";
+
+        $resultado = $this->database->query($sql);
+
+        if (!empty($resultado)) {
+            $row = $resultado[0];
+
+            return [
+                ["periodo" => "Histórico", "cantidad" => intval($row['todo'])],
+                ["periodo" => "Últ. Año", "cantidad" => intval($row['anio'])],
+                ["periodo" => "Últ. Mes", "cantidad" => intval($row['mes'])],
+                ["periodo" => "Últ. Semana", "cantidad" => intval($row['semana'])],
+                ["periodo" => "Hoy", "cantidad" => intval($row['hoy'])]
+            ];
+        }
+
+        return [];
+    }
+
     public function getCategorias()
     {
         $sql = "SELECT id, nombre, color FROM Categoria";
@@ -314,10 +333,34 @@ class PreguntaModel
     }
 
     // Métod para guardar el registro en la tabla intermedia
+    // Si bien, por default, la pregunta vista se inserta en 1, por seguridad lo agrego.
     public function guardarHistorialUsuario($usuarioId, $preguntaId, $fueCorrecta)
     {
-        $sql = "INSERT INTO usuario_pregunta (usuario_id, pregunta_id, fue_correcta) VALUES (?, ?, ?)";
+        $sql = "INSERT INTO usuario_pregunta (usuario_id, pregunta_id, fue_correcta, visto_en_partida) VALUES (?, ?, ?, 1)";
         $this->database->execute($sql, [$usuarioId, $preguntaId, $fueCorrecta]);
+    }
+
+    //nuevo metodo: Trae los IDs de las preguntas que YA vio el usuario en sus sesiones
+    public function getPreguntasVistasPorUsuario($usuarioId)
+    {
+        $sql = "SELECT pregunta_id FROM usuario_pregunta WHERE usuario_id = ? AND visto_en_partida = 1";
+        $resultados = $this->database->query($sql, [$usuarioId]);
+
+        // Mapeamos el resultado para devolver un array simple de números: [1, 5, 12...]
+        $ids = [];
+        if (!empty($resultados)) {
+            foreach ($resultados as $fila) {
+                $ids[] = $fila['pregunta_id'];
+            }
+        }
+        return $ids;
+    }
+    //nuevo metodo: El "reseteador" cuando el usuario ya respondió absolutamente todas las preguntas existentes
+    public function resetearPreguntasVistas($usuarioId)
+    {
+        Log::info("Reseteando el historial de preguntas vistas para el usuario: " . $usuarioId);
+        $sql = "UPDATE usuario_pregunta SET visto_en_partida = 0 WHERE usuario_id = ?";
+        $this->database->execute($sql, [$usuarioId]);
     }
 
     // Métod que Suma los contadores de la pregunta y recalcula su dificultad global

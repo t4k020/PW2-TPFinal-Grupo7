@@ -19,7 +19,7 @@ class PreguntaController {
     public function list() {
         Log::info("mostrando preguntas");
 
-        //para resetear cuando haga click en "jugar de nuevo"
+        // 1. Control de reinicio explícito (cuando tocan "Jugar de nuevo")
         $forzarReinicio = ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reiniciar_partida']));
 
         if ($forzarReinicio) {
@@ -31,44 +31,41 @@ class PreguntaController {
         // Atrapamos la categoría de la URL
         $idCategoria = isset($_GET['categoria']) ? intval($_GET['categoria']) : null;
 
-        // CONTROL DE ACCESO: Si no hay pregunta en curso Y tampoco viene una categoría de la ruleta, al Lobby.
-        if (!isset($_SESSION['pregunta_actual_id']) && $idCategoria === null) {
-            header("Location: /Lobby");
-            exit();
-        }
-
-        // Si el usuario nunca jugó o se acaba de resetear, se crea la lista limpia
+        // 2. INICIALIZACIÓN COMPLETA Y SEGURA: Si no existen, se crean. Si ya existen, NO se tocan.
         if (!isset($_SESSION['preguntas_respondidas'])) {
             $_SESSION['preguntas_respondidas'] = [];
+        }
+        if (!isset($_SESSION['partida_puntaje'])) {
             $_SESSION['partida_puntaje'] = 0;
         }
 
-        // con este if evitamos lo que mencionó el profe, si el usuario recarga la pregunta, se va a mostrar siempre la misma
+        $usuarioId = $_SESSION['id'];
+        $listaIgnorar = $this->preguntaModel->getPreguntasVistasPorUsuario($usuarioId);
+
+        // 3. FLUJO DE PREGUNTA ACTIVA (Mitigación de F5)
         if (isset($_SESSION['pregunta_actual_id'])) {
             $idPreguntaEnCurso = $_SESSION['pregunta_actual_id'];
             $preguntaCompleta = $this->preguntaModel->getPregunta($idPreguntaEnCurso);
-            $tiempoRestante = $_SESSION['tiempo_limite'] - (time() - $_SESSION['inicio_pregunta']);
 
+            // Temporizador
+            $tiempoRestante = $_SESSION['tiempo_limite'] - (time() - $_SESSION['inicio_pregunta']);
             if ($tiempoRestante < 0) {
                 $tiempoRestante = 0;
             }
             $preguntaCompleta['tiempo_restante'] = $tiempoRestante;
+
             if ($preguntaCompleta['tiempo_restante'] <= 0) {
                 header("Location: /Pregunta/evaluar?timeout=1");
                 exit();
             }
         } else {
-            // Si viene de la ruleta o de responder bien:
-            $listaIgnorar = $_SESSION['preguntas_respondidas'];
-
-            // Buscamos el username de la sesión (asegurate de usar la clave exacta que guardan al loguearse, ej: 'username' o 'usuario')
+            // 4. GENERAR NUEVA PREGUNTA (Viene de la ruleta o respondió bien)
             $username = $_SESSION['username'] ?? null;
             $usuarioDatos = $this->usuarioModel->getUsuario($username);
-
-            // Si encontramos al usuario, usamos su maestría real de la BD. Si no, fallback a 'Amateur'
             $maestriaJugador = $usuarioDatos['maestria'] ?? 'Amateur';
 
             $preguntaCompleta = $this->preguntaModel->getRandomPregunta($listaIgnorar, $maestriaJugador, $idCategoria);
+
             if ($preguntaCompleta !== null) {
                 $_SESSION['pregunta_actual_id'] = $preguntaCompleta['id'];
                 $_SESSION['inicio_pregunta'] = time();
@@ -77,27 +74,39 @@ class PreguntaController {
             }
         }
 
-        // Si ya no hay más preguntas disponibles en esta categoría/nivel (Partida Perfecta)
+        // 5. CHEQUEO DE VICTORIA (Partida Perfecta)
         if ($preguntaCompleta === null) {
-            $puntajeTotal = isset($_SESSION['partida_puntaje']) ? $_SESSION['partida_puntaje'] : 0;
-            $idUsuario = isset($_SESSION['id']) ? $_SESSION['id'] : null;
+            $puntajeTotal = isset($_SESSION['partida_puntaje']) ? intval($_SESSION['partida_puntaje']) : 0;
 
-            if ($idUsuario) {
-                $this->partidaModel->guardarPartida($idUsuario, $puntajeTotal);
-                $this->usuarioModel->actualizarNivelMaestria($idUsuario);
+            if ($usuarioId) {
+                // Guardamos la victoria en la base de datos
+                $this->partidaModel->guardarPartida($usuarioId, $puntajeTotal);
+                $this->usuarioModel->actualizarNivelMaestria($usuarioId);
+
+                // Reseteamos el historial físico para que la próxima partida tenga preguntas
+                $this->preguntaModel->resetearPreguntasVistas($usuarioId);
             }
 
-            // Limpiamos la sesión de juego
-            unset($_SESSION['partida_puntaje']);
-            unset($_SESSION['preguntas_respondidas']);
+            // Preparamos la vista de éxito
+            $data['mensaje_victoria'] = "¡Increíble! Respondiste absolutamente todas las preguntas disponibles. 🏆";
+            $data['puntaje_final'] = $puntajeTotal;
+
+            // EL CAMBIO DEFINITIVO: NO usamos unset() acá.
+            // Dejamos que las variables mueran recién cuando el usuario decida salir o reiniciar.
+            // Solo limpiamos el ID de la pregunta para que no se quede trabado en el F5.
             unset($_SESSION['pregunta_actual_id']);
 
-            $data['mensaje_victoria'] = "¡Increíble! Respondiste absolutamente todas las preguntas disponibles. 🏆";
             $this->renderer->render("partida_perfecta", $data);
             return;
         }
 
-        // se mezclan las respuestas, para que no esté siempre en la misma posición
+        // 6. CONTROL DE ACCESO AL LOBBY
+        if (!isset($_SESSION['pregunta_actual_id']) && $idCategoria === null) {
+            header("Location: /Lobby");
+            exit();
+        }
+
+        // Mezclamos respuestas y renderizamos pregunta normal
         $respuestasAMezclar = $preguntaCompleta['respuestas'];
         shuffle($respuestasAMezclar);
         $preguntaCompleta['respuestas'] = $respuestasAMezclar;
@@ -110,22 +119,16 @@ class PreguntaController {
         $usuarioId = $_SESSION['id'];
         $idPreguntaActual = $_SESSION['pregunta_actual_id'] ?? null;
 
-        // Si se terminó el tiempo
+        // --- ESCENARIO 1: SE TERMINÓ EL TIEMPO (PERDIÓ) ---
         if (isset($_GET['timeout'])) {
-
             if ($idPreguntaActual) {
                 $_SESSION['preguntas_respondidas'][] = $idPreguntaActual;
-
-                // Guardamos la respuesta como incorrecta
                 $this->preguntaModel->guardarHistorialUsuario($usuarioId, $idPreguntaActual, 0);
-
-                // Actualizamos estadísticas
                 $this->preguntaModel->actualizarEstadisticasYDificultad($idPreguntaActual, false);
             }
 
             $idsRespondidos = $_SESSION['preguntas_respondidas'] ?? [];
             $preguntasRespondidasDetalle = [];
-
             foreach ($idsRespondidos as $idPregunta) {
                 $pregunta = $this->preguntaModel->getPregunta($idPregunta);
                 if ($pregunta) {
@@ -133,11 +136,12 @@ class PreguntaController {
                 }
             }
 
+            // Guardamos los puntos de la derrota
             $puntajeFinal = $_SESSION['partida_puntaje'] ?? 0;
             $this->partidaModel->guardarPartida($usuarioId, $puntajeFinal);
             $this->usuarioModel->actualizarNivelMaestria($usuarioId);
 
-            // Limpiamos toda la sesión de la partida
+            // Limpieza absoluta para la próxima partida
             unset($_SESSION['inicio_pregunta']);
             unset($_SESSION['tiempo_limite']);
             unset($_SESSION['preguntas_respondidas']);
@@ -160,47 +164,51 @@ class PreguntaController {
 
         $esCorrecta = $this->preguntaModel->verificarRespuesta($idRespuesta);
 
+        // --- ESCENARIO 2: RESPONDIÓ CORRECTAMENTE ---
         if ($esCorrecta) {
-            // --- TABLA INTERMEDIA Y ESTADÍSTICAS ---
             if ($idPreguntaActual) {
                 $_SESSION['preguntas_respondidas'][] = $idPreguntaActual;
-                // Guardamos en la tabla intermedia (1 = correcta)
                 $this->preguntaModel->guardarHistorialUsuario($usuarioId, $idPreguntaActual, 1);
-                // Actualizamos contadores y dificultad de la pregunta
                 $this->preguntaModel->actualizarEstadisticasYDificultad($idPreguntaActual, true);
             }
 
+            // Inicializamos si no existe, y sumamos el punto de forma segura
+            if (!isset($_SESSION['partida_puntaje'])) {
+                $_SESSION['partida_puntaje'] = 0;
+            }
             $_SESSION['partida_puntaje']++;
+
+            // Limpiamos los datos de la pregunta vieja para que LIST cargue la nueva
             unset($_SESSION['pregunta_actual_id']);
             unset($_SESSION['inicio_pregunta']);
             unset($_SESSION['tiempo_limite']);
+
+            // Vamos a la ruleta o al flujo que maneje tu juego
             header("Location: /Pregunta/ruleta");
             exit();
 
         } else {
-            // --- TABLA INTERMEDIA Y ESTADÍSTICAS ---
+            // --- ESCENARIO 3: RESPONDIÓ INCORRECTAMENTE (PERDIÓ) ---
             if ($idPreguntaActual) {
                 $_SESSION['preguntas_respondidas'][] = $idPreguntaActual;
-                // Guardamos en la tabla intermedia (0 = incorrecta)
                 $this->preguntaModel->guardarHistorialUsuario($usuarioId, $idPreguntaActual, 0);
-                // Actualizamos contadores y dificultad de la pregunta
                 $this->preguntaModel->actualizarEstadisticasYDificultad($idPreguntaActual, false);
             }
 
             $idsRespondidos = $_SESSION['preguntas_respondidas'] ?? [];
             $preguntasRespondidasDetalle = [];
-
             if (!empty($idsRespondidos)) {
                 foreach ($idsRespondidos as $idPregunta) {
                     $preguntasRespondidasDetalle[] = $this->preguntaModel->getPregunta($idPregunta);
                 }
             }
 
-            $puntajeFinal = isset($_SESSION['partida_puntaje']) ? $_SESSION['partida_puntaje'] : 0;
+            // Guardamos la partida con el puntaje acumulado real
+            $puntajeFinal = isset($_SESSION['partida_puntaje']) ? intval($_SESSION['partida_puntaje']) : 0;
             $this->partidaModel->guardarPartida($usuarioId, $puntajeFinal);
-
-            // RECALCULAR MAESTRÍA JUGADOR: Va a usar el método nuevo con la tabla intermedia
             $this->usuarioModel->actualizarNivelMaestria($usuarioId);
+
+            // Limpiamos de forma segura sin romper la estructura analítica
             unset($_SESSION['preguntas_respondidas']);
             unset($_SESSION['pregunta_actual_id']);
             unset($_SESSION['partida_puntaje']);
