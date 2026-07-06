@@ -41,6 +41,12 @@ class Configurator {
                                         , $this->getUsuarioModel(), $this->getPartidaModel());
     }
 
+    public function getEditorController()
+    {
+        return new EditorController($this->getLobbyModel(),$this->getRenderer(), new Request(), $this->getPreguntaModel()
+            , $this->getUsuarioModel(), $this->getPartidaModel(), $this->getCategoriaModel());
+    }
+
     //Login
     public function getLoginController()
     {
@@ -106,7 +112,9 @@ class Configurator {
         return new UsuarioModel($this->getDatabase());
     }
 
-
+    public function getCategoriaModel() {
+        return new CategoriaModel($this->getDatabase());
+    }
 
 
 

@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
+    <title>Preguntados - Preguntas del Juego</title>
+</head>
+<body>
+{{> header}}
+
+<main class="container py-5">
+    <div class="colorHeader text-white rounded-top-4 shadow-sm p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <div>
+                <h1 class="display-5 fw-bold mb-1">Categorías del Juego</h1>
+                <p class="lead mb-0">Crea, edita o elimina las categorías disponibles.</p>
+            </div>
+
+            <a href="/PanelAdmin/verPreguntas" class="btn btn-outline-light btn-lg">
+                Volver a Preguntas</a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-5">
+            {{#hubo_categorias}}
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="text-uppercase">
+                            <tr>
+                                <th class="colorHeader text-white py-3">Categoría</th>
+                                <th class="colorHeader text-white text-end py-3">Acciones</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            {{#categorias}}
+                                <tr>
+                                    <td><span class="badge px-3 py-2 text-white" style="background: {{color}}">{{nombre}}</span></td>
+                                    <td class="text-end">
+                                        <div class="btn-group">
+                                            <form action="/Editor/verCategorias" method="POST">
+                                                <input type="hidden" name="id" value="{{id}}">
+                                                <button class="btn btn-warning btn-sm mx-2">Editar</button>
+                                            </form>
+
+                                            <form action="/Editor/eliminarCategoria" method="POST"
+                                                  onsubmit="return confirm('¿Eliminar categoría?')">
+                                                <input type="hidden" name="id" value="{{id}}">
+                                                <button class="btn btn-danger btn-sm ">Eliminar</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {{/categorias}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {{/hubo_categorias}}
+
+            {{^hubo_categorias}}
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body text-center py-5">
+                        <div class="display-3">🎉</div>
+                        <h3 class="mt-3">No existen categorías</h3>
+                        <p class="text-muted mb-0">Todavía no hay categorías cargadas.</p>
+                    </div>
+                </div>
+            {{/hubo_categorias}}
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0">
+                <div class="colorHeader card-header rounded-0 text-center text-white" style="background:#212529">
+                    <h3 class="mb-1">
+                        {{#categoria}}Editar Categoría{{/categoria}}
+                        {{^categoria}}Crear Categoría{{/categoria}}
+                    </h3>
+                </div>
+
+                <form action="/Editor/guardarCategoria" method="POST">
+                    <div class="card-body p-4">
+                        {{#categoria}}<input type="hidden" name="id" value="{{id}}">{{/categoria}}
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Nombre</label>
+                                <input type="text" class="form-control form-control-lg" name="nombre"
+                                       {{#categoria}}value="{{nombre}}"{{/categoria}} required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Color</label>
+                                <input id="colorCategoria" type="color" class="form-control form-control-lg" name="color"
+                                       value="{{#categoria}}{{color}}{{/categoria}}{{^categoria}}#212529{{/categoria}}">
+                            </div>
+                        </div>
+
+                        <hr>
+                        {{#categoria}}
+                        <a href="/Editor/verCategorias">Cancelar</a>
+                        {{/categoria}}
+                        <div class="text-end">
+                            <button id="submitColor" type="submit" class="btn btn-lg text-white px-5"
+                                    style="background:#212529">Guardar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+{{> footer}}
+</body>
+<script>
+        const colorInput = document.getElementById("colorCategoria");
+        const headers = document.querySelectorAll('.colorHeader');
+        const submit = document.getElementById("submitColor");
+
+        function actualizarColor() {
+            headers.forEach(header => {
+                header.style.backgroundColor = colorInput.value;
+            });
+            submit.style.backgroundColor = colorInput.value;
+        }
+
+        colorInput.addEventListener("input", actualizarColor);
+
+        actualizarColor();
+</script>
+</html>
