@@ -222,6 +222,39 @@ class PreguntaModel
         return 0;
     }
 
+    public function getPreguntasGrafico()
+    {
+        $hoy    = date('Y-m-d 00:00:00');
+        $semana = date('Y-m-d H:i:s', strtotime('-7 days'));
+        $mes    = date('Y-m-d H:i:s', strtotime('-30 days'));
+        $anio   = date('Y-m-d H:i:s', strtotime('-1 year'));
+
+
+        $sql = "SELECT 
+                SUM(CASE WHEN fechaCreacion >= '{$hoy}' THEN 1 ELSE 0 END) as hoy,
+                SUM(CASE WHEN fechaCreacion >= '{$semana}' THEN 1 ELSE 0 END) as semana,
+                SUM(CASE WHEN fechaCreacion >= '{$mes}' THEN 1 ELSE 0 END) as mes,
+                SUM(CASE WHEN fechaCreacion >= '{$anio}' THEN 1 ELSE 0 END) as anio,
+                COUNT(*) as todo
+            FROM Pregunta";
+
+        $resultado = $this->database->query($sql);
+
+        if (!empty($resultado)) {
+            $row = $resultado[0];
+
+            return [
+                ["periodo" => "Histórico", "cantidad" => intval($row['todo'])],
+                ["periodo" => "Últ. Año", "cantidad" => intval($row['anio'])],
+                ["periodo" => "Últ. Mes", "cantidad" => intval($row['mes'])],
+                ["periodo" => "Últ. Semana", "cantidad" => intval($row['semana'])],
+                ["periodo" => "Hoy", "cantidad" => intval($row['hoy'])]
+            ];
+        }
+
+        return [];
+    }
+
     public function getCategorias()
     {
         $sql = "SELECT id, nombre, color FROM Categoria";
