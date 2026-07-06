@@ -85,7 +85,8 @@ class Configurator {
         return $this->{$defaultGetter}();
     }
 
-    public function getPreguntaController() {
+    public function getPreguntaController()
+    {
         return new PreguntaController(
             $this->getPreguntaModel(),
             $this->getPartidaModel(),
@@ -112,6 +113,11 @@ class Configurator {
         return new UsuarioModel($this->getDatabase());
     }
 
+
+    public function getPanelEditorController()
+    {
+        return new PanelEditorController($this->getPreguntaModel(), $this->getUsuarioModel(), $this->getRenderer(), new Request());
+    }
     public function getCategoriaModel() {
         return new CategoriaModel($this->getDatabase());
     }

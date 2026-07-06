@@ -41,7 +41,9 @@ class PanelAdminController
         $preguntasReportadas = $this->preguntaModel->getPreguntasReportadas();
         $datosVista = [
             "lista_reportes" => $preguntasReportadas,
-            "hubo_reportes" => !empty($preguntasReportadas)
+            "hubo_reportes" => !empty($preguntasReportadas),
+            "base_url" => "/PanelAdmin",
+            "nombre_panel" => "Panel Admin"
         ];
         $this->renderer->render("verPreguntasReportadas", $datosVista);
     }
@@ -219,9 +221,9 @@ class PanelAdminController
      */
     public function verificarAdmin(): void
     {
-        if (!isset($_SESSION["id"])) {
-            Redirect::to("/lobby");
-
+        if (!isset($_SESSION["rol"]) || $_SESSION["rol"] !== "ADMIN") {
+            header("Location: /lobby");
+            exit();
         }
     }
 
@@ -230,7 +232,10 @@ class PanelAdminController
         $preguntasSugeridas = $this->preguntaModel->getPreguntasSugeridas();
         $this->renderer->render("verPreguntasSugeridas", [
             "lista_sugeridas" => $preguntasSugeridas,
-            "hubo_sugerencias" => !empty($preguntasSugeridas)]);
+            "hubo_sugerencias" => !empty($preguntasSugeridas),
+            "base_url" => "/PanelAdmin",
+            "nombre_panel" => "Panel Admin"
+        ]);
     }
 
     public function verPreguntas() {

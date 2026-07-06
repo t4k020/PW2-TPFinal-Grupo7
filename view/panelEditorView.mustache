@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
+    <title>Preguntados - Panel Editor</title>
+</head>
+<body>
+{{> header}}
+<main class="container py-4">
+    <div class="row g-4">
+        <div class="col-lg-3">
+            <div class="card shadow h-100 border-dark">
+                <div class="card-body text-center">
+                    <img src="/public/img/default-user.png"
+                         class="rounded-circle mb-3 border border-3 border-dark"
+                         width="120" height="120" alt="Editor Perfil">
+                    <h4>{{usuario}}</h4>
+                    <span class="badge bg-dark text-white mb-3">Editor de Contenido</span>
+                    <a href="/lobby" class="btn btn-outline-secondary btn-sm w-100">
+                        🏠 Volver al Lobby
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+
+            <div class="row g-4 mb-4">
+
+                <div class="col-md-6">
+                    <div class="card shadow h-100">
+                        <div class="card-body text-center py-5">
+                            <h2 class="mb-3">🎮 Preguntas del Juego</h2>
+                            <p class="lead">
+                                Administrar todas las preguntas disponibles del juego.
+                            </p>
+                            <a href="/PanelAdmin/verPreguntas"
+                               class="btn btn-primary btn-lg px-5 fw-bold">
+                                VER PREGUNTAS
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card shadow h-100">
+                        <div class="card-body text-center py-5">
+                            <h2 class="mb-3">📝 Ver preguntas propuestas</h2>
+                            <p class="lead">
+                                Preguntas propuestas por la comunidad, esperando revisión.
+                            </p>
+                            <a href="/PanelAdmin/verSugeridas"
+                               class="btn btn-dark btn-lg px-5 fw-bold">
+                                REVISAR PREGUNTAS
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-12">
+                    <div class="card shadow h-100">
+                        <div class="card-body text-center py-4">
+                            <h4>🚨 Preguntas Reportadas</h4>
+                            <p class="text-muted">
+                                Modificar o dar de baja preguntas denunciadas por los jugadores.
+                            </p>
+                            <a href="/PanelEditor/verReportes" class="btn btn-danger px-4">
+                                Gestionar Reportes
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+</body>
+</html>

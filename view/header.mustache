@@ -68,13 +68,17 @@
     {{#usuario}}
         <div class="position-absolute top-0 end-0 p-3">
             {{#esAdmin}}
-                <a href="/PanelAdmin/verPreguntas" class="btn btn-success shadow fw-bold">
-                    ABM Preguntas
-                </a>
-                <a href="/PanelAdmin" class="btn btn-warning shadow fw-bold">
+                <a href="/PanelAdmin" class="btn btn-warning shadow fw-bold me-2">
                     ⚙️ Panel Admin
                 </a>
             {{/esAdmin}}
+
+            {{#esEditor}}
+                <a href="/PanelEditor/mostrar" class="btn btn-dark shadow fw-bold me-2 text-white border-light">
+                    📝 Panel Editor
+                </a>
+            {{/esEditor}}
+
             <a href="/login/logout" class="btn btn-danger shadow">
                 🔓 Cerrar sesión
             </a>
@@ -83,5 +87,4 @@
 
     <a class="text-decoration-none" href="/lobby"><h1>Preguntados</h1></a>
     <p>"AQUÍ SE FORJAN LAS LEYENDAS DEL CONOCIMIENTO"</p>
-
 </header>
