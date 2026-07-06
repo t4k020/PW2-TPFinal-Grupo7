@@ -228,7 +228,7 @@ class PanelAdminController
     public function verSugeridas() {
         Log::info("[Editor] Mostrar Sugeridas");
         $preguntasSugeridas = $this->preguntaModel->getPreguntasSugeridas();
-        $this->renderer->render("preguntasSugeridas", [
+        $this->renderer->render("verPreguntasSugeridas", [
             "lista_sugeridas" => $preguntasSugeridas,
             "hubo_sugerencias" => !empty($preguntasSugeridas)]);
     }
