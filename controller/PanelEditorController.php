@@ -40,7 +40,9 @@ class PanelEditorController {
         $preguntasSugeridas = $this->preguntaModel->getPreguntasSugeridas();
         $this->renderer->render("preguntasSugeridas", [
             "lista_sugeridas" => $preguntasSugeridas,
-            "hubo_sugerencias" => !empty($preguntasSugeridas)
+            "hubo_sugerencias" => !empty($preguntasSugeridas),
+            "base_url" => "/PanelEditor",
+            "nombre_panel" => "Panel Editor"
         ]);
     }
 
@@ -50,7 +52,9 @@ class PanelEditorController {
 
         $this->renderer->render("verPreguntasReportadas", [
             "lista_reportes" => $preguntasReportadas,
-            "hubo_reportes" => !empty($preguntasReportadas)
+            "hubo_reportes" => !empty($preguntasReportadas),
+            "base_url" => "/PanelEditor",
+            "nombre_panel" => "Panel Editor"
         ]);
     }
 
@@ -66,7 +70,11 @@ class PanelEditorController {
         $this->verificarPermisos();
         $idPregunta = isset($_POST['id_pregunta']) ? intval($_POST['id_pregunta']) : 0;
         $this->preguntaModel->borrarPregunta($idPregunta);
-        header("Location: /PanelEditor/verReportes");
+        // Capturamos la URL anterior (si por algún motivo falla, lo mandamos al panel principal)
+        $urlOrigen = $_SERVER['HTTP_REFERER'] ?? '/PanelEditor/mostrar';
+
+        // Redirigimos
+        header("Location: " . $urlOrigen);
         exit();
     }
 
@@ -80,7 +88,9 @@ class PanelEditorController {
 
     public function verEditarPregunta() {
         $this->verificarPermisos();
-        $id = $_POST['id'] ?? null;
+
+        // Primero busca en GET (URL), si no está, busca en POST (Formulario).
+        $id = $_GET['id'] ?? $_POST['id'] ?? null;
         $data['pregunta'] = $this->preguntaModel->getPregunta($id);
 
         $data['url_procesar'] = "/PanelEditor/procesarEdicion";
@@ -104,9 +114,25 @@ class PanelEditorController {
         );
 
         if ($exito) {
-            header("Location: /PanelEditor/verReportes");
+            Log::info("Se modificaron exitosamente los datos de la pregunta.");
+
+            // Se atrapa el estado que mandó el formulario oculto
+            $estadoPregunta = $_POST['estado_pregunta'] ?? '';
+
+            // Se define la base de la URL según el rol
+            $baseUrl = ($_SESSION['rol'] === 'ADMIN') ? '/PanelAdmin' : '/PanelEditor';
+
+            // Se redirige como corresponde
+            if ($estadoPregunta === 'PENDIENTE') {
+                header("Location: " . $baseUrl . "/verSugeridas");
+            } else {
+                header("Location: " . $baseUrl . "/verReportes");
+            }
+
         } else {
-            header("Location: /PanelEditor/mostrar");
+            Log::error("No se modificaron exitosamente.");
+            $baseUrl = ($_SESSION['rol'] === 'ADMIN') ? '/PanelAdmin' : '/PanelEditor';
+            header("Location: " . $baseUrl . "/mostrar");
         }
         exit();
     }
