@@ -27,7 +27,7 @@ class Configurator {
     //Lobby
     public function getLobbyController()
     {
-        return new LobbyController($this->getLobbyModel(), $this->getPartidaModel() ,$this->getRenderer(), new Request());
+        return new LobbyController($this->getLobbyModel(), $this->getPartidaModel(), $this->getRenderer(), new Request());
     }
 
     private function getLobbyModel()
@@ -37,8 +37,8 @@ class Configurator {
 
     public function getPanelAdminController()
     {
-        return new PanelAdminController($this->getLobbyModel(),$this->getRenderer(), new Request(), $this->getPreguntaModel()
-                                        , $this->getUsuarioModel(), $this->getPartidaModel());
+        return new PanelAdminController($this->getLobbyModel(), $this->getRenderer(), new Request(), $this->getPreguntaModel()
+            , $this->getUsuarioModel(), $this->getPartidaModel());
     }
 
     public function getEditorController()
@@ -116,7 +116,10 @@ class Configurator {
         return new CategoriaModel($this->getDatabase());
     }
 
-
+    public function getPanelEditorController()
+    {
+        return new PanelEditorController($this->getPreguntaModel(), $this->getUsuarioModel(), $this->getRenderer(), new Request());
+    }
 
 
 }

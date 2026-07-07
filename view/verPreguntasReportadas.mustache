@@ -12,103 +12,116 @@
 {{> header}}
 
 <main class="container py-5">
-<div class="row justify-content-center">
-<div class="col-12 col-xl-10">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
 
-    <div class="bg-danger text-white rounded-top-4 shadow-sm p-4 mb-4">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-            <div>
-                <h1 class="display-5 fw-bold mb-1">
-                    Preguntas Reportadas
-                </h1>
-                <p class="lead mb-0 text-light">
-                    Gestiona los reportes emitidos por los usuarios de la plataforma.                </p>
+            <div class="bg-danger text-white rounded-top-4 shadow-sm p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div>
+                        <h1 class="display-5 fw-bold mb-1">
+                            Preguntas Reportadas
+                        </h1>
+                        <p class="lead mb-0 text-light">
+                            Gestiona los reportes emitidos por los usuarios de la plataforma. </p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="/PanelAdmin/mostrar" class="btn btn-outline-light btn-lg">
+                            Volver al Panel</a>
+                    </div>
+                </div>
+<!--                <a href="{{base_url}}/mostrar" class="btn btn-outline-secondary">-->
+<!--                    <i class="bi bi-arrow-left"></i> Volver a {{nombre_panel}}-->
+<!--                </a>-->
             </div>
-            <div class="d-flex gap-2">
-                <a href="/PanelAdmin/mostrar" class="btn btn-outline-light btn-lg">
-                    Volver al Panel</a>
-            </div>
-        </div>
-    </div>
 
-    {{#hubo_reportes}}
-        <div class="card shadow-sm border-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-dark text-uppercase fs-7">
-                    <tr>
-                        <th scope="col" class="ps-4 py-3" style="width: 45%;">Pregunta</th>
-                        <th scope="col" class="py-3" style="width: 15%;">Categoría</th>
-                        <th scope="col" class="py-3" style="width: 15%;">Motivo del Reporte</th>
-                        <th scope="col" class="pe-4 py-3 text-end" style="width: 25%;">Acciones</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {{#lista_reportes}}
-                        <tr>
-                            <td class="ps-4 py-3">
-                                <span class="fw-semibold text-dark fs-5 d-block mb-1">{{texto}}</span>
-                                <small class="text-muted">ID Pregunta: #{{id}}</small>
-                            </td>
+            {{#hubo_reportes}}
+                <div class="card shadow-sm border-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-dark text-uppercase fs-7">
+                            <tr>
+                                <th scope="col" class="ps-4 py-3" style="width: 45%;">Pregunta</th>
+                                <th scope="col" class="py-3" style="width: 15%;">Categoría</th>
+                                <th scope="col" class="py-3" style="width: 15%;">Motivo del Reporte</th>
+                                <th scope="col" class="pe-4 py-3 text-end" style="width: 25%;">Acciones</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{#lista_reportes}}
+                                <tr>
+                                    <td class="ps-4 py-3">
+                                        <span class="fw-semibold text-dark fs-5 d-block mb-1">{{texto}}</span>
+                                        <small class="text-muted">ID Pregunta: #{{id}}</small>
+                                    </td>
 
-                            <td class="py-3">
+                                    <td class="py-3">
                                 <span class="badge px-3 py-2 text-white" style="background-color: {{color}};">
                                     {{nombre}}
                                 </span>
-                            </td>
+                                    </td>
 
-                            <td class="py-3">
+                                    <td class="py-3">
                                 <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-2">
                                     ⚠️ {{reportado}}
                                 </span>
-                            </td>
+                                    </td>
 
-                            <td class="pe-4 py-3 text-end">
-                                <div class="d-inline-flex gap-2">
+                                    <td class="pe-4 py-3 text-end">
+                                        <div class="d-inline-flex gap-2">
 
-                                    <form action="/PanelAdmin/verEditarPregunta" method="POST" class="m-0">
-                                        <input type="hidden" name="id" value="{{id}}">
+                                            <!--<form action="{{base_url}}/verEditarPregunta" method="POST" class="m-0">-->
+                                            <form action="/PanelAdmin/verEditarPregunta" method="POST" class="m-0">
+                                                <input type="hidden" name="id" value="{{id}}">
                                         <input type="hidden" name="redirect" value="/verReportes">
-                                        <button type="submit" class="btn btn-sm btn-warning fw-bold d-inline-flex align-items-center gap-1" title="Editar contenido o respuestas">
-                                            <i class="bi bi-pencil-square"></i> Editar
-                                        </button>
-                                    </form>
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-warning fw-bold d-inline-flex align-items-center gap-1"
+                                                        title="Editar contenido o respuestas">
+                                                    <i class="bi bi-pencil-square"></i> Editar
+                                                </button>
+                                            </form>
 
-                                    <form action="/PanelAdmin/ignorarPregunta" method="POST" class="m-0">
-                                        <input type="hidden" name="id" value="{{id}}">
-                                        <button type="submit" class="btn btn-sm btn-outline-success fw-bold d-inline-flex align-items-center gap-1" title="Descartar reporte">
-                                            <i class="bi bi-check-circle"></i> Ignorar
-                                        </button>
-                                    </form>
+<!--                                            <form action="{{base_url}}/ignorarPregunta" method="POST" class="m-0">-->
+                                            <form action="/PanelAdmin/ignorarPregunta" method="POST" class="m-0">
+                                                <input type="hidden" name="id" value="{{id}}">
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-outline-success fw-bold d-inline-flex align-items-center gap-1"
+                                                        title="Descartar reporte">
+                                                    <i class="bi bi-check-circle"></i> Ignorar
+                                                </button>
+                                            </form>
 
-                                    <form action="/PanelAdmin/eliminarPregunta" method="POST" class="m-0" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta pregunta de forma permanente?');">
-                                        <input type="hidden" name="id_pregunta" value="{{id}}">
+<!--                                            form action="{{base_url}}/eliminarPregunta"-->
+                                            <form action="/PanelAdmin/eliminarPregunta" method="POST" class="m-0"
+                                                  onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta pregunta de forma permanente?');">
+                                                <input type="hidden" name="id_pregunta" value="{{id}}">
                                         <input type="hidden" name="redirect" value="/verReportes">
-                                        <button type="submit" class="btn btn-sm btn-danger fw-bold d-inline-flex align-items-center gap-1" title="Eliminar pregunta de la aplicación">
-                                            <i class="bi bi-trash3"></i> Eliminar
-                                        </button>
-                                    </form>
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-danger fw-bold d-inline-flex align-items-center gap-1"
+                                                        title="Eliminar pregunta de la aplicación">
+                                                    <i class="bi bi-trash3"></i> Eliminar
+                                                </button>
+                                            </form>
 
-                                </div>
-                            </td>
-                        </tr>
-                    {{/lista_reportes}}
-                    </tbody>
-                </table>
-            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {{/lista_reportes}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {{/hubo_reportes}}
+
+            {{^hubo_reportes}}
+                <div class="card text-center shadow-sm border-0 p-5">
+                    <div class="display-1 text-success mb-3">🎉</div>
+                    <h3 class="fw-bold text-dark">¡Todo al día por aquí!</h3>
+                    <p class="text-muted mb-0">No se encontraron preguntas con reportes activos en este momento.</p>
+                </div>
+            {{/hubo_reportes}}
+
         </div>
-    {{/hubo_reportes}}
-
-    {{^hubo_reportes}}
-        <div class="card text-center shadow-sm border-0 p-5">
-            <div class="display-1 text-success mb-3">🎉</div>
-            <h3 class="fw-bold text-dark">¡Todo al día por aquí!</h3>
-            <p class="text-muted mb-0">No se encontraron preguntas con reportes activos en este momento.</p>
-        </div>
-    {{/hubo_reportes}}
-
-</div>
-</div>
+    </div>
 </main>
 
 {{> footer}}

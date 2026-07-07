@@ -41,7 +41,9 @@ class PanelAdminController
         $preguntasReportadas = $this->preguntaModel->getPreguntasReportadas();
         $datosVista = [
             "lista_reportes" => $preguntasReportadas,
-            "hubo_reportes" => !empty($preguntasReportadas)
+            "hubo_reportes" => !empty($preguntasReportadas),
+            "base_url" => "/PanelAdmin",
+            "nombre_panel" => "Panel Admin"
         ];
         $this->renderer->render("verPreguntasReportadas", $datosVista);
     }
@@ -59,6 +61,14 @@ class PanelAdminController
         $idPregunta = isset($_POST['id_pregunta']) ? intval($_POST['id_pregunta']) : 0;
         $this->preguntaModel->borrarPregunta($idPregunta);
         header("Location: /PanelAdmin$redirect");
+
+//        // Capturamos la URL anterior (si por algún motivo falla, lo mandamos al panel principal)
+//        $urlOrigen = $_SERVER['HTTP_REFERER'] ?? '/PanelAdmin/mostrar';
+//
+//        // Redirigimos
+//        header("Location: " . $urlOrigen);
+//        exit();
+
     }
 
     public function ignorarPregunta() {
@@ -71,6 +81,7 @@ class PanelAdminController
     public  function verEditarPregunta() {
         $this->verificarAdmin();
         $id = $_POST['id'] ?? null;
+//        $id = $_GET['id'] ?? $_POST['id'] ?? null;
         $redirect = $_POST["redirect"] ?? "";
         $categorias = $this->preguntaModel->getCategorias();
         $pregunta = $this->preguntaModel->getPregunta($id);
@@ -78,6 +89,7 @@ class PanelAdminController
         foreach ($categorias as &$categoria) {
             $categoria["seleccionada"] = ($categoria['id'] == $pregunta['categoria_id']);
         }
+//        $data['url_procesar'] = "/PanelAdmin/procesarEdicion";
         $this->renderer->render("editarPregunta",
             ["pregunta" => $pregunta,
                 "categorias" => $categorias,
@@ -112,6 +124,30 @@ class PanelAdminController
         log::info("se modificaron exitosamente");
         header("Location: /PanelAdmin$redirect");
         exit();
+
+//        // 3. Redirigimos según el resultado
+//        if ($exito) {
+//            Log::info("Se modificaron exitosamente los datos de la pregunta.");
+//
+//            // Atrapamos el estado que mandó el formulario oculto
+//            $estadoPregunta = $_POST['estado_pregunta'] ?? '';
+//
+//            // Definimos la base de la URL según el rol
+//            $baseUrl = ($_SESSION['rol'] === 'ADMIN') ? '/PanelAdmin' : '/PanelEditor';
+//
+//            // Redirigimos como corresponde
+//            if ($estadoPregunta === 'PENDIENTE') {
+//                header("Location: " . $baseUrl . "/verSugeridas");
+//            } else {
+//                header("Location: " . $baseUrl . "/verReportes");
+//            }
+//
+//        } else {
+//            Log::error("No se modificaron exitosamente.");
+//            $baseUrl = ($_SESSION['rol'] === 'ADMIN') ? '/PanelAdmin' : '/PanelEditor';
+//            header("Location: " . $baseUrl . "/mostrar");
+//        }
+//        exit();
     }
 
     public function guardarCreacion() {
@@ -219,9 +255,9 @@ class PanelAdminController
      */
     public function verificarAdmin(): void
     {
-        if (!isset($_SESSION["id"])) {
-            Redirect::to("/lobby");
-
+        if (!isset($_SESSION["rol"]) || $_SESSION["rol"] !== "ADMIN") {
+            header("Location: /lobby");
+            exit();
         }
     }
 
@@ -230,7 +266,10 @@ class PanelAdminController
         $preguntasSugeridas = $this->preguntaModel->getPreguntasSugeridas();
         $this->renderer->render("verPreguntasSugeridas", [
             "lista_sugeridas" => $preguntasSugeridas,
-            "hubo_sugerencias" => !empty($preguntasSugeridas)]);
+            "hubo_sugerencias" => !empty($preguntasSugeridas),
+            "base_url" => "/PanelAdmin",
+            "nombre_panel" => "Panel Admin"
+        ]);
     }
 
     public function verPreguntas() {

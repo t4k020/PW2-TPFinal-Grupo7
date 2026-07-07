@@ -28,6 +28,9 @@
                     <div class="d-flex gap-2">
                         <a href="/PanelAdmin/mostrar" class="btn btn-outline-dark btn-lg">
                             Volver al Panel</a>
+<!--                        <a href="{{base_url}}/mostrar" class="btn btn-outline-secondary">-->
+<!--                            <i class="bi bi-arrow-left"></i> Volver a {{nombre_panel}}-->
+<!--                        </a>-->
                     </div>
                 </div>
             </div>
@@ -73,6 +76,7 @@
                                     <td class="pe-4 py-3 text-end">
                                         <div class="d-inline-flex gap-2">
 
+<!--                                            <form action="{{base_url}}/aprobarPregunta" method="POST" class="m-0">-->
                                             <form action="/PanelAdmin/aprobarPregunta" method="POST" class="m-0">
                                                 <input type="hidden" name="id_pregunta" value="{{id}}">
                                                 <button type="submit" class="btn btn-sm btn-outline-success fw-bold d-inline-flex align-items-center gap-1" title="Descartar reporte">
@@ -80,6 +84,7 @@
                                                 </button>
                                             </form>
 
+<!--                                            <a href="{{base_url}}/verEditarPregunta?id={{id}}"-->
                                             <form action="/PanelAdmin/verEditarPregunta" method="POST" class="m-0">
                                                 <input type="hidden" name="id" value="{{id}}">
                                                 <input type="hidden" name="redirect" value="/verSugeridas">
@@ -88,7 +93,8 @@
                                                 </button>
                                             </form>
 
-                                            <form action="/PanelAdmin/eliminarPregunta" method="POST" class="m-0" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta pregunta de forma permanente?');">
+<!--                                            <form action="{{base_url}}/eliminarPregunta" method="POST" class="m-0" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta pregunta de forma permanente?');">-->
+                                                <form action="/PanelAdmin/eliminarPregunta" method="POST" class="m-0" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta pregunta de forma permanente?');">
                                                 <input type="hidden" name="id_pregunta" value="{{id}}">
                                                 <input type="hidden" name="redirect" value="/verSugeridas">
                                                 <button type="submit" class="btn btn-sm btn-danger fw-bold d-inline-flex align-items-center gap-1" title="Eliminar pregunta de la aplicación">
