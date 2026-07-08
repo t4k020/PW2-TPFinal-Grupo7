@@ -8,24 +8,31 @@ $router = $config->getRouter();
 $controller = $_GET['controller'] ?? '';
 $method = $_GET['method'] ?? '';
 
-$publicControllers = ['login', 'register'];
-$publicRoutes = ['usuario/ver'];
-
-if (!(in_array($controller, $publicControllers) || in_array("$controller/$method", $publicRoutes))
-    && !isset($_SESSION['id'])) {
-    Redirect::to('/login');
+switch ($controller) {
+    case 'panelAdmin':
+        if (!isset($_SESSION['id']) || $_SESSION['rol'] != 'ADMIN')
+            Redirect::to('/lobby');
+        break;
+    case 'panelEditor':
+        if (!isset($_SESSION['id']) || !in_array($_SESSION['rol'], ['ADMIN', 'EDITOR']))
+            Redirect::to('/lobby');
+        break;
+    case 'register':
+        if (isset($_SESSION['id']))
+            Redirect::to('/lobby');
+        break;
+    case 'login':
+        if (isset($_SESSION['id']) && $method != 'logout')
+            Redirect::to('/lobby');
+        break;
+    case 'usuario':
+        if (!isset($_SESSION['id']) && $method != 'ver')
+            Redirect::to('/login');
+        break;
+    default:
+        if (!isset($_SESSION['id']))
+            Redirect::to('/login');
+        break;
 }
 
-$router->dispatch(
-    $_GET['controller'] ?? '',
-        $_GET['method'] ?? '',
-        $_GET['params'] ?? null
-);
-
-if (in_array($controller, $publicControllers) && isset($_SESSION['id'])) {
-    Redirect::to('/lobby');
-}
-//validar admin y sesion en index
-//añadir ruleta, elige aleatoriamente una categoria
-// añadir editor, que labura preguntas,no vee estadisticas
-//graficar las estadisticas, boton de imprimir cada uno
+$router->dispatch($controller, $method, $_GET['params'] ?? null);

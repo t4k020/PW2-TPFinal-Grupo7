@@ -2,19 +2,17 @@
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
+
 class PanelAdminController
 {
-    private $model;
     private $renderer;
     private $request;
-
     private $preguntaModel;
     private $usuarioModel;
     private $partidaModel;
 
-    public function __construct($model, $renderer, $request, $preguntaModel, $usuarioModel, $partidaModel)
+    public function __construct($renderer, $request, $preguntaModel, $usuarioModel, $partidaModel)
     {
-        $this->model = $model;
         $this->renderer = $renderer;
         $this->request = $request;
         $this->preguntaModel = $preguntaModel;
@@ -22,121 +20,16 @@ class PanelAdminController
         $this->partidaModel = $partidaModel;
     }
 
-    public function mostrar() {
+    public function mostrar()
+    {
         Log::info("panelAdminController::mostrar");
-        $this->verificarAdmin();
-        $usuario = $this->model->obtenerDatosUsuario($_SESSION["id"]);
+        $usuario = $this->usuarioModel->obtenerDatosUsuario($_SESSION["id"]);
 
         $this->renderer->render("panelAdminView",
             ["usuario" => $usuario["username"],
-            "puntaje" => $usuario["puntaje"],
-            "trampitas" => $usuario["trampitas"],
-            "esAdmin" => ($usuario["username"] === "Admin")]);
-    }
-
-    public function verReportes()
-    {
-        $this->verificarAdmin();
-
-        $preguntasReportadas = $this->preguntaModel->getPreguntasReportadas();
-        $datosVista = [
-            "lista_reportes" => $preguntasReportadas,
-            "hubo_reportes" => !empty($preguntasReportadas),
-            "base_url" => "/PanelAdmin",
-            "nombre_panel" => "Panel Admin"
-        ];
-        $this->renderer->render("verPreguntasReportadas", $datosVista);
-    }
-
-    public function aprobarPregunta() {
-        $this->verificarAdmin();
-        $idPregunta = isset($_POST['id_pregunta']) ? intval($_POST['id_pregunta']) : 0;
-        $this->preguntaModel->aprobarPregunta($idPregunta);
-        $this->verSugeridas();
-    }
-
-    public function eliminarPregunta() {
-        $this->verificarAdmin();
-        $redirect = $_POST["redirect"] ?? "";
-        $idPregunta = isset($_POST['id_pregunta']) ? intval($_POST['id_pregunta']) : 0;
-        $this->preguntaModel->borrarPregunta($idPregunta);
-        header("Location: /PanelAdmin$redirect");
-    }
-
-    public function ignorarPregunta() {
-        $this->verificarAdmin();
-        $idPregunta = isset($_POST['id']) ? intval($_POST['id']) : 0;
-        $this->preguntaModel->ignorarPregunta($idPregunta);
-        $this->verReportes();
-    }
-
-    public  function verEditarPregunta() {
-        $this->verificarAdmin();
-        $id = $_POST['id'] ?? null;
-        $redirect = $_POST["redirect"] ?? "";
-        $categorias = $this->preguntaModel->getCategorias();
-        $pregunta = $this->preguntaModel->getPregunta($id);
-
-        foreach ($categorias as &$categoria) {
-            $categoria["seleccionada"] = ($categoria['id'] == $pregunta['categoria_id']);
-        }
-        $this->renderer->render("editarPregunta",
-            ["pregunta" => $pregunta,
-                "categorias" => $categorias,
-                "redirect" => $redirect]);
-    }
-
-    public function procesarEdicion()
-    {
-        $this->verificarAdmin();
-        // Validamos que vengan los datos mínimos obligatorios
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['id'])) {
-            header("Location: /PanelAdmin/mostrar");
-            exit();
-        }
-
-        $idPregunta = intval($_POST['id']);
-        $redirect = $_POST["redirect"] ?? "";
-        $nuevoTextoPregunta = $_POST['texto'] ?? '';
-        $idRespuestaCorrecta = intval($_POST['respuesta_correcta_id'] ?? 0);
-        $respuestasData = $_POST['respuestas'] ?? []; // Trae el array indexado [id => ['texto' => '...']]
-
-        //Mandamos los datos al modelo
-        $this->preguntaModel->updatePreguntaYRespuestas(
-            $idPregunta,
-            $nuevoTextoPregunta,
-            $idRespuestaCorrecta,
-            $respuestasData
-        );
-        if (str_contains($redirect,"verReportes"))
-            $this->ignorarPregunta();
-
-        log::info("se modificaron exitosamente");
-        header("Location: /PanelAdmin$redirect");
-        exit();
-    }
-
-    public function guardarCreacion() {
-        Log::info("Guardando pregunta nueva...");
-        $redirect = $_POST["redirect"] ?? "";
-        $estado = "PENDIENTE";
-        if ($redirect != "") {
-            $this->verificarAdmin();
-            $estado = "APROBADA";
-        }
-
-        $categoriaId = $_POST['categoria_id'];
-        $pregunta = $_POST['texto_pregunta'];
-        $respuestaCorrecta = $_POST['respuesta_correcta'];
-        $respuestas = $_POST['respuestas'];
-
-        $this->preguntaModel->guardarPreguntaYRespuestas($categoriaId, $pregunta, $respuestaCorrecta, $respuestas, $estado);
-        if ($redirect != "") {
-            header("Location: $redirect");
-            exit();
-        }
-        Redirect::toIndex();
-        exit();
+                "puntaje" => $usuario["puntaje"],
+                "trampitas" => $usuario["trampitas"],
+                "esAdmin" => ($usuario["username"] === "Admin")]);
     }
 
     public function verEstadisticasAdmin()
@@ -162,14 +55,12 @@ class PanelAdminController
                 $fechaDesde = null; // 'todo' no filtra por fecha
                 break;
         }
-        $this->verificarAdmin();
+
         $totalUsuarios = $this->usuarioModel->getTotalUsuarios($fechaDesde);
 
         $datosTotalUsuariosEscalera = $this->usuarioModel->getUsuariosGrafico();
         $preguntasTotalEscalera = $this->preguntaModel->getPreguntasGrafico();
         $partidasTotalEscalera = $this->partidaModel->getPartidasGrafico();
-
-
 
 
         $totalPreguntas = $this->preguntaModel->getTotalPreguntas($fechaDesde);
@@ -215,37 +106,6 @@ class PanelAdminController
         $this->renderer->render("verEstadisticasAdmin", $datosVista);
     }
 
-
-    /**
-     * @return void
-     */
-    public function verificarAdmin(): void
-    {
-        if (!isset($_SESSION["rol"]) || $_SESSION["rol"] !== "ADMIN") {
-            header("Location: /lobby");
-            exit();
-        }
-    }
-
-    public function verSugeridas() {
-        Log::info("[Editor] Mostrar Sugeridas");
-        $preguntasSugeridas = $this->preguntaModel->getPreguntasSugeridas();
-        $this->renderer->render("verPreguntasSugeridas", [
-            "lista_sugeridas" => $preguntasSugeridas,
-            "hubo_sugerencias" => !empty($preguntasSugeridas),
-            "base_url" => "/PanelAdmin",
-            "nombre_panel" => "Panel Admin"
-        ]);
-    }
-
-    public function verPreguntas() {
-        Log::info("[Editor] Mostrar Preguntas");
-        $preguntasSugeridas = $this->preguntaModel->getPreguntasAprobadas();
-        $this->renderer->render("verTodasLasPreguntas", [
-            "lista_preguntas" => $preguntasSugeridas,
-            "hubo_preguntas" => !empty($preguntasSugeridas)]);
-    }
-
     //NECESITA ACTIVAR EXTENSION GD EN APACHE (php.ini) para dibujar las graficas en el pdf
     public function generarReportePdf()
     {
@@ -254,12 +114,12 @@ class PanelAdminController
 
             // capturamos y limpiamos los Base64 eliminando espacios o saltos de línea
             // los graficos esta codificado en base64 para que pueda ser reescrito en pdf
-            $imgPais   = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_pais']);
-            $imgEdad   = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_edad']);
+            $imgPais = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_pais']);
+            $imgEdad = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_edad']);
             $imgGenero = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_genero']);
-            $imgTiempo  = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_usuarios_tiempo']);
+            $imgTiempo = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_usuarios_tiempo']);
             $imgPreguntas = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_preguntas_tiempo']);
-            $imgPartidas  = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_partidas_tiempo']);
+            $imgPartidas = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_partidas_tiempo']);
             $imgAciertos = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_acierto_dona']);
 
 

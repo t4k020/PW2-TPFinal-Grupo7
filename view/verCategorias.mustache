@@ -19,7 +19,7 @@
                 <p class="lead mb-0">Crea, edita o elimina las categorías disponibles.</p>
             </div>
 
-            <a href="/PanelAdmin/verPreguntas" class="btn btn-outline-light btn-lg">
+            <a href="/panelEditor/verPreguntas" class="btn btn-outline-light btn-lg">
                 Volver a Preguntas</a>
         </div>
     </div>
@@ -43,12 +43,12 @@
                                     <td><span class="badge px-3 py-2 text-white" style="background: {{color}}">{{nombre}}</span></td>
                                     <td class="text-end">
                                         <div class="btn-group">
-                                            <form action="/Editor/verCategorias" method="POST">
+                                            <form action="/panelEditor/verCategorias" method="POST">
                                                 <input type="hidden" name="id" value="{{id}}">
                                                 <button class="btn btn-warning btn-sm mx-2">Editar</button>
                                             </form>
 
-                                            <form action="/Editor/eliminarCategoria" method="POST"
+                                            <form action="/panelEditor/eliminarCategoria" method="POST"
                                                   onsubmit="return confirm('¿Eliminar categoría?')">
                                                 <input type="hidden" name="id" value="{{id}}">
                                                 <button class="btn btn-danger btn-sm ">Eliminar</button>
@@ -83,7 +83,7 @@
                     </h3>
                 </div>
 
-                <form action="/Editor/guardarCategoria" method="POST">
+                <form action="/panelEditor/guardarCategoria" method="POST">
                     <div class="card-body p-4">
                         {{#categoria}}<input type="hidden" name="id" value="{{id}}">{{/categoria}}
 
@@ -102,10 +102,11 @@
                         </div>
 
                         <hr>
-                        {{#categoria}}
-                        <a href="/Editor/verCategorias">Cancelar</a>
-                        {{/categoria}}
                         <div class="text-end">
+                            {{#categoria}}
+                                <a href="/panelEditor/verCategorias" class="btn btn-lg px-5
+                                btn-outline-secondary">Cancelar</a>
+                            {{/categoria}}
                             <button id="submitColor" type="submit" class="btn btn-lg text-white px-5"
                                     style="background:#212529">Guardar</button>
                         </div>

@@ -6,6 +6,16 @@ class CategoriaModel {
     public function __construct($database)
     {$this->database = $database;}
 
+    public function getCategorias()
+    {
+        $sql = "SELECT id, nombre, color FROM Categoria";
+        $resultado = $this->database->query($sql);
+        if (empty($resultado))
+            return null;
+
+        return $resultado;
+    }
+
     public function getCategoria($id) {
         $sql = "SELECT id, nombre, color FROM Categoria WHERE id = ?";
         $resultado = $this->database->query($sql,[$id]);
