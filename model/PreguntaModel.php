@@ -140,10 +140,19 @@ class PreguntaModel
                         JOIN Categoria c ON p.categoria_id = c.id 
                         WHERE p.reportado IN ('Pregunta mal escrita', 'Respuesta equivocada') ";
 
+        $preguntas = $this->database->query($sqlReporte);
 
-        $resultadoReporte = $this->database->query($sqlReporte);
+        foreach ($preguntas as &$pregunta) {
 
-        return $resultadoReporte;
+            $sqlRespuestas = "SELECT id, texto, es_correcta
+                          FROM Respuesta
+                          WHERE pregunta_id = ?";
+
+            $pregunta["respuestas"] =
+                $this->database->query($sqlRespuestas, [$pregunta["id"]]);
+        }
+
+        return $preguntas;
     }
 
     public function aprobarPregunta($id)
@@ -175,11 +184,11 @@ class PreguntaModel
         $this->database->query($sql);
     }
 
-    public function updatePreguntaYRespuestas($idPregunta, $textoPregunta, $idRespuestaCorrecta, $respuestasData)
+    public function updatePreguntaYRespuestas($idPregunta, $textoPregunta,$categoriaId, $idRespuestaCorrecta, $respuestasData)
     {
         // Actualizar el texto de la Pregunta usando placeholders
-        $sqlPregunta = "UPDATE Pregunta SET texto = ? WHERE id = ?";
-        $paramsPregunta = [$textoPregunta, intval($idPregunta)];
+        $sqlPregunta = "UPDATE Pregunta SET texto = ?, categoria_id = ? WHERE id = ?";
+        $paramsPregunta = [$textoPregunta, $categoriaId, intval($idPregunta)];
 
         // Ejecutamos el cambio en la tabla Pregunta
         $this->database->execute($sqlPregunta, $paramsPregunta);
@@ -198,6 +207,7 @@ class PreguntaModel
 
             // Ejecutamos el update de esta respuesta de forma segura
             $this->database->execute($sqlRespuesta, $paramsRespuesta);
+            Log::info("[Editor] Se modificaron exitosamente los datos de la pregunta");
         }
     }
 
@@ -250,16 +260,6 @@ class PreguntaModel
         }
 
         return [];
-    }
-
-    public function getCategorias()
-    {
-        $sql = "SELECT id, nombre, color FROM Categoria";
-        $resultado = $this->database->query($sql);
-        if (empty($resultado))
-            return null;
-
-        return $resultado;
     }
 
     public function guardarPreguntaYRespuestas($categoriaId, $pregunta, $respuestaCorrecta, $respuestas, $estado)

@@ -26,15 +26,38 @@
         </div>
 
         <div class="col-lg-9">
-            <div class="card shadow mb-4">
-                <div class="card-body text-center py-5">
-                    <h2 class="mb-3">📝 Ver preguntas propuestas</h2>
-                    <p class="lead">Preguntas propuestas por la comunidad, esperando revisión.</p>
-                    <a href="/PanelEditor/verSugeridas" class="btn btn-dark btn-lg px-5 fw-bold">
-                        REVISAR PREGUNTAS
-                    </a>
+
+            <div class="row g-4 mb-4">
+
+                <div class="col-md-6">
+                    <div class="card shadow h-100">
+                        <div class="card-body text-center py-5">
+                            <h2 class="mb-3">🎮 Preguntas del Juego</h2>
+                            <p class="lead">
+                                Administrar todas las preguntas disponibles del juego.
+                            </p>
+                            <a href="/panelEditor/verPreguntas"
+                               class="btn btn-primary btn-lg px-5 fw-bold">
+                                VER PREGUNTAS
+                            </a>
+                        </div>
+                    </div>
                 </div>
-            </div>
+
+                <div class="col-md-6">
+                    <div class="card shadow h-100">
+                        <div class="card-body text-center py-5">
+                            <h2 class="mb-3">📝 Ver preguntas propuestas</h2>
+                            <p class="lead">
+                                Preguntas propuestas por la comunidad, esperando revisión.
+                            </p>
+                            <a href="/panelEditor/verSugeridas"
+                               class="btn btn-dark btn-lg px-5 fw-bold">
+                                REVISAR PREGUNTAS
+                            </a>
+                        </div>
+                    </div>
+                </div>
 
             <div class="row g-4">
                 <div class="col-md-12">
@@ -42,7 +65,7 @@
                         <div class="card-body text-center py-4">
                             <h4>🚨 Preguntas Reportadas</h4>
                             <p class="text-muted">Modificar o dar de baja preguntas denunciadas por los jugadores.</p>
-                            <a href="/PanelEditor/verReportes" class="btn btn-danger px-4">
+                            <a href="/panelEditor/verReportes" class="btn btn-danger px-4">
                                 Gestionar Reportes
                             </a>
                         </div>

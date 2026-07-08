@@ -1,22 +1,26 @@
 <?php
 
 class LobbyController {
-    private $model;
+    private $usuarioModel;
+    private $preguntaModel;
+    private $categoriaModel;
     private $partidaModel;
     private $renderer;
     private $request;
 
-    public function __construct($model, $partidaModel, $renderer, $request)
+    public function __construct($usuarioModel, $preguntaModel, $categoriaModel, $partidaModel, $renderer, $request)
     {
-        $this->model = $model;
+        $this->usuarioModel = $usuarioModel;
         $this->partidaModel = $partidaModel;
         $this->renderer = $renderer;
         $this->request = $request;
+        $this->preguntaModel = $preguntaModel;
+        $this->categoriaModel = $categoriaModel;
     }
 
     public function mostrar()
     {
-        $usuario = $this->model->obtenerDatosUsuario($_SESSION["id"]);
+        $usuario = $this->usuarioModel->obtenerDatosUsuario($_SESSION["id"]);
         $mejorPartida = $this->partidaModel->getPartidaConMejorPuntajePorUsuario($_SESSION["id"]);
         $mejorPuntaje = $mejorPartida["puntaje"] ?? 0;
         $mejorFecha = $mejorPartida["fecha_partida"] ?? '';
@@ -42,5 +46,37 @@ class LobbyController {
         }
 
         $this->renderer->render("rankingView", ["usuarios" => $listaRanking]);
+    }
+
+    public function sugerirPregunta() {
+        Log::info("[Lobby] Sugerir Pregunta");
+        $categorias = $this->categoriaModel->getCategorias();
+        $this->renderer->render("crearPregunta",
+            ["categorias" => $categorias,
+                "opciones" => [1,2,3,4]]);
+    }
+
+    public function guardarSugerencia()
+    {
+        Log::info("[Lobby] Guardar Sugerencia");
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || isset($_POST['id'])) {
+            Log::error("[Lobby] Sugerencia no guardada");
+            Redirect::to("/lobby");
+        }
+        $estado = "PENDIENTE";
+
+        $categoriaId = $_POST['categoria_id'];
+        $pregunta = $_POST['texto_pregunta'];
+        $respuestaCorrecta = $_POST['respuesta_correcta'];
+        $respuestas = $_POST['respuestas'];
+
+        $exito = $this->preguntaModel->guardarPreguntaYRespuestas(
+            $categoriaId, $pregunta, $respuestaCorrecta, $respuestas, $estado);
+        if ($exito)
+            Log::info("[Lobby] Sugerencia guardada");
+        else
+            Log::error("[Lobby] Sugerencia no guardada");
+
+        Redirect::to("/lobby");
     }
 }

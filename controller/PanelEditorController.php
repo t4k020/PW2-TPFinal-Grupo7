@@ -1,139 +1,187 @@
 <?php
 
-class PanelEditorController {
+class PanelEditorController
+{
     private $preguntaModel;
+    private $categoriaModel;
     private $usuarioModel;
     private $renderer;
     private $request;
 
-    public function __construct($preguntaModel, $usuarioModel, $renderer, $request) {
+    public function __construct($preguntaModel, $categoriaModel, $usuarioModel, $renderer, $request)
+    {
         $this->preguntaModel = $preguntaModel;
         $this->usuarioModel = $usuarioModel;
         $this->renderer = $renderer;
         $this->request = $request;
+        $this->categoriaModel = $categoriaModel;
     }
 
-    // Méto do centralizado de seguridad
-    private function verificarPermisos() {
-        if (!isset($_SESSION['rol']) || ($_SESSION['rol'] !== 'EDITOR' && $_SESSION['rol'] !== 'ADMIN')) {
-            header("Location: /lobby");
-            exit();
-        }
-    }
-
-    public function mostrar() {
-        $this->verificarPermisos();
-
-        // Buscamos los datos del usuario logueado usando su sesión
-        $usuario = $this->usuarioModel->getUsuario($_SESSION["username"]);
+    public function mostrar()
+    {
+        Log::info("[PanelEditor] Mostrar Panel Editor");
+        $usuario = $this->usuarioModel->getUsuario($_SESSION["username"]);//quiza seria mejor por id
 
         $this->renderer->render("panelEditorView", [
-            "usuario" => $usuario["username"],
-            "esEditor" => true
+            "usuario" => $usuario["username"]
         ]);
     }
 
-    public function verSugeridas() {
-        $this->verificarPermisos();
-        Log::info("Mostrando Preguntas Sugeridas al Editor");
+    public function verPreguntas()
+    {
+        Log::info("[Editor] Mostrar Preguntas");
+        $preguntasSugeridas = $this->preguntaModel->getPreguntasAprobadas();
 
+        $this->renderer->render("verTodasLasPreguntas", [
+            "lista_preguntas" => $preguntasSugeridas,
+            "hubo_preguntas" => !empty($preguntasSugeridas),
+            "redirect" => "/verPreguntas"]);
+    }
+
+    public function verSugeridas()
+    {
+        Log::info("[Editor] Mostrar Preguntas Sugeridas");
         $preguntasSugeridas = $this->preguntaModel->getPreguntasSugeridas();
-        $this->renderer->render("preguntasSugeridas", [
+
+        $this->renderer->render("verPreguntasSugeridas", [
             "lista_sugeridas" => $preguntasSugeridas,
             "hubo_sugerencias" => !empty($preguntasSugeridas),
-            "base_url" => "/PanelEditor",
-            "nombre_panel" => "Panel Editor"
+            "redirect" => "/verSugeridas"
         ]);
     }
 
-    public function verReportes() {
-        $this->verificarPermisos();
+    public function verReportes()
+    {
+        Log::info("[Editor] Mostrar Preguntas Reportadas");
         $preguntasReportadas = $this->preguntaModel->getPreguntasReportadas();
 
         $this->renderer->render("verPreguntasReportadas", [
             "lista_reportes" => $preguntasReportadas,
             "hubo_reportes" => !empty($preguntasReportadas),
-            "base_url" => "/PanelEditor",
-            "nombre_panel" => "Panel Editor"
+            "redirect" => "/verReportes"
         ]);
     }
 
-    public function aprobarPregunta() {
-        $this->verificarPermisos();
+    public function crearPregunta()
+    {
+        Log::info("[Editor] Crear Pregunta");
+        $redirect = $_POST["redirect"] ?? "/mostrar";
+        $categorias = $this->categoriaModel->getCategorias();
+        $this->renderer->render("crearPregunta",
+            ["categorias" => $categorias,
+                "opciones" => [1, 2, 3, 4],
+                "redirect" => $redirect]);
+    }
+
+    public function aprobarPregunta()
+    {
+        Log::info("[Editor] Aprobar Pregunta");
         $idPregunta = isset($_POST['id_pregunta']) ? intval($_POST['id_pregunta']) : 0;
         $this->preguntaModel->aprobarPregunta($idPregunta);
-        header("Location: /PanelEditor/verSugeridas");
-        exit();
+        Redirect::to('/panelEditor/verSugeridas');
     }
 
-    public function eliminarPregunta() {
-        $this->verificarPermisos();
+    public function eliminarPregunta()
+    {
+        Log::info("[Editor] Eliminar Pregunta");
+        $redirect = $_POST["redirect"] ?? "/mostrar";
         $idPregunta = isset($_POST['id_pregunta']) ? intval($_POST['id_pregunta']) : 0;
         $this->preguntaModel->borrarPregunta($idPregunta);
-        // Capturamos la URL anterior (si por algún motivo falla, lo mandamos al panel principal)
-        $urlOrigen = $_SERVER['HTTP_REFERER'] ?? '/PanelEditor/mostrar';
-
-        // Redirigimos
-        header("Location: " . $urlOrigen);
-        exit();
+        Redirect::to("/panelEditor$redirect");
     }
 
-    public function ignorarPregunta() {
-        $this->verificarPermisos();
-        $idPregunta = isset($_POST['id_pregunta']) ? intval($_POST['id_pregunta']) : 0;
+    public function ignorarPregunta()
+    {
+        Log::info("[Editor] Ignorar Pregunta");
+        $idPregunta = isset($_POST['id']) ? intval($_POST['id']) : 0;
         $this->preguntaModel->ignorarPregunta($idPregunta);
-        header("Location: /PanelEditor/verReportes");
-        exit();
+        Redirect::to("/panelEditor/verReportes");
     }
 
-    public function verEditarPregunta() {
-        $this->verificarPermisos();
+    public function verEditarPregunta()
+    {
+        Log::info("[Editor] Editar Pregunta");
+        $id = $_POST['id'] ?? null;
+        $redirect = $_POST["redirect"] ?? "";
+        $categorias = $this->categoriaModel->getCategorias();
+        $pregunta = $this->preguntaModel->getPregunta($id);
 
-        // Primero busca en GET (URL), si no está, busca en POST (Formulario).
-        $id = $_GET['id'] ?? $_POST['id'] ?? null;
-        $data['pregunta'] = $this->preguntaModel->getPregunta($id);
-
-        $data['url_procesar'] = "/PanelEditor/procesarEdicion";
-        $this->renderer->render("editarPregunta", $data);
-    }
-
-    public function procesarEdicion() {
-        $this->verificarPermisos();
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['id'])) {
-            header("Location: /PanelEditor/mostrar");
-            exit();
+        foreach ($categorias as &$categoria) {
+            $categoria["seleccionada"] = ($categoria['id'] == $pregunta['categoria_id']);
         }
+//        $data['url_procesar'] = "/PanelAdmin/procesarEdicion";
+        $this->renderer->render("editarPregunta",
+            ["pregunta" => $pregunta,
+                "categorias" => $categorias,
+                "redirect" => $redirect]);
+    }
+
+    public function procesarEdicion()
+    {
+        Log::info("[Editor] Procesando Edición");
+        // Validamos que vengan los datos mínimos obligatorios
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['id']))
+            Redirect::to("/mostrar");
 
         $idPregunta = intval($_POST['id']);
+        $redirect = $_POST["redirect"] ?? "";
+        $categoriaId = intval($_POST["categoria_id"]) ?? 0;
         $nuevoTextoPregunta = $_POST['texto'] ?? '';
         $idRespuestaCorrecta = intval($_POST['respuesta_correcta_id'] ?? 0);
-        $respuestasData = $_POST['respuestas'] ?? [];
+        $respuestasData = $_POST['respuestas'] ?? []; // Trae el array indexado [id => ['texto' => '...']]
 
-        $exito = $this->preguntaModel->updatePreguntaYRespuestas(
-            $idPregunta, $nuevoTextoPregunta, $idRespuestaCorrecta, $respuestasData
-        );
+        //Mandamos los datos al modelo
+        $this->preguntaModel->updatePreguntaYRespuestas($idPregunta,
+            $nuevoTextoPregunta, $categoriaId, $idRespuestaCorrecta, $respuestasData);
 
-        if ($exito) {
-            Log::info("Se modificaron exitosamente los datos de la pregunta.");
+        Redirect::to("/panelEditor$redirect");
+    }
 
-            // Se atrapa el estado que mandó el formulario oculto
-            $estadoPregunta = $_POST['estado_pregunta'] ?? '';
+    public function guardarCreacion()
+    {
+        Log::info("Guardando pregunta nueva...");
+        $estado = "APROBADA";
+        $categoriaId = $_POST['categoria_id'];
+        $pregunta = $_POST['texto_pregunta'];
+        $respuestaCorrecta = $_POST['respuesta_correcta'];
+        $respuestas = $_POST['respuestas'];
 
-            // Se define la base de la URL según el rol
-            $baseUrl = ($_SESSION['rol'] === 'ADMIN') ? '/PanelAdmin' : '/PanelEditor';
+        $this->preguntaModel->guardarPreguntaYRespuestas($categoriaId, $pregunta, $respuestaCorrecta, $respuestas, $estado);
+            Redirect::to("/panelEditor/verPreguntas");
+    }
 
-            // Se redirige como corresponde
-            if ($estadoPregunta === 'PENDIENTE') {
-                header("Location: " . $baseUrl . "/verSugeridas");
-            } else {
-                header("Location: " . $baseUrl . "/verReportes");
-            }
+    public function verCategorias()
+    {
+        $id = $_POST['id'] ?? null;
+        $categoria = $this->categoriaModel->getCategoria($id);
+        $categorias = $this->categoriaModel->getCategorias();
+        $hubo_categorias = (isset($categorias) || $categorias > 0);
 
-        } else {
-            Log::error("No se modificaron exitosamente.");
-            $baseUrl = ($_SESSION['rol'] === 'ADMIN') ? '/PanelAdmin' : '/PanelEditor';
-            header("Location: " . $baseUrl . "/mostrar");
+        $this->renderer->render("verCategorias",
+            ["categorias" => $categorias,
+                "categoria" => $categoria,
+                "hubo_categorias" => $hubo_categorias]);
+    }
+
+    public function guardarCategoria()
+    {
+        $id = $_POST['id'] ?? null;
+        $nombre = $_POST['nombre'];
+        $color = $_POST['color'];
+
+        if (!isset($id))
+            $this->categoriaModel->guardarCategoria($nombre, $color);
+        else {
+            $id = intval($id);
+            $this->categoriaModel->updateCategoria($id, $nombre, $color);
         }
-        exit();
+        Redirect::to("/verCategorias");
+    }
+
+    public function eliminarCategoria()
+    {
+        $idCategoria = isset($_POST['id']) ? intval($_POST['id']) : 0;
+        $this->categoriaModel->borrarCategoria($idCategoria);
+        Redirect::to("/verCategorias");
     }
 }

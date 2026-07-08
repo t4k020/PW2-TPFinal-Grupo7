@@ -68,13 +68,16 @@
     {{#usuario}}
         <div class="position-absolute top-0 end-0 p-3">
             {{#esAdmin}}
-                <a href="/PanelAdmin" class="btn btn-warning shadow fw-bold me-2">
+                <a href="/panelAdmin/verEstadisticasAdmin" class="btn btn-warning shadow fw-bold me-2">
                     ⚙️ Panel Admin
+                </a>
+                <a href="/panelEditor/mostrar" class="btn btn-dark shadow fw-bold me-2 text-white border-light">
+                    📝 Panel Editor
                 </a>
             {{/esAdmin}}
 
             {{#esEditor}}
-                <a href="/PanelEditor/mostrar" class="btn btn-dark shadow fw-bold me-2 text-white border-light">
+                <a href="/panelEditor/mostrar" class="btn btn-dark shadow fw-bold me-2 text-white border-light">
                     📝 Panel Editor
                 </a>
             {{/esEditor}}

@@ -268,16 +268,6 @@ class PreguntaController {
         exit();
     }
 
-    public function crearPregunta() {
-        Log::info("Iniciando formulario sugerir");
-        $redirect = $_POST['redirect'] ?? "";
-        $categorias = $this->preguntaModel->getCategorias();
-        $this->renderer->render("crearPregunta",
-                    ["categorias" => $categorias,
-                    "opciones" => [1,2,3,4],
-                    "redirect" => $redirect]);
-    }
-
     // calcula categorias y gira la ruleta
     public function ruleta() {
         Log::info("Calculando categorías para la ruleta...");
@@ -349,11 +339,5 @@ class PreguntaController {
         header("Location: /Lobby");
         exit();
     }
-
-
-
-
-
-
 
 }

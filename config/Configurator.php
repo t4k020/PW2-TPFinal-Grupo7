@@ -1,6 +1,7 @@
 <?php
 
-class Configurator {
+class Configurator
+{
 
     private $config;
 
@@ -24,50 +25,65 @@ class Configurator {
         return new MustacheRenderer(__DIR__ . '/../view');
     }
 
-    //Lobby
     public function getLobbyController()
     {
-        return new LobbyController($this->getLobbyModel(), $this->getPartidaModel(), $this->getRenderer(), new Request());
+        return new LobbyController($this->getUsuarioModel(), $this->getPreguntaModel(), $this->getCategoriaModel(), $this->getPartidaModel(), $this->getRenderer(), new Request());
     }
 
-    private function getLobbyModel()
+    public function getLoginController()
     {
-        return new LobbyModel($this->getDatabase());
+        return new LoginController($this->getUsuarioModel(), $this->getRenderer(), new Request());
     }
 
     public function getPanelAdminController()
     {
-        return new PanelAdminController($this->getLobbyModel(), $this->getRenderer(), new Request(), $this->getPreguntaModel()
+        return new PanelAdminController($this->getRenderer(), new Request(), $this->getPreguntaModel()
             , $this->getUsuarioModel(), $this->getPartidaModel());
     }
 
-    public function getEditorController()
+    public function getPanelEditorController()
     {
-        return new EditorController($this->getLobbyModel(),$this->getRenderer(), new Request(), $this->getPreguntaModel()
-            , $this->getUsuarioModel(), $this->getPartidaModel(), $this->getCategoriaModel());
+        return new PanelEditorController($this->getPreguntaModel(), $this->getCategoriaModel(), $this->getUsuarioModel(), $this->getRenderer(), new Request());
     }
 
-    //Login
-    public function getLoginController()
+    public function getPreguntaController()
     {
-        return new LoginController($this->getLoginModel(), $this->getRenderer(), new Request());
+        return new PreguntaController($this->getPreguntaModel(), $this->getPartidaModel(), $this->getRenderer(), new Request(), $this->getUsuarioModel());
     }
 
-    private function getLoginModel()
+    public function getUsuarioController()
     {
-        return new LoginModel($this->getDatabase());
+        return new UsuarioController($this->getUsuarioModel(), $this->getRenderer(), new Request(), $this->getPartidaModel());
     }
 
-    //Register
     public function getRegisterController()
     {
-        return new RegisterController($this->getRegisterModel(), $this->getRenderer(),
-            new Request());
+        return new RegisterController($this->getRegisterModel(), $this->getRenderer(), new Request());
     }
 
     private function getRegisterModel()
     {
         return new RegisterModel($this->getDatabase());
+    }
+
+    public function getPreguntaModel()
+    {
+        return new PreguntaModel($this->getDatabase());
+    }
+
+    public function getPartidaModel()
+    {
+        return new PartidaModel($this->getDatabase());
+    }
+
+    public function getUsuarioModel()
+    {
+        return new UsuarioModel($this->getDatabase());
+    }
+
+    public function getCategoriaModel()
+    {
+        return new CategoriaModel($this->getDatabase());
     }
 
     public function getRouter()
@@ -84,42 +100,5 @@ class Configurator {
         $defaultGetter = 'get' . ucfirst($defaultControllerName) . 'Controller';
         return $this->{$defaultGetter}();
     }
-
-    public function getPreguntaController() {
-        return new PreguntaController(
-            $this->getPreguntaModel(),
-            $this->getPartidaModel(),
-            $this->getRenderer(),
-            new Request(),
-            $this->getUsuarioModel()
-        );
-    }
-
-    public function getPreguntaModel() {
-        return new PreguntaModel($this->getDatabase());
-    }
-
-    public function getPartidaModel() {
-        return new PartidaModel($this->getDatabase());
-    }
-
-    public function getUsuarioController()
-    {
-        return new UsuarioController($this->getUsuarioModel(), $this->getRenderer(), new Request(), $this->getPartidaModel());
-    }
-
-    public function getUsuarioModel() {
-        return new UsuarioModel($this->getDatabase());
-    }
-
-    public function getCategoriaModel() {
-        return new CategoriaModel($this->getDatabase());
-    }
-
-    public function getPanelEditorController()
-    {
-        return new PanelEditorController($this->getPreguntaModel(), $this->getUsuarioModel(), $this->getRenderer(), new Request());
-    }
-
 
 }

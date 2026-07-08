@@ -25,13 +25,13 @@
                             Gestiona los reportes emitidos por los usuarios de la plataforma. </p>
                     </div>
                     <div class="d-flex gap-2">
-                        <a href="/PanelAdmin/mostrar" class="btn btn-outline-light btn-lg">
+                        <a href="/panelEditor/mostrar" class="btn btn-outline-light btn-lg">
                             Volver al Panel</a>
                     </div>
                 </div>
-<!--                <a href="{{base_url}}/mostrar" class="btn btn-outline-secondary">-->
-<!--                    <i class="bi bi-arrow-left"></i> Volver a {{nombre_panel}}-->
-<!--                </a>-->
+                <!--                <a href="{{base_url}}/mostrar" class="btn btn-outline-secondary">-->
+                <!--                    <i class="bi bi-arrow-left"></i> Volver a {{nombre_panel}}-->
+                <!--                </a>-->
             </div>
 
             {{#hubo_reportes}}
@@ -51,7 +51,13 @@
                                 <tr>
                                     <td class="ps-4 py-3">
                                         <span class="fw-semibold text-dark fs-5 d-block mb-1">{{texto}}</span>
-                                        <small class="text-muted">ID Pregunta: #{{id}}</small>
+                                        <div class="mt-2 d-flex flex-wrap gap-2">
+                                            {{#respuestas}}
+                                                <span class="badge {{#es_correcta}}bg-success{{/es_correcta}}{{^es_correcta}}bg-secondary{{/es_correcta}}">
+                                                    {{texto}}
+                                                </span>
+                                            {{/respuestas}}
+                                        </div>
                                     </td>
 
                                     <td class="py-3">
@@ -69,36 +75,27 @@
                                     <td class="pe-4 py-3 text-end">
                                         <div class="d-inline-flex gap-2">
 
-                                            <!--<form action="{{base_url}}/verEditarPregunta" method="POST" class="m-0">-->
-                                            <form action="/PanelAdmin/verEditarPregunta" method="POST" class="m-0">
+                                            <form action="/panelEditor/verEditarPregunta" method="POST" class="m-0">
                                                 <input type="hidden" name="id" value="{{id}}">
-                                        <input type="hidden" name="redirect" value="/verReportes">
-                                                <button type="submit"
-                                                        class="btn btn-sm btn-warning fw-bold d-inline-flex align-items-center gap-1"
-                                                        title="Editar contenido o respuestas">
-                                                    <i class="bi bi-pencil-square"></i> Editar
+                                                <input type="hidden" name="redirect" value={{redirect}}>
+                                                <button type="submit" class="btn btn-sm btn-warning fw-bold d-inline-flex align-items-center gap-1" title="Editar contenido o respuestas">
+                                                    Editar
                                                 </button>
                                             </form>
 
-<!--                                            <form action="{{base_url}}/ignorarPregunta" method="POST" class="m-0">-->
-                                            <form action="/PanelAdmin/ignorarPregunta" method="POST" class="m-0">
+                                            <form action="/panelEditor/ignorarPregunta" method="POST" class="m-0">
                                                 <input type="hidden" name="id" value="{{id}}">
-                                                <button type="submit"
-                                                        class="btn btn-sm btn-outline-success fw-bold d-inline-flex align-items-center gap-1"
-                                                        title="Descartar reporte">
-                                                    <i class="bi bi-check-circle"></i> Ignorar
+                                                <button type="submit" class="btn btn-sm btn-outline-success fw-bold d-inline-flex align-items-center gap-1" title="Descartar reporte">
+                                                    Ignorar
                                                 </button>
                                             </form>
 
-<!--                                            form action="{{base_url}}/eliminarPregunta"-->
-                                            <form action="/PanelAdmin/eliminarPregunta" method="POST" class="m-0"
+                                            <form action="/panelEditor/eliminarPregunta" method="POST" class="m-0"
                                                   onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta pregunta de forma permanente?');">
                                                 <input type="hidden" name="id_pregunta" value="{{id}}">
-                                        <input type="hidden" name="redirect" value="/verReportes">
-                                                <button type="submit"
-                                                        class="btn btn-sm btn-danger fw-bold d-inline-flex align-items-center gap-1"
-                                                        title="Eliminar pregunta de la aplicación">
-                                                    <i class="bi bi-trash3"></i> Eliminar
+                                                <input type="hidden" name="redirect" value={{redirect}}>
+                                                <button type="submit" class="btn btn-sm btn-danger fw-bold d-inline-flex align-items-center gap-1" title="Eliminar pregunta de la aplicación">
+                                                    Eliminar
                                                 </button>
                                             </form>
 

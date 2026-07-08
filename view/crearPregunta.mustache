@@ -21,10 +21,10 @@
                     <span class="fw-bold fs-2 text-white m-0">Crear Pregunta</span>
                 </div>
 
-                <form action="/PanelAdmin/guardarCreacion" method="POST">
+                <form action="{{#redirect}}/panelEditor/{{redirect}}{{/redirect}}
+                {{^redirect}}/lobby/guardarSugerencia{{/redirect}}" method="POST">
 
                     <div class="card-body p-4 p-md-5">
-                        <input type="hidden" name="redirect" value="{{redirect}}">
                         <div class="mb-4 text-start">
                             <label for="texto" class="form-label fw-semibold text-secondary">Texto de la
                                 Pregunta</label>
@@ -66,12 +66,13 @@
                         <hr class="my-5">
 
                         <div class="d-flex justify-content-end gap-3">
-                            <a href="/Lobby"
+                            <a href="{{#redirect}}/panelEditor{{redirect}}{{/redirect}}
+                                {{^redirect}}/lobby{{/redirect}}"
                                class="btn btn-outline-secondary btn-lg px-4 py-2 border-0 fw-medium">
                                 Cancelar
                             </a>
                             <button id="submitColor" type="submit" class="btn btn-lg px-5 py-2 text-white fw-bold shadow-sm">
-                                Enviar Sugerencia
+                                {{#redirect}}Crear{{/redirect}}{{^redirect}}Enviar{{/redirect}}
                             </button>
                         </div>
 

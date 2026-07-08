@@ -2,13 +2,13 @@
 
 class LoginController
 {
-    private $model;
+    private $usuarioModel;
     private $renderer;
     private $request;
 
-    public function __construct($model, $renderer, $request)
+    public function __construct($usuarioModel, $renderer, $request)
     {
-        $this->model = $model;
+        $this->usuarioModel = $usuarioModel;
         $this->renderer = $renderer;
         $this->request = $request;
     }
@@ -23,7 +23,7 @@ class LoginController
         $username = $this->request->post("username");
         $password = $this->request->post("password");
 
-        $usuario = $this->model->buscarUsuario($username);
+        $usuario = $this->usuarioModel->getUsuario($username);
 
         if (!$usuario) {
             Log::error("no existe usuario");
