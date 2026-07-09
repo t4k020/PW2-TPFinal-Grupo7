@@ -13,7 +13,7 @@
 {{> header}}
 
 <main class="container py-4">
-<!--    datos para los graficos-->
+<!--    datos para los graficos tienen triple llave para que sea inalterable-->
     <div id="usuarios_por_pais_data" data-json='{{{ json_pais }}}'></div>
     <div id="usuarios_por_edad_data" data-json='{{{ json_edad }}}'></div>
     <div id="usuarios_por_sexo_data" data-json='{{{ json_sexo }}}'></div>
@@ -21,6 +21,7 @@
     <div id="preguntas_tiempo_data" data-json='{{{ json_preguntas_tiempo }}}'></div>
     <div id="partidas_tiempo_data" data-json='{{{ json_partidas_tiempo }}}'></div>
     <div id="acierto_dona_data" data-json='{{{ json_acierto_dona }}}'></div>
+    <div id="preguntas_usuarios_tiempo_data" data-json='{{{ json_preguntas_usuarios_tiempo }}}'></div>
 
     <div class="row mb-4">
         <div class="col-12">
@@ -47,7 +48,7 @@
                     </select>
                 </form>
 
-                <form action="PanelAdmin/generarReportePdf" method="POST" id="form-pdf">
+                <form action="/PanelAdmin/generarReportePdf" method="POST" id="form-pdf">
                     <input type="hidden" name="img_pais" id="input_img_pais">
                     <input type="hidden" name="img_edad" id="input_img_edad">
                     <input type="hidden" name="img_genero" id="input_img_genero">
@@ -55,6 +56,7 @@
                     <input type="hidden" name="img_preguntas_tiempo" id="input_img_preguntas_tiempo">
                     <input type="hidden" name="img_partidas_tiempo" id="input_img_partidas_tiempo">
                     <input type="hidden" name="img_acierto_dona" id="input_img_acierto_dona">
+                    <input type="hidden" name="img_preguntas_usuarios_tiempo" id="input_img_preguntas_usuarios_tiempo">
                     <button type="submit" id="btn-exportar-pdf" class="btn btn-secondary shadow-sm fw-medium" >
                         🖨️ Descargar Reporte PDF
                     </button>
@@ -243,21 +245,29 @@
                 <div class="card-body text-center py-4">
                     <div class="text-dark mb-2"><i class="bi bi-trophy-fill fs-1 text-warning"></i></div>
                     <h4>Preguntas hechas por usuarios</h4>
-                    <p class="display-6 fw-bold my-3 text-secondary">{{record_maximo}}</p>
-                    <span class="badge bg-light text-dark border px-2 py-1">Por {{usuario_record}}</span>
+
+                    <div id="preguntas_usuarios_tiempo_div" style="width: 100%; height: 200px;"></div>
+
+                    <ul class="list-group list-group-flush text-start mt-2">
+                        <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0 py-1">
+                    <span class="small fw-medium text-secondary">
+                        Filtrado actual:
+                        <strong>
+                            {{#filtro_todo}}Histórico Completo{{/filtro_todo}}
+                            {{#filtro_hoy}}Hoy{{/filtro_hoy}}
+                            {{#filtro_semana}}Última Semana{{/filtro_semana}}
+                            {{#filtro_mes}}Último Mes{{/filtro_mes}}
+                            {{#filtro_anio}}Último Año{{/filtro_anio}}
+                        </strong>
+                    </span>
+                            <span class="badge bg-dark text-white rounded-pill px-2 py-1 fs-6 fw-semibold">{{preguntas_creadas_usuario}}</span>
+                        </li>
+                    </ul>
+
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card shadow border-0 h-100 rounded-3">
-                <div class="card-body text-center py-4">
-                    <div class="text-secondary mb-2"><i class="bi bi-calendar-check-fill fs-1 text-primary"></i></div>
-                    <h4>Usuarios nuevos</h4>
-                    <p class="display-6 fw-bold my-3 text-secondary">{{registros_hoy}}</p>
-                </div>
-            </div>
-        </div>
     </div>
 
     <div class="row mt-5">
