@@ -15,7 +15,7 @@
     <div class="row justify-content-center">
         <div class="col-12 col-xl-10">
 
-            <div class="bg-danger text-white rounded-top-4 shadow-sm p-4 mb-4">
+            <div class="bg-danger text-white rounded-top-4 shadow-sm p-4">
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                     <div>
                         <h1 class="display-5 fw-bold mb-1">
@@ -29,9 +29,6 @@
                             Volver al Panel</a>
                     </div>
                 </div>
-                <!--                <a href="{{base_url}}/mostrar" class="btn btn-outline-secondary">-->
-                <!--                    <i class="bi bi-arrow-left"></i> Volver a {{nombre_panel}}-->
-                <!--                </a>-->
             </div>
 
             {{#hubo_reportes}}
@@ -68,12 +65,12 @@
 
                                     <td class="py-3">
                                 <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-2">
-                                    ⚠️ {{reportado}}
+                                    {{reportado}}
                                 </span>
                                     </td>
 
                                     <td class="pe-4 py-3 text-end">
-                                        <div class="d-inline-flex gap-2">
+                                        <div class="d-flex flex-column text-center flex-md-row gap-2 justify-content-end">
 
                                             <form action="/panelEditor/verEditarPregunta" method="POST" class="m-0">
                                                 <input type="hidden" name="id" value="{{id}}">

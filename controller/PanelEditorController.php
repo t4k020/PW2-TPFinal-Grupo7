@@ -175,13 +175,13 @@ class PanelEditorController
             $id = intval($id);
             $this->categoriaModel->updateCategoria($id, $nombre, $color);
         }
-        Redirect::to("/verCategorias");
+        Redirect::to("verCategorias");
     }
 
     public function eliminarCategoria()
     {
         $idCategoria = isset($_POST['id']) ? intval($_POST['id']) : 0;
         $this->categoriaModel->borrarCategoria($idCategoria);
-        Redirect::to("/verCategorias");
+        Redirect::to("verCategorias");
     }
 }

@@ -22,14 +22,7 @@ class PanelAdminController
 
     public function mostrar()
     {
-        Log::info("panelAdminController::mostrar");
-        $usuario = $this->usuarioModel->obtenerDatosUsuario($_SESSION["id"]);
-
-        $this->renderer->render("panelAdminView",
-            ["usuario" => $usuario["username"],
-                "puntaje" => $usuario["puntaje"],
-                "trampitas" => $usuario["trampitas"],
-                "esAdmin" => ($usuario["username"] === "Admin")]);
+        $this->verEstadisticasAdmin();
     }
 
     public function verEstadisticasAdmin()

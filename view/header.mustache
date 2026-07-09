@@ -62,11 +62,18 @@
         border: 1px solid #ccc;
     }
 
+    @media (max-width: 490px) {
+        .header-buttons .btn {
+            padding: 0.25rem 0.6rem;
+            font-size: 0.79rem;
+            min-width: 90px;
+        }
+    }
 </style>
 
 <header>
     {{#usuario}}
-        <div class="position-absolute top-0 end-0 p-3">
+        <div class="header-buttons position-absolute top-0 end-0 p-2">
             {{#esAdmin}}
                 <a href="/panelAdmin/verEstadisticasAdmin" class="btn btn-warning shadow fw-bold me-2">
                     ⚙️ Panel Admin
