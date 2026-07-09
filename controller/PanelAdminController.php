@@ -29,8 +29,6 @@ class PanelAdminController
     {
         $filtro = $_GET['filtro_fecha'] ?? 'todo';
 
-        $fechaDesde = null;
-
         switch ($filtro) {
             case 'hoy':
                 $fechaDesde = date('Y-m-d 00:00:00');
@@ -45,23 +43,41 @@ class PanelAdminController
                 $fechaDesde = date('Y-m-d H:i:s', strtotime('-1 year'));
                 break;
             default:
-                $fechaDesde = null; // 'todo' no filtra por fecha
+                $fechaDesde = null;
                 break;
         }
 
-        $totalUsuarios = $this->usuarioModel->getTotalUsuarios($fechaDesde);
-
+        // aca se consiguen los datos filtrados por las 4 fechas
         $datosTotalUsuariosEscalera = $this->usuarioModel->getUsuariosGrafico();
         $preguntasTotalEscalera = $this->preguntaModel->getPreguntasGrafico();
         $partidasTotalEscalera = $this->partidaModel->getPartidasGrafico();
+        $preguntasHechasPorUsuarioEscalera = $this->preguntaModel->getPreguntasHechasPorUsuarioGrafico();
+
+        // mapeamos el filtro con las etiquetas que devuelven los métodos
+        $mapeoFiltros = [
+            'todo'   => 'Histórico',
+            'anio'   => 'Últ. Año',
+            'mes'    => 'Últ. Mes',
+            'semana' => 'Últ. Semana',
+            'hoy'    => 'Hoy'
+        ];
+        $periodoBuscado = $mapeoFiltros[$filtro] ?? 'Histórico';
 
 
-        $totalPreguntas = $this->preguntaModel->getTotalPreguntas($fechaDesde);
+
+        // Segun el filtro asignado, se busca el numero para mostrarlo debajo del grafico
+        $totalUsuarios           = $this->obtenerCantidadPorPeriodo($datosTotalUsuariosEscalera, $periodoBuscado);
+        $totalPreguntas          = $this->obtenerCantidadPorPeriodo($preguntasTotalEscalera, $periodoBuscado);
+        $totalPartidas           = $this->obtenerCantidadPorPeriodo($partidasTotalEscalera, $periodoBuscado);
+        $preguntasCreadasUsuario = $this->obtenerCantidadPorPeriodo($preguntasHechasPorUsuarioEscalera, $periodoBuscado);
+
+        // no se puede hacer lo mismo con estos por devolver listas complejas
         $usuariosPorPais = $this->usuarioModel->getUsuariosPorPais($fechaDesde);
         $usuariosPorEdad = $this->usuarioModel->getUsuariosPorEdad($fechaDesde);
         $usuariosPorSexo = $this->usuarioModel->getUsuariosPorSexo($fechaDesde);
-        $totalPartidas = $this->partidaModel->getTotalPartidas($fechaDesde);
+
         $aciertoGlobal = $this->partidaModel->getPorcentajeAciertoGlobal($fechaDesde);
+
         $error = 100 - $aciertoGlobal;
         $datosDonaAciertos = [
             ["tipo" => "Aciertos", "porcentaje" => $aciertoGlobal],
@@ -76,6 +92,7 @@ class PanelAdminController
             "usuarios_por_sexo" => $usuariosPorSexo,
             "total_partidas" => $totalPartidas,
             "acierto_global" => $aciertoGlobal,
+            "preguntas_creadas_usuario" => $preguntasCreadasUsuario,
 
             // JSON para los graficos
             "json_preguntas_tiempo" => json_encode($preguntasTotalEscalera),
@@ -85,16 +102,14 @@ class PanelAdminController
             "json_sexo" => json_encode($usuariosPorSexo ?: []),
             "json_partidas_tiempo" => json_encode($partidasTotalEscalera),
             "json_acierto_dona" => json_encode($datosDonaAciertos),
+            "json_preguntas_usuarios_tiempo" => json_encode($preguntasHechasPorUsuarioEscalera),
 
             "filtro_todo" => $filtro === 'todo',
             "filtro_hoy" => $filtro === 'hoy',
             "filtro_semana" => $filtro === 'semana',
             "filtro_mes" => $filtro === 'mes',
             "filtro_anio" => $filtro === 'anio'
-
-
         ];
-
 
         $this->renderer->render("verEstadisticasAdmin", $datosVista);
     }
@@ -114,6 +129,7 @@ class PanelAdminController
             $imgPreguntas = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_preguntas_tiempo']);
             $imgPartidas = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_partidas_tiempo']);
             $imgAciertos = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_acierto_dona']);
+            $imgPreguntasUsuariosTiempo = str_replace([" ", "\n", "\r"], ["+", "", ""], $_POST['img_preguntas_usuarios_tiempo']);
 
 
             // Html del Pdf
@@ -206,6 +222,12 @@ class PanelAdminController
                     <div class='chart-title'>Evolución Acumulativa de Partidas Jugadas</div>
                     <img class='chart-img' src='{$imgAciertos}' />
                 </div>
+                
+                <div class='chart-box'>
+                    <div class='chart-title'>Evolución Acumulativa de Partidas Jugadas</div>
+                    <img class='chart-img' src='{$imgPreguntasUsuariosTiempo}' />
+                </div>
+            
             
                 <div class='footer'>
                     Preguntados - Panel Administrativo Confidencial
@@ -236,4 +258,16 @@ class PanelAdminController
         header("Location: /PanelAdmin/verEstadisticasAdmin");
         exit;
     }
+
+    private function obtenerCantidadPorPeriodo($arrayEscalera, $periodoBuscado)
+    {
+        foreach ($arrayEscalera as $item) {
+            if ($item['periodo'] === $periodoBuscado) {
+                return $item['cantidad'];
+            }
+        }
+        return 0;
+    }
+
+
 }
