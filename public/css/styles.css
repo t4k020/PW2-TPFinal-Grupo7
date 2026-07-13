@@ -144,9 +144,18 @@ main::before {
 
 .text-rosa {
     color: #ff006a !important;
+    text-shadow: 0 0 20px #000000 !important;
 }
 .text-cyan {
     color: #6ef7ef !important;
+    text-shadow: 0 0 10px #000000 !important;
+}
+
+.categoria-titulo {
+    color: whitesmoke !important;
+    font-size: 1.5rem !important;
+    text-transform: uppercase !important;
+    text-shadow: 0 0 30px #000000 !important;
 }
 
 .card::before,
@@ -194,3 +203,51 @@ main::before {
     transform: scale(1.01);
     box-shadow: 0 0 8px cyan;
 }
+
+/*Tablas de preguntas*/
+
+.table-ticket-wrap {
+    overflow-x: auto;
+
+}
+
+.table-ticket {
+    border-collapse: separate;
+    border-spacing: 0 0.2rem;
+    border-radius: 0 !important;
+    width: 100%;
+}
+
+.table-ticket tbody tr td {
+    position: relative;
+    background: radial-gradient(ellipse, #864bff 0%, #0f0c60 100%);
+    border-top: 4px dashed #FFFFFF26;
+    border-bottom: 4px dashed #FFFFFF26;
+    color: #fdf6ec;
+    font-family: var(--font-primary);
+}
+
+.table-ticket tbody tr td:first-child {
+    border-left: 4px dashed #FFFFFF26;
+}
+
+.table-ticket tbody tr td:last-child {
+    border-right: 4px dashed #FFFFFF26;
+}
+
+/* Muescas de ticket */
+.table-ticket tbody tr td:first-child::before,
+.table-ticket tbody tr td:last-child::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+    background: #0e082e;
+    border-radius: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.table-ticket tbody tr td:first-child::before { left: -0.8rem; }
+.table-ticket tbody tr td:last-child::after   { right: -0.8rem; }

@@ -20,7 +20,7 @@
     <div class="row justify-content-center">
         <div class="col-12 col-xl-10">
 
-            <div class="bg-dark text-white rounded-top-4 shadow-sm p-4">
+            <div class="bg-dark card-body text-white border-light shadow-sm p-4">
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                     <div>
                         <h1 class="display-5 fw-bold mb-1">
@@ -54,9 +54,9 @@
 
             {{#hubo_preguntas}}
                 <div class="shadow-sm border-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-dark text-uppercase fs-7">
+                    <div class="table-ticket-wrap">
+                        <table class="table table-ticket align-middle mb-0">
+                            <thead class="table-dark text-uppercase my-0 fs-7">
                             <tr>
                                 <th scope="col" class="ps-4 py-3" style="width: 45%;">Pregunta</th>
                                 <th scope="col" class="py-3 text-center" style="width: 15%;">Categoría</th>
@@ -67,7 +67,7 @@
                             {{#lista_preguntas}}
                                 <tr>
                                     <td class="ps-4 py-3">
-                                        <span class="fw-semibold text-dark fs-5 d-block mb-1">{{texto}}</span>
+                                        <span class="fw-semibold text-light fs-5 d-block mb-1">{{texto}}</span>
                                         <div class="mt-2 d-flex flex-wrap gap-2">
                                             {{#respuestas}}
                                                 <span class="badge {{#es_correcta}}bg-success{{/es_correcta}}{{^es_correcta}}bg-secondary{{/es_correcta}}">
