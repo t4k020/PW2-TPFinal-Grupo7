@@ -3,92 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito+Sans:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="/public/css/styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
     <title>Preguntados - Fin del Juego</title>
 </head>
-<body class="bg-light">
+<body>
 {{> header}}
 
 <main class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-6 text-center">
 
-            <div class="card shadow p-5 border-0 row-gap-3">
-                <div class="display-1 text-danger">💀</div>
-                <h1 class="fw-bold text-dark">¡Fin del Juego!</h1>
-                {{#hubo_respuestas}}
-                    <h3>Preguntas que respondiste en esta partida:</h3>
-                    <ul class="lista-respondidas">
-                        {{#historial_preguntas}}
-                            <li style="background: #f9f9f9; border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 5px;">
-                                <div style="display: flex; align-items: center; justify-content: space-between;">
-                                    <div>
-                                        <strong>📌 {{texto}}</strong>
-                                        <span class="badge" style="background-color: {{categoria_color}}; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">
-                                            {{categoria_nombre}}
-                                        </span>
-                                    </div>
-
-                                    <div>
-                                        {{#ya_reportada}}
-                                            <span style="color: green; font-weight: bold; font-size: 0.9rem;">✔️ ¡Reportada!</span>
-                                        {{/ya_reportada}}
-
-                                        {{^ya_reportada}}
-                                            <button type="button" onclick="conmutarFormulario({{id}})" title="Reportar pregunta" style="background: none; border: none; color: red; font-size: 1.3rem; cursor: pointer;">
-                                                🚩
-                                            </button>
-                                        {{/ya_reportada}}
-                                    </div>
-                                </div>
-
-                                {{^ya_reportada}}
-                                    <form id="form-reporte-{{id}}" action="/Pregunta/iniciarReporte" method="POST" style="display: none; margin-top: 12px; background: #fff; padding: 10px; border-left: 3px solid red;">
-                                        <input type="hidden" name="id_pregunta_reportada" value="{{id}}">
-
-                                        <label for="motivo-{{id}}" style="display: block; font-size: 0.9rem; margin-bottom: 5px; font-weight: bold;">¿Cuál es el problema?</label>
-                                        <div style="display: flex; gap: 10px;">
-                                            <select name="motivo_reporte" id="motivo-{{id}}" required style="padding: 5px; flex-grow: 1;">
-                                                <option value="Respuesta equivocada">Respuesta equivocada</option>
-                                                <option value="Pregunta mal escrita">Pregunta mal escrita</option>
-                                            </select>
-                                            <button type="submit" style="background: red; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; font-weight: bold;">
-                                                Enviar Reporte
-                                            </button>
+            <div class="card">
+                <div class="card-body shadow p-5 row-gap-3">
+                    <div class="display-1 text-danger">💀</div>
+                    <h1 class="fw-bold text-rosa">¡Fin del Juego!</h1>
+                    {{#hubo_respuestas}}
+                        <h3 class="text-light">Preguntas que respondiste en esta partida:</h3>
+                        <ul class="lista-respondidas">
+                            {{#historial_preguntas}}
+                                <li class="puntaje" style="background: #f9f9f9; border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 5px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                                        <div>
+                                            <strong>📌 {{texto}}</strong>
+                                            <span class="badge"
+                                                  style="background-color: {{categoria_color}}; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">
+                                                {{categoria_nombre}}
+                                            </span>
                                         </div>
-                                    </form>
-                                {{/ya_reportada}}
-                            </li>
-                        {{/historial_preguntas}}
-                    </ul>
-                    <script>
-                        function conmutarFormulario(id) {
-                            var formulario = document.getElementById('form-reporte-' + id);
-                            if (formulario.style.display === 'none') {
-                                formulario.style.display = 'block';
-                            } else {
-                                formulario.style.display = 'none';
+
+                                        <div>
+                                            {{#ya_reportada}}
+                                                <span style="color: green; font-weight: bold; font-size: 0.9rem;">✔️ ¡Reportada!</span>
+                                            {{/ya_reportada}}
+
+                                            {{^ya_reportada}}
+                                                <button type="button" onclick="conmutarFormulario({{id}})"
+                                                        title="Reportar pregunta"
+                                                        style="background: none; border: none; color: red; font-size: 1.3rem; cursor: pointer;">
+                                                    🚩
+                                                </button>
+                                            {{/ya_reportada}}
+                                        </div>
+                                    </div>
+
+                                    {{^ya_reportada}}
+                                        <form id="form-reporte-{{id}}" action="/Pregunta/iniciarReporte" method="POST"
+                                              style="display: none; margin-top: 12px; background: #fff; padding: 10px; border-left: 3px solid red;">
+                                            <input type="hidden" name="id_pregunta_reportada" value="{{id}}">
+
+                                            <label for="motivo-{{id}}" class="text-dark" style="display: block; font-size: 0.9rem; margin-bottom: 5px; font-weight: bold;">¿Cuál es el problema?</label>
+                                            <div class="d-flex flex-column flex-md-row gap-2">
+                                                <select name="motivo_reporte" id="motivo-{{id}}" required
+                                                        style="padding: 5px; flex-grow: 1;">
+                                                    <option value="Respuesta equivocada">Respuesta equivocada</option>
+                                                    <option value="Pregunta mal escrita">Pregunta mal escrita</option>
+                                                </select>
+                                                <div class="d-grid">
+                                                    <button type="submit" class="btn btn-danger btn-lg">
+                                                        Enviar Reporte
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    {{/ya_reportada}}
+                                </li>
+                            {{/historial_preguntas}}
+                        </ul>
+                        <script>
+                            function conmutarFormulario(id) {
+                                var formulario = document.getElementById('form-reporte-' + id);
+                                if (formulario.style.display === 'none') {
+                                    formulario.style.display = 'block';
+                                } else {
+                                    formulario.style.display = 'none';
+                                }
                             }
-                        }
-                    </script>
-                {{/hubo_respuestas}}
+                        </script>
+                    {{/hubo_respuestas}}
 
-                {{^hubo_respuestas}}
-                    <p>No lograste responder ninguna pregunta correctamente esta vez. ¡A intentarlo de nuevo!</p>
-                {{/hubo_respuestas}}
+                    {{^hubo_respuestas}}
+                        <p class="text-light">No lograste responder ninguna pregunta correctamente esta vez. ¡A intentarlo de nuevo!</p>
+                    {{/hubo_respuestas}}
 
-                <hr class="my-4">
+                    <hr class="my-4">
 
-                <div class="d-grid gap-2">
-                    <form action="/Pregunta/nuevaPartida" method="POST" class="d-grid">
-                        <input type="hidden" name="reiniciar_partida" value="1">
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            🔄 Intentar de nuevo
-                        </button>
-                    </form>
-                    <a href="/Lobby" class="btn btn-outline-secondary">
-                        🏠 Volver al Lobby
-                    </a>
+                    <div class="d-grid gap-2">
+                        <form action="/Pregunta/nuevaPartida" method="POST" class="d-grid">
+                            <input type="hidden" name="reiniciar_partida" value="1">
+                            <button type="submit" class="btn btn-cyan btn-lg">
+                                🔄 Intentar de nuevo
+                            </button>
+                        </form>
+                        <a href="/Lobby" class="btn btn-outline-secondary">
+                            🏠 Volver al Lobby
+                        </a>
+                    </div>
                 </div>
             </div>
 

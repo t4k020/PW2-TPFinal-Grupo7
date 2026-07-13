@@ -5,7 +5,10 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="/public/css/lobby.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito+Sans:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/public/css/styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
     <title>Preguntados - Lobby</title>
 </head>
@@ -29,8 +32,8 @@
                             <input type="hidden" name="redirect" value="{{redirect}}">
 
                             <div class="mb-4 text-start">
-                                <label for="texto" class="form-label fw-semibold text-secondary">Texto de la Pregunta</label>
-                                <input type="text" class="form-control form-control-lg bg-light border-0 py-3 shadow-sm"
+                                <label for="texto" class="form-label fw-semibold text-cyan">Texto de la Pregunta</label>
+                                <input type="text" class="form-control form-control-lg border-0 py-3 shadow-sm"
                                        id="texto" name="texto" value="{{texto}}" required>
                             </div>
 
@@ -38,9 +41,9 @@
 
                                 <div class="col-md-4">
                                     <label for="categoria_id" class="form-label fw-semibold
-                                text-secondary">Categoría</label>
+                                text-cyan">Categoría</label>
                                     <select id="categoria_id" name="categoria_id" class="form-select
-                                bg-light border-0 shadow-sm py-2" required>
+                                border-0 shadow-sm py-2" required>
                                         {{#categorias}}
                                             <option value="{{id}}" {{#seleccionada}}selected{{/seleccionada}}
                                                     data-color="{{color}}">{{nombre}}</option>
@@ -50,8 +53,8 @@
 
                                 <div class="col-md-4">
                                     <label for="dificultad"
-                                           class="form-label fw-semibold text-secondary small">Dificultad</label>
-                                    <input type="text" class="form-control bg-light border-0 shadow-sm py-2"
+                                           class="form-label fw-semibold text-cyan small">Dificultad</label>
+                                    <input type="text" class="form-control border-0 shadow-sm py-2"
                                            id="dificultad"
                                            name="dificultad" value="{{dificultad}}" readonly disabled>
                                 </div>
@@ -63,13 +66,13 @@
                             <div class="d-grid gap-3 text-start">
                                 {{#respuestas}}
                                     <div class="input-group input-group-lg shadow-sm rounded border-0">
-                                        <div class="input-group-text bg-white border-0 px-4">
+                                        <div class="input-group-text border-0 px-4">
                                             <input class="form-check-input" type="radio" name="respuesta_correcta_id" value="{{id}}"
                                                    {{#es_correcta}}checked{{/es_correcta}} required style="transform: scale(1.3); cursor: pointer;">
-                                            <span class="ms-2 text-success small fw-bold d-none d-sm-inline">Correcta</span>
+                                            <span class="ms-2 text-cyan small fw-bold d-none d-sm-inline">Correcta</span>
                                         </div>
 
-                                        <input type="text" class="form-control border-0 bg-light px-3 py-3 text-start"
+                                        <input type="text" class="form-control border-0 px-3 py-3 text-start"
                                                name="respuestas[{{id}}][texto]" value="{{texto}}" required>
                                     </div>
                                 {{/respuestas}}

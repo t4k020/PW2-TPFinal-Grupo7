@@ -23,7 +23,8 @@ class PanelEditorController
         $usuario = $this->usuarioModel->getUsuario($_SESSION["username"]);//quiza seria mejor por id
 
         $this->renderer->render("panelEditorView", [
-            "usuario" => $usuario["username"]
+            "usuario" => $usuario["username"],
+            "fotoPerfil" => $usuario["fotoPerfil"],
         ]);
     }
 
