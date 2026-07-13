@@ -294,10 +294,10 @@ class PreguntaModel
         return [];
     }
 
-    public function guardarPreguntaYRespuestas($categoriaId, $pregunta, $respuestaCorrecta, $respuestas, $estado)
+    public function guardarPreguntaYRespuestas($categoriaId, $pregunta, $respuestaCorrecta, $respuestas, $estado, $creadoPor)
     {
-        $sqlPregunta = "INSERT INTO Pregunta (categoria_id, texto, estado) VALUES (?,?,?)";
-        $this->database->execute($sqlPregunta, [$categoriaId, $pregunta, $estado]);
+        $sqlPregunta = "INSERT INTO Pregunta (categoria_id, texto, estado, creadoPor) VALUES (?,?,?,?)";
+        $this->database->execute($sqlPregunta, [$categoriaId, $pregunta, $estado, $creadoPor]);
 
         $preguntaId = $this->database->lastInsertId();
 

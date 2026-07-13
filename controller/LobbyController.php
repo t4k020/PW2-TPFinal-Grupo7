@@ -58,12 +58,20 @@ class LobbyController {
 
     public function guardarSugerencia()
     {
+
+        if (!isset($_SESSION['username'])) {
+            Log::error("[Lobby] Sugerencia no guardada - Usuario no logueado");
+            Redirect::to("/login");
+            return;
+        }
+
         Log::info("[Lobby] Guardar Sugerencia");
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' || isset($_POST['id'])) {
             Log::error("[Lobby] Sugerencia no guardada");
             Redirect::to("/lobby");
         }
         $estado = "PENDIENTE";
+        $creadoPor = $_SESSION['username'];
 
         $categoriaId = $_POST['categoria_id'];
         $pregunta = $_POST['texto_pregunta'];
@@ -71,7 +79,7 @@ class LobbyController {
         $respuestas = $_POST['respuestas'];
 
         $exito = $this->preguntaModel->guardarPreguntaYRespuestas(
-            $categoriaId, $pregunta, $respuestaCorrecta, $respuestas, $estado);
+            $categoriaId, $pregunta, $respuestaCorrecta, $respuestas, $estado, $creadoPor);
         if ($exito)
             Log::info("[Lobby] Sugerencia guardada");
         else
