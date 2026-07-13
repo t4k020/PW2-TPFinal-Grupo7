@@ -159,7 +159,9 @@ main::before {
 }
 
 .card::before,
-.card::after {
+.card::after,
+.card-white::before,
+.card-white::after {
     content: "";
     position: absolute;
     top: 50%;
@@ -170,8 +172,8 @@ main::before {
     transform: translateY(-50%);
 }
 
-.card::before { left: -1rem; }
-.card::after   { right: -1rem; }
+.card::before, .card-white::before { left: -1rem; }
+.card::after, .card-white::after   { right: -1rem; }
 
 .card-body {
     border: 5px dashed #FFFFFF26;
