@@ -5,7 +5,10 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="/public/css/lobby.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito+Sans:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/public/css/styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
     <title>Preguntados - Lobby</title>
 </head>
@@ -24,7 +27,8 @@
 
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card shadow border-0 bg-dark text-white p-4 text-center rounded-3">
+            <div class="card shadow border-0 bg-dark text-white text-center rounded-3">
+            <div class="card-body p-4">
                 <h2 class="mb-1">📊 Estadísticas Generales</h2>
                 {{#filtro_todo}}<span class="badge bg-secondary border border-light-subtle fs-6 fw-normal">Histórico Completo</span>{{/filtro_todo}}
                 {{#filtro_hoy}}<span class="badge bg-success fs-6 fw-normal">Filtrado por: Hoy</span>{{/filtro_hoy}}
@@ -32,6 +36,7 @@
                 {{#filtro_mes}}<span class="badge bg-warning text-dark fs-6 fw-normal">Filtrado por: Último Mes</span>{{/filtro_mes}}
                 {{#filtro_anio}}<span class="badge bg-danger fs-6 fw-normal">Filtrado por: Último Año</span>{{/filtro_anio}}
                 <p class="lead mb-0 text-white-50">El rendimiento global del juego en tiempo real</p>
+            </div>
             </div>
             <div class="col-md-5">
                 <form action="/index.php" method="GET" class="d-flex gap-2 justify-content-md-end my-2">
@@ -65,7 +70,7 @@
 
     <div class="row g-4">
         <div class="col-md-4">
-            <div class="card shadow border-0 h-100 rounded-3">
+            <div class="card-white shadow border-0 h-100 rounded-3">
                 <div class="card-body text-center py-4">
                     <div class="text-primary mb-2"><i class="bi bi-people-fill fs-1"></i></div>
                     <h4>Usuarios creados</h4>
@@ -91,7 +96,7 @@
         </div>
 
         <div class="col-md-4">
-            <div class="card shadow border-0 h-100 rounded-3">
+            <div class="card-white shadow border-0 h-100 rounded-3">
                 <div class="card-body text-center py-4">
                     <div class="text-warning mb-2"><i class="bi bi-controller fs-1"></i></div>
                     <h4>Preguntas creadas</h4>
@@ -118,7 +123,7 @@
         </div>
 
         <div class="col-md-4">
-            <div class="card shadow border-0 h-100 rounded-3">
+            <div class="card-white shadow border-0 h-100 rounded-3">
                 <div class="card-body text-center py-4">
                     <div class="text-success mb-2"><i class="bi bi-question-circle-fill fs-1"></i></div>
                     <h4>Usuarios creados por país</h4>
@@ -141,7 +146,7 @@
         </div>
 
         <div class="col-md-4">
-            <div class="card shadow border-0 h-100 rounded-3">
+            <div class="card-white shadow border-0 h-100 rounded-3">
                 <div class="card-body text-center py-4">
                     <h4 class="card-title mb-4 fw-semibold text-start">Usuarios creados por Rango de Edad</h4>
 
@@ -163,7 +168,7 @@
         </div>
 
         <div class="col-md-4">
-            <div class="card shadow border-0 h-100 rounded-3">
+            <div class="card-white shadow border-0 h-100 rounded-3">
                 <div class="card-body text-center py-4">
                     <h4 class="card-title mb-4 fw-semibold text-start">Usuarios creados por Género</h4>
 
@@ -185,7 +190,7 @@
         </div>
 
         <div class="col-md-4">
-            <div class="card shadow border-0 h-100 rounded-3">
+            <div class="card-white shadow border-0 h-100 rounded-3">
                 <div class="card-body text-center py-4">
                     <div class="text-warning mb-2"><i class="bi bi-controller fs-1"></i></div>
                     <h4>Partidas Jugadas</h4>
@@ -212,7 +217,7 @@
         </div>
 
         <div class="col-md-4">
-            <div class="card shadow border-0 h-100 rounded-3">
+            <div class="card-white shadow border-0 h-100 rounded-3">
                 <div class="card-body text-center py-4">
                     <div class="text-success mb-2"><i class="bi bi-graph-up-arrow fs-1"></i></div>
                     <h4>Promedio de aciertos global</h4>
@@ -239,7 +244,7 @@
         </div>
 
         <div class="col-md-4">
-            <div class="card shadow border-0 h-100 rounded-3">
+            <div class="card-white shadow border-0 h-100 rounded-3">
                 <div class="card-body text-center py-4">
                     <div class="text-dark mb-2"><i class="bi bi-trophy-fill fs-1 text-warning"></i></div>
                     <h4>Preguntas hechas por usuarios</h4>
@@ -250,7 +255,7 @@
         </div>
 
         <div class="col-md-4">
-            <div class="card shadow border-0 h-100 rounded-3">
+            <div class="card-white shadow border-0 h-100 rounded-3">
                 <div class="card-body text-center py-4">
                     <div class="text-secondary mb-2"><i class="bi bi-calendar-check-fill fs-1 text-primary"></i></div>
                     <h4>Usuarios nuevos</h4>
@@ -262,7 +267,7 @@
 
     <div class="row mt-5">
         <div class="col-12 text-center">
-            <a href="/lobby" class="btn btn-outline-secondary btn-lg px-4 shadow-sm border-0 fw-medium">
+            <a href="/lobby" class="btn btn-cyan btn-lg px-4 shadow-sm border-0 fw-medium">
                 Volver al Lobby
             </a>
         </div>

@@ -4,9 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Preguntados - Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito+Sans:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="/public/css/styles.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-dark">
+<body>
 
 {{> header}}
 
@@ -18,15 +23,15 @@
 
             <div class="card shadow">
 
-                <div class="card-body p-4">
+                <div class="card-body py-4 px-5">
 
-                    <h3 class="text-center mb-4">
+                    <h1 class="text-center text-rosa mb-4">
                         Iniciar Sesión
-                    </h3>
+                    </h1>
 
                     <form action="/login/procesar" method="POST">
 
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <input
                                     type="text"
                                     name="username"
@@ -36,7 +41,7 @@
                             >
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <input
                                     type="password"
                                     name="password"
@@ -48,15 +53,15 @@
 
                         <button
                                 type="submit"
-                                class="btn btn-primary w-100">
+                                class="btn btn-cyan mt-3 w-100">
                             Ingresar
                         </button>
 
                     </form>
 
-                    <p class="text-center pt-4 mx-0">
-                        ¿Todavía no tenés cuenta?
-                        <a href="/register" class="text-decoration-none fw-bold">
+                    <p class="text-center text-light pt-4 mx-0">
+                        ¿Todavía no tenés cuenta?<br>
+                        <a href="/register" class="text-decoration-none text-cyan fw-bold">
                             Registrate
                         </a>
                     </p>

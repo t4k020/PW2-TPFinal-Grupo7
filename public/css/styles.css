@@ -1,0 +1,196 @@
+:root {
+    --font-primary: "Baloo 2", system-ui, sans-serif;
+}
+
+body {
+    background: #0e082e !important;
+}
+
+.btn-warning {
+    background: linear-gradient(#f8b914, #fbd364) !important;
+}
+
+.btn-success {
+    background: linear-gradient(#02c3bb, #6ef7ef) !important;
+}
+
+.btn-logout {
+    background: linear-gradient(#a50153, #f3194c) !important;
+}
+
+/* Fondo con textura de estrellas */
+main {
+    position: relative;
+    z-index: 0;
+}
+
+main::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+            radial-gradient(#b5b5b5 1px, transparent 1px),
+            radial-gradient(grey 1px, transparent 1px);
+    background-size: 130px 130px, 90px 90px;
+    background-position: 0 0, 45px 65px;
+    z-index: -1;
+}
+
+.fotoperfil-arcoiris {
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    padding: 4px;
+    background: conic-gradient(from 0deg, #ffc93c, #ff3d81, #17e9e0, #ffc93c);
+}
+
+.fotoperfil {
+    border-radius: 50%;
+    border: 4px solid #1e0f45;
+}
+
+.puntaje {
+    background: #0a0620 !important;
+    border: 1px solid cyan !important;
+    color: cyan !important;
+    font-family: "Space Mono", monospace;
+}
+
+.form-label {
+    color: cyan !important;
+}
+
+.form-control, .form-select, .input-group-text {
+    background: #0a0620 !important;
+    color: whitesmoke !important;
+    border-radius: 0 !important;
+    font-family: "Space Mono", monospace !important;
+}
+
+.form-control::placeholder {
+    color: #787878 !important;
+}
+
+.btn-dorado {
+    display: inline-block;
+    text-transform: uppercase;
+    color: black;
+    font-weight: bold;
+    text-decoration: none;
+    background: linear-gradient(#f4c74f, #ffc307);
+    border: 1px solid #f3dca0;
+    box-shadow: 0 6px 16px rgba(255,201,60,.35);
+}
+
+.btn-dorado:hover {
+    color: black;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255,201,60,.5);
+}
+
+
+/* El boton jugar */
+.buzzer {
+    position: relative;
+    width: 168px;
+    height: 168px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-family: var(--font-primary);
+    font-weight: 1000;
+    font-size: 2rem;
+    letter-spacing: .04em;
+    color: black;
+    background: radial-gradient(circle at 35% 30%, #ffe8a3, #ffc93c 55%, #e08a00 100%);
+    box-shadow: 0 10px 0 #b56f00;
+    transition: transform .1s ease;
+}
+
+.buzzer:hover {
+    box-shadow:
+            0 10px 0 #b56f00,
+            0 16px 30px rgba(255,201,60,.45);
+    transition: transform .1s ease, box-shadow .1s ease;
+    transform: scale(1.05);
+}
+
+.buzzer:active {
+    transform: translateY(10px);
+    box-shadow:
+            0 4px 0 #b56f00,
+            0 8px 18px rgba(255,201,60,.4);
+}
+
+.buzzer__label {
+    position: relative;
+    z-index: 2;
+}
+
+/*card de ticket*/
+
+.card {
+    position: relative;
+    background: radial-gradient(ellipse, #864bff 0%, #0f0c60 100%);
+    border-radius: 0 !important;
+    padding: .25rem;
+    font-family: var(--font-primary);
+}
+
+.card-white {
+    position: relative;
+    background: white !important;
+}
+
+.text-rosa {
+    color: #ff006a !important;
+}
+.text-cyan {
+    color: #6ef7ef !important;
+}
+
+.card::before,
+.card::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 1.9rem;
+    height: 1.9rem;
+    background: #0e082e;
+    border-radius: 50%;
+    transform: translateY(-50%);
+}
+
+.card::before { left: -1rem; }
+.card::after   { right: -1rem; }
+
+.card-body {
+    border: 5px dashed #FFFFFF26;
+    padding: 1.75rem 1.5rem;
+    text-align: center;
+}
+
+#headerCategoria {
+    border-radius: 0 !important;
+}
+.no-hover:hover {
+    transform: none;
+}
+
+/*boton cyan*/
+
+.btn-cyan {
+    display: inline-block;
+    color: black;
+    font-family: var(--font-primary);
+    text-decoration: none;
+    background: radial-gradient(ellipse, #51fafa 30%, #00cdcd 100%);
+    text-decoration: none;
+    border: 1px solid #8bffff;
+    font-weight: bold;
+}
+
+.btn-cyan:hover {
+    transform: scale(1.01);
+    box-shadow: 0 0 8px cyan;
+}
