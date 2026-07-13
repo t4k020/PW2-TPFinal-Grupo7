@@ -19,12 +19,12 @@
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card shadow">
+            <div class="shadow">
                 <div class="card-header bg-primary text-white text-center py-3">
                     <h2 class="mb-0"><i class="fas fa-trophy text-warning me-2"></i> Ranking Global de Jugadores</h2>
                 </div>
-                <div class="card-body p-0">
-                    <table class="table table-hover table-striped mb-0 text-center">
+                <div class="table-ticket-wrap p-0">
+                    <table class="table table-ticket overflow-hidden table-striped mb-0 text-center">
                         <thead class="table-dark">
                         <tr>
                             <th scope="col" style="width: 20%">Posición</th>
@@ -36,24 +36,24 @@
                         <tbody>
                         {{#usuarios}}
                             <tr class="align-middle">
-                                    <td>
-                                        <strong class="fs-5">{{puesto}}</strong>
-                                    </td>
-                                    <td>
-                                        <a href="/usuario/ver/{{username}}">
-                                            <img src="/public/img/{{fotoPerfil}}"
+                                <td>
+                                    <strong class="fs-5">{{puesto}}</strong>
+                                </td>
+                                <td>
+                                    <a href="/usuario/ver/{{username}}">
+                                        <img src="/public/img/{{fotoPerfil}}"
                                              class="rounded-circle border"
                                              width="45"
                                              height="45"
                                              alt="Avatar">
-                                        </a>
-                                    </td>
-                                    <td class="text-start fw-bold text-secondary">
-                                        <a href="/usuario/ver/{{username}}" class="text-decoration-none">{{username}}</a>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-success fs-6 px-3 py-2">{{puntaje_total}} pts</span>
-                                    </td>
+                                    </a>
+                                </td>
+                                <td class="text-start fw-bold">
+                                    <a href="/usuario/ver/{{username}}" class="text-decoration-none text-rosa">{{username}}</a>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success fs-6 px-3 py-2">{{puntaje_total}} pts</span>
+                                </td>
                             </tr>
                         {{/usuarios}}
 
